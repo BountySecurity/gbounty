@@ -1,15 +1,22 @@
 run:
-  timeout: 2m
+  timeout: 5m
 
 linters:
   enable-all: true
   disable:
-    # deprecations
-    - gomnd # deprecated (since v1.58.0) in favor of 'mnd'
-    - execinquery # deprecated (since v1.58.0) as it has been archived
+    # deprecations:
+    - gomnd # (since v1.58.0) in favor of 'mnd'
+    - execinquery # (since v1.58.0) as it has been archived
+    # we don't want that many whitespaces and white lines
+    - wsl
+    - nlreturn
+    # annoying linters that report many false positives
+    - depguard
+    - wrapcheck
     # other
-    - depguard # not used (by default reports many false positives)
-    - wsl # we don't want that many whitespaces and white lines
+    - varnamelen # we want freedom for choosing variable names
+    - lll # we try (not force) to keep the lines at a reasonable length
+    - exhaustruct # why? isn't it against Go idiomatic zero-value behave?
 
 
 linters-settings:

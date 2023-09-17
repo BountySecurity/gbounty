@@ -3,6 +3,7 @@ module github.com/bountysecurity/gbounty
 go 1.22.5
 
 require (
+	github.com/go-logfmt/logfmt v0.6.0
 	github.com/pterm/pterm v0.12.79
 	github.com/stretchr/testify v1.9.0
 )

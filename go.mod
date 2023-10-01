@@ -1,6 +1,8 @@
 module github.com/bountysecurity/gbounty
 
-go 1.22.5
+go 1.21
+
+toolchain go1.21.13
 
 require (
 	github.com/go-logfmt/logfmt v0.6.0

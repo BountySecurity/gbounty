@@ -13,10 +13,17 @@ linters:
     # annoying linters that report many false positives
     - depguard
     - wrapcheck
+    - nilnil
     # other
     - varnamelen # we want freedom for choosing variable names
+    - tagliatelle # we want freedom for choosing json mapping depending on requirements (external services, etc)
     - lll # we try (not force) to keep the lines at a reasonable length
     - exhaustruct # why? isn't it against Go idiomatic zero-value behave?
+    - nonamedreturns # we are fine with named returns so far
+    - musttag # sometimes we are just fine with defaults
+    # perhaps revisit?
+    - cyclop
+    - funlen
 
 
 linters-settings:

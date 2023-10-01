@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	FileExtensionV2 = ".bb2"
+	FileExtension = ".bb2"
 )
 
 var (
@@ -75,7 +75,7 @@ func NewFileProvider(locations ...string) (FileProvider, error) {
 
 				// It only looks for *.bb and *.bb2 files
 				ext := filepath.Ext(info.Name())
-				if info.IsDir() || ext != FileExtensionV2 {
+				if info.IsDir() || ext != FileExtension {
 					return nil
 				}
 
@@ -84,8 +84,7 @@ func NewFileProvider(locations ...string) (FileProvider, error) {
 					return returnErr(err)
 				}
 
-				switch ext {
-				case FileExtensionV2:
+				if ext == FileExtension {
 					err = readBB2Profiles(&data, fileBytes)
 				}
 

@@ -2,7 +2,7 @@ package url_test
 
 import (
 	"errors"
-	"fmt"
+	"github.com/stretchr/testify/require"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -11,6 +11,8 @@ import (
 )
 
 func TestValidURL(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name     string
 		input    string
@@ -40,15 +42,18 @@ func TestValidURL(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 			urlInput := tc.input
 			err := url.Validate(&urlInput)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tc.expected, urlInput)
 		})
 	}
 }
 
 func TestInvalidURL(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name  string
 		input string
@@ -73,15 +78,18 @@ func TestInvalidURL(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 			urlInput := tc.input
 			err := url.Validate(&urlInput)
-			assert.Error(t, err)
-			assert.True(t, errors.Is(err, url.ErrInvalidURL))
+			require.Error(t, err)
+			require.ErrorIs(t, err, url.ErrInvalidURL)
 		})
 	}
 }
 
 func TestURLFallbackProtocol(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name     string
 		input    string
@@ -101,15 +109,18 @@ func TestURLFallbackProtocol(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 			urlInput := tc.input
 			err := url.Validate(&urlInput)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tc.expected, urlInput)
 		})
 	}
 }
 
 func TestURLWithPort(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name     string
 		input    string
@@ -129,6 +140,7 @@ func TestURLWithPort(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 			urlInput := tc.input
 			err := url.Validate(&urlInput)
 			assert.NoError(t, err)
@@ -137,8 +149,9 @@ func TestURLWithPort(t *testing.T) {
 	}
 }
 
-// TestURLWithoutHost tests URLs that are missing a host and should fail validation
 func TestURLWithoutHost(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name  string
 		input string
@@ -159,10 +172,11 @@ func TestURLWithoutHost(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 			urlInput := tc.input
 			err := url.Validate(&urlInput)
-			assert.Error(t, err)
-			assert.True(t, errors.Is(err, url.ErrInvalidURL), fmt.Sprintf("expected ErrInvalidURL for input: %s", tc.input))
+			require.Error(t, err)
+			assert.True(t, errors.Is(err, url.ErrInvalidURL), "expected ErrInvalidURL for input: "+tc.input)
 		})
 	}
 }

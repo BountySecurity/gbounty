@@ -19,7 +19,7 @@ var ErrInvalidURL = errors.New("invalid url")
 // by modifying the value stored in the given string pointer.
 func Validate(str *string) error {
 	if !strings.Contains(*str, "://") {
-		*str = fmt.Sprintf("http://%s", *str)
+		*str = "http://" + *str
 	}
 
 	u, err := url.ParseRequestURI(*str)

@@ -78,8 +78,8 @@ Content-Length: 13
 Hello, world!`))
 
 		assert.Nil(t, res)
-		assert.Error(t, err)
-		assert.ErrorIs(t, err, response.ErrInvalidStatusLine)
+		require.Error(t, err)
+		require.ErrorIs(t, err, response.ErrInvalidStatusLine)
 	})
 
 	t.Run("no body", func(t *testing.T) {

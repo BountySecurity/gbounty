@@ -36,7 +36,7 @@ func NewZipProvider(ctx context.Context, contents []byte) (ZipProvider, error) {
 		// It only looks for *.bb and *.bb2 files
 		info := zipFile.FileInfo()
 		ext := filepath.Ext(info.Name())
-		if info.IsDir() || ext != FileExtensionV2 {
+		if info.IsDir() || ext != FileExtension {
 			continue
 		}
 
@@ -53,8 +53,7 @@ func NewZipProvider(ctx context.Context, contents []byte) (ZipProvider, error) {
 			continue
 		}
 
-		switch ext {
-		case FileExtensionV2:
+		if ext == FileExtension {
 			err = readBB2Profiles(&data, fileBytes)
 		}
 

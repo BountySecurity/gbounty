@@ -1,7 +1,7 @@
 package profile
 
 // Response must implement the Profile and
-// IssueInformation interfaces
+// IssueInformation interfaces.
 var (
 	_ Profile          = Response{}
 	_ IssueInformation = Response{}

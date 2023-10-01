@@ -11,6 +11,8 @@ import (
 )
 
 func TestStep_InsertionPointEnabled(t *testing.T) {
+	t.Parallel()
+
 	tcs := map[string]struct {
 		step     profile.Step
 		ipt      profile.InsertionPointType
@@ -50,7 +52,9 @@ func TestStep_InsertionPointEnabled(t *testing.T) {
 	}
 
 	for name, tc := range tcs {
+		tc := tc
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 			result := tc.step.InsertionPointEnabled(tc.ipt, tc.method)
 			require.Equal(t, tc.expected, result)
 		})

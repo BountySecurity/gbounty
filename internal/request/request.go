@@ -143,7 +143,7 @@ func (r *Request) MultipartForm() (*multipart.Form, error) {
 
 	req := &http.Request{
 		Header: http.Header{
-			"Content-Type": {fmt.Sprintf("multipart/form-data; boundary=%s", line[2:])},
+			"Content-Type": {"multipart/form-data; boundary=" + line[2:]},
 		},
 		Body: io.NopCloser(bytes.NewReader(r.Body)),
 	}

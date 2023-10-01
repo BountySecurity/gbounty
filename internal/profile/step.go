@@ -51,6 +51,8 @@ func (s Step) InsertionPointEnabled(ipt InsertionPointType, method string) bool 
 		switch {
 		// POST to GET
 		case s.PostToGet() && method == http.MethodPost:
+			// Only these two are relevant here:
+			//nolint:exhaustive
 			switch enabledIPT {
 			case ParamURLName:
 				enabledIPT = ParamBodyName
@@ -60,6 +62,8 @@ func (s Step) InsertionPointEnabled(ipt InsertionPointType, method string) bool 
 
 		// GET to POST
 		case s.GetToPost() && method == http.MethodGet:
+			// Only these two are relevant here:
+			//nolint:exhaustive
 			switch enabledIPT {
 			case ParamBodyName:
 				enabledIPT = ParamURLName
@@ -69,6 +73,8 @@ func (s Step) InsertionPointEnabled(ipt InsertionPointType, method string) bool 
 
 		// GET <=> POST
 		case s.SwapGetAndPost() && (method == http.MethodGet || method == http.MethodPost):
+			// Only these four are relevant here:
+			//nolint:exhaustive
 			switch enabledIPT {
 			case ParamURLName:
 				enabledIPT = ParamBodyName

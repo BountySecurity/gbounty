@@ -46,3 +46,14 @@ linters-settings:
 issues:
   max-issues-per-linter: 1000
   max-same-issues: 1000
+
+  exclude-rules:
+    - path: internal/request/request.go
+      linters:
+        - dupl
+    - path: internal/response/response.go
+      linters:
+        - dupl
+    - path: internal/request/request_test.go
+      linters:
+        - dupl

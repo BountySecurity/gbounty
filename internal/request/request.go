@@ -21,6 +21,8 @@ import (
 	internalurl "github.com/bountysecurity/gbounty/kit/url"
 )
 
+const defaultTimeout = 20 * time.Second
+
 var (
 	// ErrInvalidHost is returned when building/parsing a request
 	// from plain text and the Host line is invalid.
@@ -274,12 +276,12 @@ func ParseRequest(b []byte, hh ...string) (Request, error) {
 	firstLine := strings.TrimSpace(string(b[:firstNextLine]))
 	if strings.HasPrefix(firstLine, "http") {
 		if err := internalurl.Validate(&firstLine); err != nil {
-			return Request{}, fmt.Errorf("%w - %s", ErrInvalidHost, err)
+			return Request{}, errors.Join(ErrInvalidHost, err)
 		}
 
 		host, err := url.Parse(firstLine)
 		if err != nil {
-			return Request{}, fmt.Errorf("%w - %s", ErrInvalidHost, err)
+			return Request{}, errors.Join(ErrInvalidHost, err)
 		}
 
 		hostStr = host.String()
@@ -291,7 +293,7 @@ func ParseRequest(b []byte, hh ...string) (Request, error) {
 
 	first, err := tp.ReadLine()
 	if err != nil {
-		return Request{}, fmt.Errorf("%w: %s", ErrInvalidPayload, err)
+		return Request{}, errors.Join(ErrInvalidPayload, err)
 	}
 
 	method, path, proto, ok := parseRequestLine(first)
@@ -301,7 +303,7 @@ func ParseRequest(b []byte, hh ...string) (Request, error) {
 
 	headers, err := tp.ReadMIMEHeader()
 	if err != nil && !errors.Is(err, io.EOF) {
-		return Request{}, fmt.Errorf("%w: %s", ErrInvalidPayload, err)
+		return Request{}, errors.Join(ErrInvalidPayload, err)
 	}
 
 	// If [hostStr] remains empty, we should try to get the host from the headers.
@@ -312,12 +314,12 @@ func ParseRequest(b []byte, hh ...string) (Request, error) {
 		}
 
 		if err := internalurl.Validate(&hh); err != nil {
-			return Request{}, fmt.Errorf("%w - %s", ErrInvalidHost, err)
+			return Request{}, errors.Join(ErrInvalidHost, err)
 		}
 
 		host, err := url.Parse(strings.TrimSpace(hh))
 		if err != nil {
-			return Request{}, fmt.Errorf("%w - %s", ErrInvalidHost, err)
+			return Request{}, errors.Join(ErrInvalidHost, err)
 		}
 
 		hostStr = host.String()
@@ -336,7 +338,7 @@ func ParseRequest(b []byte, hh ...string) (Request, error) {
 		Headers: headers,
 		Body:    body,
 		// Default values
-		Timeout:      20 * time.Second,
+		Timeout:      defaultTimeout,
 		RedirectType: profile.RedirectNever,
 	}, nil
 }
@@ -358,7 +360,8 @@ func readBody(tp *textproto.Reader) ([]byte, error) {
 	var reqBytes []byte
 
 	for {
-		recvBuf := make([]byte, 1024)
+		const buffSize = 1024
+		recvBuf := make([]byte, buffSize)
 
 		n, err := tp.R.Read(recvBuf)
 		if err != nil {

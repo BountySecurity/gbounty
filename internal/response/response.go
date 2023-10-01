@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"net/textproto"
 	"sort"
@@ -227,26 +226,27 @@ func ParseResponse(b []byte) (*Response, error) {
 	// Read the status line
 	statusLine, err := tp.ReadLine()
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrInvalidStatusLine, err)
+		return nil, errors.Join(ErrInvalidStatusLine, err)
 	}
 
 	// Parse status line
-	parts := strings.SplitN(statusLine, " ", 3)
-	if len(parts) < 3 {
-		return nil, fmt.Errorf("%w: %s", ErrInvalidStatusLine, err)
+	const chunks = 3
+	parts := strings.SplitN(statusLine, " ", chunks)
+	if len(parts) < chunks {
+		return nil, errors.Join(ErrInvalidStatusLine, err)
 	}
 
 	proto := parts[0]
 	code, err := strconv.Atoi(parts[1])
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrInvalidStatusCode, err)
+		return nil, errors.Join(ErrInvalidStatusCode, err)
 	}
 	status := parts[2]
 
 	// Read headers
 	headers, err := tp.ReadMIMEHeader()
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrInvalidHeaders, err)
+		return nil, errors.Join(ErrInvalidHeaders, err)
 	}
 
 	// Convert MIMEHeader to a map[string][]string
@@ -257,7 +257,7 @@ func ParseResponse(b []byte) (*Response, error) {
 	if tp.R.Buffered() > 0 {
 		body, err = io.ReadAll(tp.R)
 		if err != nil {
-			return nil, fmt.Errorf("%w: %s", ErrUnreadableBody, err)
+			return nil, errors.Join(ErrUnreadableBody, err)
 		}
 	}
 

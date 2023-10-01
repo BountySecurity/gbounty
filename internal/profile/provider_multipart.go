@@ -3,7 +3,6 @@ package profile
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"mime/multipart"
 )
@@ -21,17 +20,17 @@ func NewMultipartFromProvider(ctx context.Context, form *multipart.Form) (ZipPro
 
 	f, err := fhs[0].Open()
 	if err != nil {
-		return ZipProvider{}, fmt.Errorf("%w: %s", ErrMissingProfiles, err)
+		return ZipProvider{}, errors.Join(ErrMissingProfiles, err)
 	}
 
 	zipBytes, err := io.ReadAll(f)
 	if err != nil {
-		return ZipProvider{}, fmt.Errorf("%w: %s", ErrMissingProfiles, err)
+		return ZipProvider{}, errors.Join(ErrMissingProfiles, err)
 	}
 
 	provider, err := NewZipProvider(ctx, zipBytes)
 	if err != nil {
-		return ZipProvider{}, fmt.Errorf("%w: %s", ErrMissingProfiles, err)
+		return ZipProvider{}, errors.Join(ErrMissingProfiles, err)
 	}
 
 	return provider, nil

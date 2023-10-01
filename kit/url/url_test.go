@@ -1,11 +1,10 @@
 package url_test
 
 import (
-	"errors"
-	"github.com/stretchr/testify/require"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/bountysecurity/gbounty/kit/url"
 )
@@ -41,6 +40,7 @@ func TestValidURL(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			urlInput := tc.input
@@ -77,6 +77,7 @@ func TestInvalidURL(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			urlInput := tc.input
@@ -108,6 +109,7 @@ func TestURLFallbackProtocol(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			urlInput := tc.input
@@ -139,11 +141,12 @@ func TestURLWithPort(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			urlInput := tc.input
 			err := url.Validate(&urlInput)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tc.expected, urlInput)
 		})
 	}
@@ -171,12 +174,13 @@ func TestURLWithoutHost(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			urlInput := tc.input
 			err := url.Validate(&urlInput)
 			require.Error(t, err)
-			assert.True(t, errors.Is(err, url.ErrInvalidURL), "expected ErrInvalidURL for input: "+tc.input)
+			require.ErrorIs(t, err, url.ErrInvalidURL)
 		})
 	}
 }

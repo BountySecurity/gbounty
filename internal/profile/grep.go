@@ -72,7 +72,7 @@ func GrepFromString(s string, rr map[string]string, includeWhere bool) (Grep, er
 		return Grep{}, err
 	}
 
-	if includeWhere {
+	if includeWhere { //nolint:nestif
 		// Perhaps add validation
 		where = strings.TrimSpace(chunks[3])
 
@@ -156,6 +156,8 @@ func (op GrepOperator) OrNot() bool {
 // Match returns the result of the operator applied to the two
 // given boolean values. So, basic logic operations are performed.
 func (op GrepOperator) Match(x, y bool) bool {
+	const noop = false
+
 	switch op {
 	case GrepOperatorAnd:
 		return x && y
@@ -165,10 +167,12 @@ func (op GrepOperator) Match(x, y bool) bool {
 		return x || y
 	case GrepOperatorOrNot:
 		return x || !y
+	case GrepOperatorNone:
+		return noop
 	}
 
 	// Return false for any non-functional operator
-	return false
+	return noop
 }
 
 func parseGrepOperator(s string) (GrepOperator, error) {

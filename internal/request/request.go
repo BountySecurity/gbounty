@@ -327,7 +327,7 @@ func ParseRequest(b []byte, hh ...string) (Request, error) {
 
 	body, err := readBody(tp)
 	if err != nil && !errors.Is(err, io.EOF) {
-		return Request{}, fmt.Errorf("%w: %s", ErrInvalidPayload, err)
+		return Request{}, errors.Join(ErrInvalidPayload, err)
 	}
 
 	return Request{

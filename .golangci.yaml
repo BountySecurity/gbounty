@@ -48,10 +48,10 @@ issues:
   max-same-issues: 1000
 
   exclude-rules:
-    - path: internal/request/request.go
+    - path: internal/profile/request.go
       linters:
         - dupl
-    - path: internal/response/response.go
+    - path: internal/profile/response.go
       linters:
         - dupl
     - path: internal/request/request_test.go

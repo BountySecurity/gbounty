@@ -2,7 +2,6 @@ package entrypoint
 
 import (
 	"encoding/gob"
-	"fmt"
 	"strconv"
 	"strings"
 
@@ -49,7 +48,7 @@ func (e JSONParam) Param(payload string) string {
 		param = e.baseEntrypoint.Param(payload)
 	}
 
-	return fmt.Sprintf("%s (json param)", param)
+	return param + " (json param)"
 }
 
 const jsonReplacer = 886018860
@@ -82,7 +81,7 @@ func (e JSONParam) append(payload string) string {
 }
 
 func (e JSONParam) insert(payload string) string {
-	mid := len(e.V) / 2
+	mid := len(e.V) / half
 
 	return e.V[:mid] + payload + e.V[mid:]
 }

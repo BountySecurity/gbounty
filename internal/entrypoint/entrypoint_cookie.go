@@ -2,7 +2,6 @@ package entrypoint
 
 import (
 	"encoding/gob"
-	"fmt"
 	"strings"
 
 	"github.com/bountysecurity/gbounty/internal/profile"
@@ -50,7 +49,7 @@ func (e Cookie) Param(payload string) string {
 		param = e.baseEntrypoint.Param(payload)
 	}
 
-	return fmt.Sprintf("%s (cookie name)", param)
+	return param + " (cookie name)"
 }
 
 func (e Cookie) InjectPayload(req request.Request, pos profile.PayloadPosition, payload string) request.Request {
@@ -84,7 +83,7 @@ func (e Cookie) append(payload string) string {
 }
 
 func (e Cookie) insert(payload string) string {
-	mid := len(e.V) / 2
+	mid := len(e.V) / half
 
 	return e.V[:mid] + payload + e.V[mid:]
 }

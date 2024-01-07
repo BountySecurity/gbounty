@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/gob"
-	"fmt"
 	"net/textproto"
 
 	"github.com/bountysecurity/gbounty/internal/profile"
@@ -59,7 +58,7 @@ func (e EntireBody) append(payload string) string {
 }
 
 func (e EntireBody) insert(payload string) string {
-	mid := len(e.V) / 2
+	mid := len(e.V) / half
 	return e.V[:mid] + payload + e.V[mid:]
 }
 
@@ -80,7 +79,7 @@ func (e EntireBody) contentType(payload string) string {
 			return "multipart/form-data"
 		}
 
-		return fmt.Sprintf("multipart/form-data; boundary=%s", line[2:])
+		return "multipart/form-data; boundary=" + line[2:]
 	default:
 		return ""
 	}

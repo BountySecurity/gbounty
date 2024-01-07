@@ -14,6 +14,7 @@ linters:
     - depguard
     - wrapcheck
     - nilnil
+    - gochecknoinits
     # other
     - varnamelen # we want freedom for choosing variable names
     - tagliatelle # we want freedom for choosing json mapping depending on requirements (external services, etc)
@@ -24,6 +25,7 @@ linters:
     # perhaps revisit?
     - cyclop
     - funlen
+    - gocognit
 
 
 linters-settings:
@@ -57,3 +59,7 @@ issues:
     - path: internal/request/request_test.go
       linters:
         - dupl
+    - path: internal/entrypoint/.*_test\.go
+      linters:
+        - dupl
+        - perfsprint

@@ -3,7 +3,6 @@ package entrypoint
 import (
 	"bytes"
 	"encoding/gob"
-	"fmt"
 	"io"
 	"mime"
 	"mime/multipart"
@@ -43,7 +42,7 @@ func newMultipart(ipt profile.InsertionPointType, key string) Multipart {
 }
 
 func (e Multipart) Param(_ string) string {
-	return fmt.Sprintf("%s (multipart attachment)", e.Key)
+	return e.Key + " (multipart attachment)"
 }
 
 func (e Multipart) InjectPayload(req request.Request, pos profile.PayloadPosition, payload string) request.Request {
@@ -115,7 +114,7 @@ func (e Multipart) body(injReq request.Request, pos profile.PayloadPosition, pay
 		for _, f := range files {
 			if _, ok := f.Header["Content-Disposition"]; ok {
 				f.Header["Content-Disposition"] = []string{
-					fmt.Sprintf("form-data; name=\"%s\"; filename=\"%s\"", k, f.Filename),
+					`form-data; name="` + k + `"; filename="` + f.Filename + `"`,
 				}
 			}
 
@@ -176,7 +175,7 @@ func (e Multipart) append(payload, val string) string {
 }
 
 func (e Multipart) insert(payload, val string) string {
-	mid := len(val) / 2
+	mid := len(val) / half
 
 	return val[:mid] + payload + val[mid:]
 }

@@ -12,16 +12,16 @@ import (
 // Specific implementations of this interface are responsible
 // for injecting payloads into the request.
 type Entrypoint interface {
-	Param(string) string
+	Param(param string) string
 	Value() string
 	InsertionPointType() profile.InsertionPointType
-	InjectPayload(request.Request, profile.PayloadPosition, string) request.Request
+	InjectPayload(req request.Request, pos profile.PayloadPosition, payload string) request.Request
 }
 
 // Finder defines the behavior of an entrypoints finder,
 // which is a component capable of finding entrypoints in a request.
 type Finder interface {
-	Find(request.Request) []Entrypoint
+	Find(req request.Request) []Entrypoint
 }
 
 // Finders returns a list of all available entrypoints finders
@@ -81,3 +81,5 @@ func (b baseEntrypoint) Value() string {
 func (b baseEntrypoint) InsertionPointType() profile.InsertionPointType {
 	return b.IPT
 }
+
+const half = 2

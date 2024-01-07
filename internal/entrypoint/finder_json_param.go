@@ -79,7 +79,7 @@ func (f JSONParamFinder) parseArray(root jsonmap.Ordered, key string, elems []in
 	var entrypoints []Entrypoint
 
 	for i, elem := range elems {
-		arrKey := fmt.Sprintf("%s[%d]", key, i)
+		arrKey := key + "[" + strconv.Itoa(i) + "]"
 
 		switch val := elem.(type) {
 		case jsonmap.Ordered:

@@ -60,7 +60,7 @@ func (e Path) append(payload string) string {
 }
 
 func (e Path) insert(payload string) string {
-	mid := len(e.V) / 2
+	mid := len(e.V) / half
 
 	return e.Prefix + "/" + e.V[:mid] + payload + e.V[mid:]
 }

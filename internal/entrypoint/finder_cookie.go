@@ -1,7 +1,6 @@
 package entrypoint
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/bountysecurity/gbounty/internal/request"
@@ -26,7 +25,7 @@ func (f CookieFinder) Find(req request.Request) []Entrypoint {
 
 	var (
 		tmp         string
-		entrypoints = make([]Entrypoint, 0, len(reqCookies)*2)
+		entrypoints = make([]Entrypoint, 0, len(reqCookies)*2) //nolint:gomnd
 	)
 
 	for _, c := range reqCookies {
@@ -53,12 +52,12 @@ func (c cookies) string() string {
 	var cookieStr string
 
 	for i, c := range c {
-		next := fmt.Sprintf("%s=%s", c.Name, c.Value)
+		next := c.Name + "=" + c.Value
 
 		if i == 0 {
 			cookieStr += next
 		} else {
-			cookieStr += fmt.Sprintf("; %s", next)
+			cookieStr += "; " + next
 		}
 	}
 

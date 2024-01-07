@@ -66,7 +66,7 @@ func (e URL) append(payload string) string {
 }
 
 func (e URL) insert(payload string) string {
-	mid := len(e.V) / 2
+	mid := len(e.V) / half
 
 	return e.Prefix + e.V[:mid] + payload + e.V[mid:] + e.Suffix
 }

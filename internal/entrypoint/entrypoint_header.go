@@ -2,8 +2,6 @@ package entrypoint
 
 import (
 	"encoding/gob"
-	"fmt"
-
 	"github.com/bountysecurity/gbounty/internal/profile"
 	"github.com/bountysecurity/gbounty/internal/request"
 )
@@ -30,7 +28,7 @@ func newHeader(ipt profile.InsertionPointType, headerKey string) Header {
 }
 
 func (e Header) Param(_ string) string {
-	return fmt.Sprintf("%s (header)", e.HeaderKey)
+	return e.HeaderKey + " (header)"
 }
 
 func (e Header) InjectPayload(req request.Request, pos profile.PayloadPosition, payload string) request.Request {
@@ -71,7 +69,7 @@ func (e Header) append(values []string, payload string) []string {
 
 func (e Header) insert(values []string, payload string) []string {
 	for i, val := range values {
-		mid := len(val) / 2
+		mid := len(val) / half
 		values[i] = val[:mid] + payload + val[mid:]
 	}
 

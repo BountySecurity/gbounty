@@ -2,8 +2,6 @@ package entrypoint
 
 import (
 	"encoding/gob"
-	"fmt"
-
 	"github.com/bountysecurity/gbounty/internal/profile"
 	"github.com/bountysecurity/gbounty/internal/request"
 )
@@ -30,7 +28,7 @@ func newCustomHeader(headerKey string) CustomHeader {
 }
 
 func (e CustomHeader) Param(_ string) string {
-	return fmt.Sprintf("%s (header)", e.HeaderKey)
+	return e.HeaderKey + " (header)"
 }
 
 func (e CustomHeader) InjectPayload(req request.Request, _ profile.PayloadPosition, payload string) request.Request {

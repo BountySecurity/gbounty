@@ -2,7 +2,6 @@ package entrypoint
 
 import (
 	"encoding/gob"
-	"fmt"
 	"strings"
 
 	"github.com/bountysecurity/gbounty/internal/profile"
@@ -60,7 +59,7 @@ func (e XMLParam) Param(payload string) string {
 		param = e.baseEntrypoint.Param(payload)
 	}
 
-	return fmt.Sprintf("%s (xml param)", param)
+	return param + " (xml param)"
 }
 
 func (e XMLParam) InjectPayload(req request.Request, pos profile.PayloadPosition, payload string) request.Request {
@@ -91,7 +90,7 @@ func (e XMLParam) append(payload string) string {
 }
 
 func (e XMLParam) insert(payload string) string {
-	mid := len(e.V) / 2
+	mid := len(e.V) / half
 
 	return e.V[:mid] + payload + e.V[mid:]
 }

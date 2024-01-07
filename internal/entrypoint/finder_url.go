@@ -1,7 +1,6 @@
 package entrypoint
 
 import (
-	"fmt"
 	"path"
 	"strings"
 
@@ -33,7 +32,7 @@ func (f URLFinder) Find(req request.Request) []Entrypoint {
 	case "/":
 		return append(entrypoints, newURLFile("/", file, query))
 	default:
-		entrypoints = append(entrypoints, newURLFile(fmt.Sprintf("%s/", dir), file, query))
+		entrypoints = append(entrypoints, newURLFile(dir+"/", file, query))
 	}
 
 	if dir != "/" {
@@ -44,12 +43,12 @@ func (f URLFinder) Find(req request.Request) []Entrypoint {
 
 			var tmpBase string
 			if i < len(dirChunks)-2 {
-				tmpBase = fmt.Sprintf("/%s/%s", strings.Join(dirChunks[i+2:], "/"), base)
+				tmpBase = "/" + strings.Join(dirChunks[i+2:], "/") + "/" + base
 			} else {
-				tmpBase = fmt.Sprintf("/%s", base)
+				tmpBase = "/" + base
 			}
 
-			entrypoints = append(entrypoints, newURLFolder(fmt.Sprintf("%s/", prefix), chunk, tmpBase))
+			entrypoints = append(entrypoints, newURLFolder(prefix+"/", chunk, tmpBase))
 		}
 	}
 

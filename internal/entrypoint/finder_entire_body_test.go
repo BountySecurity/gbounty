@@ -21,7 +21,7 @@ func TestEntireBodyFinder_Find_Replace(t *testing.T) {
 
 		req := request.Request{Headers: headers()}
 		entrypoints := finder.Find(req)
-		assert.Len(t, entrypoints, 0)
+		assert.Empty(t, entrypoints)
 	})
 
 	t.Run("with simple body", func(t *testing.T) {
@@ -125,7 +125,7 @@ func TestEntireBodyFinder_Find_Append(t *testing.T) {
 
 		req := request.Request{Headers: headers()}
 		entrypoints := finder.Find(req)
-		assert.Len(t, entrypoints, 0)
+		assert.Empty(t, entrypoints)
 	})
 
 	t.Run("with simple body", func(t *testing.T) {
@@ -225,7 +225,7 @@ func TestEntireBodyFinder_Find_Insert(t *testing.T) {
 
 		req := request.Request{Headers: headers()}
 		entrypoints := finder.Find(req)
-		assert.Len(t, entrypoints, 0)
+		assert.Empty(t, entrypoints)
 	})
 
 	t.Run("with simple body", func(t *testing.T) {
@@ -244,7 +244,7 @@ func TestEntireBodyFinder_Find_Insert(t *testing.T) {
 			assert.True(t, strings.Contains(string(injected.Body), payload))
 
 			expectedBodyLength := len(req.Body) + len([]byte(payload))
-			assert.Equal(t, expectedBodyLength, len(injected.Body))
+			assert.Len(t, injected.Body, expectedBodyLength)
 		}
 	})
 
@@ -267,7 +267,7 @@ func TestEntireBodyFinder_Find_Insert(t *testing.T) {
 			assert.True(t, strings.Contains(string(injected.Body), payload))
 
 			expectedBodyLength := len(req.Body) + len([]byte(payload))
-			assert.Equal(t, expectedBodyLength, len(injected.Body))
+			assert.Len(t, injected.Body, expectedBodyLength)
 		}
 	})
 
@@ -290,7 +290,7 @@ func TestEntireBodyFinder_Find_Insert(t *testing.T) {
 			assert.True(t, strings.Contains(string(injected.Body), payload))
 
 			expectedBodyLength := len(req.Body) + len([]byte(payload))
-			assert.Equal(t, expectedBodyLength, len(injected.Body))
+			assert.Len(t, injected.Body, expectedBodyLength)
 		}
 	})
 
@@ -322,7 +322,7 @@ contents of the file
 			assert.True(t, strings.Contains(string(injected.Body), payload))
 
 			expectedBodyLength := len(req.Body) + len([]byte(payload))
-			assert.Equal(t, expectedBodyLength, len(injected.Body))
+			assert.Len(t, injected.Body, expectedBodyLength)
 		}
 	})
 }

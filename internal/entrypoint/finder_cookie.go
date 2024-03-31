@@ -25,7 +25,7 @@ func (f CookieFinder) Find(req request.Request) []Entrypoint {
 
 	var (
 		tmp         string
-		entrypoints = make([]Entrypoint, 0, len(reqCookies)*2) //nolint:gomnd
+		entrypoints = make([]Entrypoint, 0, len(reqCookies)*2) //nolint:mnd
 	)
 
 	for _, c := range reqCookies {

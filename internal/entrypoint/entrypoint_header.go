@@ -2,6 +2,7 @@ package entrypoint
 
 import (
 	"encoding/gob"
+
 	"github.com/bountysecurity/gbounty/internal/profile"
 	"github.com/bountysecurity/gbounty/internal/request"
 )

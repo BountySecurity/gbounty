@@ -77,7 +77,7 @@ func decodeOrderedMap(dec *json.Decoder, o *Ordered) error {
 			return err
 		}
 
-		if delim, ok := token.(json.Delim); ok { //nonlint:nestif
+		if delim, ok := token.(json.Delim); ok { //nolint:nestif
 			switch delim {
 			case '{':
 				if values, ok := o.Data[key].(map[string]interface{}); ok {

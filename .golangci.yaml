@@ -15,6 +15,7 @@ linters:
     - wrapcheck
     - nilnil
     - gochecknoinits
+    - nakedret
     # other
     - varnamelen # we want freedom for choosing variable names
     - tagliatelle # we want freedom for choosing json mapping depending on requirements (external services, etc)
@@ -50,16 +51,18 @@ issues:
   max-same-issues: 1000
 
   exclude-rules:
+    # It's fine to disable some of the linters
+    # for test files.
+    - path: .*_test\.go
+      linters:
+        - dupl # false positives
+        - perfsprint # performance doesn't matter in tests
     - path: internal/profile/request.go
       linters:
         - dupl
     - path: internal/profile/response.go
       linters:
         - dupl
-    - path: internal/request/request_test.go
+    - path: internal/platform/http/client/reader.go
       linters:
-        - dupl
-    - path: internal/entrypoint/.*_test\.go
-      linters:
-        - dupl
-        - perfsprint
+        - mnd

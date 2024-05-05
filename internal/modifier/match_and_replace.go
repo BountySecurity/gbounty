@@ -1,11 +1,12 @@
 package modifier
 
 import (
+	"regexp"
+	"strings"
+
 	scan "github.com/bountysecurity/gbounty/internal"
 	"github.com/bountysecurity/gbounty/internal/profile"
 	"github.com/bountysecurity/gbounty/internal/request"
-	"regexp"
-	"strings"
 )
 
 // MatchAndReplace must implement the [scan.Modifier] interface.

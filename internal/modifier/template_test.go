@@ -11,6 +11,7 @@ import (
 	"github.com/bountysecurity/gbounty/internal/request"
 )
 
+//nolint:maintidx
 func TestTemplate_Modify(t *testing.T) {
 	t.Parallel()
 

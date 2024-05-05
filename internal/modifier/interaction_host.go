@@ -1,7 +1,6 @@
 package modifier
 
 import (
-	"fmt"
 	"net/url"
 	"strings"
 
@@ -40,8 +39,9 @@ const (
 // NewInteractionHost is a constructor function that creates a new instance of
 // the [InteractionHost] modifier with the given base url and host identifier.
 func NewInteractionHost(base string, hid blindhost.HostIdentifier) InteractionHost {
-	if strings.Contains(base, fmt.Sprintf("%s.", hid.ID())) {
-		base = strings.Replace(base, fmt.Sprintf("%s.", hid.ID()), "", 1)
+	hidDot := hid.ID() + "."
+	if strings.Contains(base, hidDot) {
+		base = strings.Replace(base, hidDot, "", 1)
 	}
 
 	return InteractionHost{

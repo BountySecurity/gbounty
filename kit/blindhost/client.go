@@ -32,7 +32,7 @@ func WithClient(httpClient *http.Client) ClientOpt {
 // NewClient creates a new [Client], ready to use, with the given address and options.
 func NewClient(addr string, opts ...ClientOpt) (*Client, error) {
 	if !strings.Contains(addr, "://") {
-		addr = fmt.Sprintf("http://%s", addr)
+		addr = "http://" + addr
 	}
 	_, err := parseBlindHostAddress(addr)
 	if err != nil {

@@ -23,6 +23,7 @@ linters:
     - exhaustruct # why? isn't it against Go idiomatic zero-value behave?
     - nonamedreturns # we are fine with named returns so far
     - musttag # sometimes we are just fine with defaults
+    - containedctx # for now, we are fine with context being passed around
     # perhaps revisit?
     - cyclop
     - funlen

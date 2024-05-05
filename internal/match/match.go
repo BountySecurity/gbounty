@@ -2,7 +2,6 @@ package match
 
 import (
 	"context"
-	"fmt"
 	"path/filepath"
 	"strings"
 	"time"
@@ -100,6 +99,9 @@ func Match(ctx context.Context, d Data) (bool, []occurrence.Occurrence) {
 			ok  bool
 			occ []occurrence.Occurrence
 		)
+
+		// We intentionally omit [profile.GrepTypeBlindHost].
+		//nolint:exhaustive
 		switch g.Type {
 		case profile.GrepTypeSimpleString:
 			ok, occ = matchSimpleString(g, d.Request, d.Response)
@@ -190,7 +192,7 @@ func matchRegex(g profile.Grep, req *request.Request, res *response.Response) (b
 
 	value := g.Value.AsRegex()
 	if !g.Option.CaseSensitive() {
-		value = fmt.Sprintf("(?i)%s", value)
+		value = "(?i)" + value
 	}
 
 	occurrences := occurrence.FindRegexp(string(findIn), value)
@@ -228,8 +230,13 @@ func matchContentType(g profile.Grep, res *response.Response) (bool, []occurrenc
 
 func matchContentLength(g profile.Grep, res *response.Response) (bool, []occurrence.Occurrence) {
 	// We calculate a 20% of margin
+	const (
+		twenty  = 20
+		percent = 100
+	)
+
 	length := g.Value.AsContentLength()
-	margin := length * 20 / 100
+	margin := length * twenty / percent
 	return length-margin <= res.Length() && res.Length() <= length+margin, []occurrence.Occurrence{}
 }
 

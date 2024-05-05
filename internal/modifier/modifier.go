@@ -11,6 +11,6 @@ func Modifiers() []scan.Modifier {
 		NewRandom(),
 		NewTemplate(),
 		NewTimeout(),
-		//NewInteractionHost(), - intentionally commented, as it is created on demand.
+		// NewInteractionHost(), - intentionally commented, as it is created on demand.
 	}
 }

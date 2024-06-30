@@ -8,10 +8,15 @@ require (
 	github.com/antchfx/xmlquery v1.4.1
 	github.com/emirpasic/gods v1.18.1
 	github.com/go-logfmt/logfmt v0.6.0
+	github.com/google/go-github/v64 v64.0.0
+	github.com/google/uuid v1.6.0
+	github.com/oklog/ulid/v2 v2.1.0
 	github.com/prometheus/client_golang v1.20.3
 	github.com/pterm/pterm v0.12.79
 	github.com/stretchr/testify v1.9.0
+	github.com/ulikunitz/xz v0.5.12
 	golang.org/x/net v0.26.0
+	golang.org/x/oauth2 v0.23.0
 )
 
 require (
@@ -24,12 +29,11 @@ require (
 	github.com/containerd/console v1.0.4 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	github.com/google/uuid v1.6.0 // indirect
+	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/gookit/color v1.5.4 // indirect
 	github.com/lithammer/fuzzysearch v1.1.8 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
-	github.com/oklog/ulid/v2 v2.1.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.55.0 // indirect

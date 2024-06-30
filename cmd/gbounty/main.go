@@ -11,6 +11,7 @@ import (
 
 func main() {
 	bootstrap.PrintAppName()
+	bootstrap.CheckForUpdates()
 
 	if err := bootstrap.Run(); err != nil {
 		pterm.Error.WithShowLineNumber(false).Printf("%s\n", capitalize.First(err.Error()))

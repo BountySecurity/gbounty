@@ -24,12 +24,17 @@ const (
 	defaultGitHubProfilesSlug = "BountySecurity/gbounty-profiles"
 )
 
+var (
+	errNoApplicationReleaseFound = errors.New("no application release found")
+	errNoProfilesReleaseFound    = errors.New("no profiles release found")
+)
+
 func checkVer() (u update, err error) {
 	// In general, we don't error out in this function fails, we just print a warning.
 	// But, if there is a panic, we want to catch it and error out.
 	defer func() {
 		if r := recover(); r != nil {
-			err = fmt.Errorf("panic: %v", r)
+			err = fmt.Errorf("panic: %v", r) //nolint:err113
 		}
 	}()
 
@@ -120,7 +125,7 @@ func updateAppNeeds() (updateNeeds, error) {
 		return updateNeeds{}, err
 	}
 	if !ok {
-		return updateNeeds{}, errors.New("no application release found")
+		return updateNeeds{}, errNoApplicationReleaseFound
 	}
 
 	// Determine whether an update is available for the application, or not.
@@ -144,7 +149,7 @@ func latestProfileRelease() (*selfupdate.Release, error) {
 		return nil, err
 	}
 	if !ok {
-		return nil, errors.New("no profiles release found")
+		return nil, errNoProfilesReleaseFound
 	}
 
 	return rel, nil

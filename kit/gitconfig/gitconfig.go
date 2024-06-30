@@ -10,13 +10,13 @@ import (
 	"syscall"
 )
 
-// ErrNotFound is the error returned when the key is not found in the Git configuration.
-type ErrNotFound struct {
+// NotFoundError is the error returned when the key is not found in the Git configuration.
+type NotFoundError struct {
 	Key string
 }
 
 // Error returns the error message.
-func (e *ErrNotFound) Error() string {
+func (e *NotFoundError) Error() string {
 	return fmt.Sprintf("the key `%s` is not found", e.Key)
 }
 
@@ -37,7 +37,7 @@ func execGitConfig(args ...string) (string, error) {
 	if errors.As(err, &exitError) {
 		if waitStatus, ok := exitError.Sys().(syscall.WaitStatus); ok {
 			if waitStatus.ExitStatus() == 1 {
-				return "", &ErrNotFound{Key: args[len(args)-1]}
+				return "", &NotFoundError{Key: args[len(args)-1]}
 			}
 		}
 		return "", err

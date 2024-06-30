@@ -53,5 +53,6 @@ func removeAndRecreate(dir string) error {
 }
 
 func mkdir(dir string) error {
-	return os.Mkdir(dir, 0o700)
+	const fullPermUserOnly = 0o700
+	return os.Mkdir(dir, fullPermUserOnly)
 }

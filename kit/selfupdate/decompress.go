@@ -36,13 +36,13 @@ func decompressZip(src io.Reader, cmd string) (io.Reader, error) {
 	// Zip format requires its file size for decompressing.
 	buf, err := io.ReadAll(src)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrDecompression, err)
+		return nil, errors.Join(ErrDecompression, err)
 	}
 
 	r := bytes.NewReader(buf)
 	z, err := zip.NewReader(r, r.Size())
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrDecompression, err)
+		return nil, errors.Join(ErrDecompression, err)
 	}
 
 	// We go over all the files in the zip archive and try to find the executable.
@@ -59,7 +59,7 @@ func decompressZip(src io.Reader, cmd string) (io.Reader, error) {
 func decompressTarGz(src io.Reader, cmd string) (io.Reader, error) {
 	gz, err := gzip.NewReader(src)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrDecompression, err)
+		return nil, errors.Join(ErrDecompression, err)
 	}
 
 	return decompressTar(gz, cmd)
@@ -68,7 +68,7 @@ func decompressTarGz(src io.Reader, cmd string) (io.Reader, error) {
 func decompressGzip(src io.Reader, cmd string) (io.Reader, error) {
 	r, err := gzip.NewReader(src)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrDecompression, err)
+		return nil, errors.Join(ErrDecompression, err)
 	}
 
 	name := r.Header.Name
@@ -82,7 +82,7 @@ func decompressGzip(src io.Reader, cmd string) (io.Reader, error) {
 func decompressTarXz(src io.Reader, cmd string) (io.Reader, error) {
 	xzip, err := xz.NewReader(src)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrDecompression, err)
+		return nil, errors.Join(ErrDecompression, err)
 	}
 
 	return decompressTar(xzip, cmd)
@@ -91,7 +91,7 @@ func decompressTarXz(src io.Reader, cmd string) (io.Reader, error) {
 func decompressXz(src io.Reader) (io.Reader, error) {
 	xzip, err := xz.NewReader(src)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrDecompression, err)
+		return nil, errors.Join(ErrDecompression, err)
 	}
 
 	return xzip, nil
@@ -105,7 +105,7 @@ func decompressTar(src io.Reader, cmd string) (io.Reader, error) {
 			break
 		}
 		if err != nil {
-			return nil, fmt.Errorf("%w: %s", ErrDecompression, err)
+			return nil, errors.Join(ErrDecompression, err)
 		}
 
 		_, name := filepath.Split(h.Name)

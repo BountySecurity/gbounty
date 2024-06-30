@@ -67,3 +67,6 @@ issues:
     - path: internal/platform/http/client/reader.go
       linters:
         - mnd
+    - path: kit/osext/.*\.go
+      linters:
+        - mnd

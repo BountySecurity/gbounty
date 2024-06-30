@@ -1,20 +1,20 @@
 package selfupdate
 
 import (
-	"fmt"
+	"errors"
 	"time"
 
 	"github.com/bountysecurity/gbounty/kit/semver"
 )
 
 var (
-	ErrInvalidSlug        = fmt.Errorf("invalid slug format, it must be owner/name")
-	ErrRepositoryNotFound = fmt.Errorf("repository or release not found")
-	ErrDownload           = fmt.Errorf("release could not be downloaded")
-	ErrChecksumValidation = fmt.Errorf("checksum validation failed")
-	ErrChecksumDownload   = fmt.Errorf("checksum could not be downloaded")
-	ErrDecompression      = fmt.Errorf("release could not be decompressed")
-	ErrReleaseBinary      = fmt.Errorf("release archive does not contain the binary")
+	ErrInvalidSlug        = errors.New("invalid slug format, it must be owner/name")
+	ErrRepositoryNotFound = errors.New("repository or release not found")
+	ErrDownload           = errors.New("release could not be downloaded")
+	ErrChecksumValidation = errors.New("checksum validation failed")
+	ErrChecksumDownload   = errors.New("checksum could not be downloaded")
+	ErrDecompression      = errors.New("release could not be decompressed")
+	ErrReleaseBinary      = errors.New("release archive does not contain the binary")
 )
 
 // Release represents a release asset for current OS and arch.

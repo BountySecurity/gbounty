@@ -24,7 +24,7 @@ func detectVersion(ctx context.Context, slug string, min semver.Version) (releas
 	}
 
 	// First, we list all the releases from the given repository.
-	releases, res, err := githubClient().Repositories.ListReleases(ctx, repo[0], repo[1], nil)
+	releases, res, err := githubClient(ctx).Repositories.ListReleases(ctx, repo[0], repo[1], nil)
 	if err != nil {
 		if res != nil && res.StatusCode == http.StatusNotFound {
 			err = fmt.Errorf("%w: %s", ErrRepositoryNotFound, slug)

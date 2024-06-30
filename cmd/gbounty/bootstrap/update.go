@@ -62,10 +62,10 @@ func CheckForUpdates() {
 	// TODO: Update profiles (if needed)
 	if update.profiles.needed {
 		if profUpdate {
-			//pterm.Info.Println("Updating profiles...")
-			//wg.Add(1)
-			//updateProfiles := func() error { defer wg.Done(); return updateProfiles(update.profiles) }
-			//go die.OnErr(updateProfiles, "Could not update the profiles")
+			// pterm.Info.Println("Updating profiles...")
+			// wg.Add(1)
+			// updateProfiles := func() error { defer wg.Done(); return updateProfiles(update.profiles) }
+			// go die.OnErr(updateProfiles, "Could not update the profiles")
 		} else {
 			pterm.Info.Printf("There is a new profiles version available: v%s (curr. v%s)\n",
 				update.profiles.latest.Version, update.profiles.current)
@@ -92,12 +92,12 @@ func updateApp(info updateNeeds) error {
 	// Which, later, will be used to replace the binary.
 	cmdPath, err := osext.Executable()
 	if err != nil {
-		return fmt.Errorf("failed to get the executable's path: %s", err)
+		return fmt.Errorf("failed to get the executable's path: %s", err) //nolint:err113
 	}
 
 	// When on Windows, the executable path might have the '.exe' suffix.
 	if runtime.GOOS == "windows" && !strings.HasSuffix(cmdPath, ".exe") {
-		cmdPath = cmdPath + ".exe"
+		cmdPath += ".exe"
 	}
 
 	// Check if the binary is a symlink.
@@ -110,7 +110,7 @@ func updateApp(info updateNeeds) error {
 	if stat.Mode()&os.ModeSymlink != 0 {
 		p, err := filepath.EvalSymlinks(cmdPath)
 		if err != nil {
-			return fmt.Errorf("failed to resolve symlink: %s - for executable: %s", cmdPath, err)
+			return fmt.Errorf("failed to resolve symlink: %s - for executable: %s", cmdPath, err) //nolint:err113
 		}
 		cmdPath = p
 	}

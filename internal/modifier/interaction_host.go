@@ -39,11 +39,7 @@ const (
 // NewInteractionHost is a constructor function that creates a new instance of
 // the [InteractionHost] modifier with the given base url and host identifier.
 func NewInteractionHost(base string, hid blindhost.HostIdentifier) InteractionHost {
-	hidDot := hid.ID() + "."
-	if strings.Contains(base, hidDot) {
-		base = strings.Replace(base, hidDot, "", 1)
-	}
-
+	base = strings.Replace(base, hid.ID()+".", "", 1)
 	return InteractionHost{
 		scheme: urlScheme(base),
 		base:   base,

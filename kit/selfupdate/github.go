@@ -11,7 +11,7 @@ import (
 	"github.com/bountysecurity/gbounty/kit/gitconfig"
 )
 
-func githubClient() *github.Client {
+func githubClient(ctx context.Context) *github.Client {
 	token := os.Getenv("GITHUB_TOKEN")
 	if token == "" {
 		// We ignore the error, because it's not a big deal if we can't get the token.
@@ -19,7 +19,7 @@ func githubClient() *github.Client {
 		token, _ = gitconfig.GithubToken()
 	}
 
-	client := httpClient(context.Background(), token)
+	client := httpClient(ctx, token)
 	return github.NewClient(client)
 }
 

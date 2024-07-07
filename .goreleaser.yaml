@@ -1,0 +1,45 @@
+version: 2
+project_name: gbounty
+builds:
+  # Windows
+  - id: gbounty-windows
+    binary: gbounty
+    main: ./cmd/gbounty
+    env: [ CGO_ENABLED=0 ]
+    goos: [ windows ]
+    goarch: [ amd64,386 ]
+  # MacOS
+  - id: gbounty-macos
+    binary: gbounty
+    main: ./cmd/gbounty
+    env: [ CGO_ENABLED=0 ]
+    goos: [ darwin ]
+    goarch: [ amd64,arm64 ]
+  # Linux
+  - id: gbounty-linux
+    binary: gbounty
+    main: ./cmd/gbounty
+    env: [ CGO_ENABLED=0 ]
+    goos: [ linux ]
+    goarch: [ amd64,arm64,386 ]
+
+archives:
+  - id: gbounty
+    builds:
+      - gbounty-windows
+      - gbounty-macos
+    format: zip
+  - id: gbounty-linux
+    builds:
+      - gbounty-linux
+    format: tar.gz
+
+checksum:
+  split: true
+  algorithm: sha256
+  name_template: "{{ .ArtifactName }}.sha256"
+
+changelog:
+  filters:
+    exclude:
+      - '^Chore:'

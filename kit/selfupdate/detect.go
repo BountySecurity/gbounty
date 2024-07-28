@@ -78,7 +78,7 @@ func findReleaseAndAsset(
 	targetVersion semver.Version,
 ) (*github.RepositoryRelease, *github.ReleaseAsset, semver.Version, bool) {
 	// Generate candidates
-	suffixes := make([]string, 0, 2*7*2)
+	suffixes := make([]string, 0, 2*7*2) //nolint:mnd
 	for _, sep := range []rune{'_', '-'} {
 		for _, ext := range []string{".zip", ".tar.gz", ".tgz", ".gzip", ".gz", ".tar.xz", ".xz", ""} {
 			suffix := fmt.Sprintf("%s%c%s%s", runtime.GOOS, sep, runtime.GOARCH, ext)

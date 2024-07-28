@@ -18,7 +18,9 @@ func OnErr(fn func() error, mm ...string) {
 // OrRet is a helper function to handle errors, that runs the given function and,
 // in case of error, it prints the error message and exits (1) the program.
 // It is similar to [OnErr], but in case of success it returns the value.
-func OrRet[T any](fn func() (T, error), mm ...string) (t T) { //nolint:ireturn
+//
+//nolint:ireturn
+func OrRet[T any](fn func() (T, error), mm ...string) (t T) {
 	v, err := fn()
 	if err == nil {
 		return v

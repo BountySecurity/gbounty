@@ -1,4 +1,4 @@
-name: golangci-lint
+name: Lint
 on:
   push:
     branches:
@@ -10,12 +10,11 @@ permissions:
   contents: read
 
 jobs:
-  golangci:
+  lint:
     strategy:
       matrix:
         go: [ '1.21.13' ]
         os: [ ubuntu-latest, macos-latest, windows-latest ]
-    name: lint
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4

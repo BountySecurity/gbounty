@@ -53,7 +53,7 @@ func CheckForUpdates() {
 			updateApp := func() error { defer wg.Done(); return updateApp(update.app) }
 			go die.OnErr(updateApp, "Could not update the application")
 		} else {
-			pterm.Info.Printf("There is a new app version available: v%s (curr. %s)\n",
+			pterm.Info.Printf("There is a new app version available: %s (curr. %s)\n",
 				update.app.latest.Version, update.app.current)
 			pterm.Info.Println("Use --update or --update-app to update")
 		}
@@ -92,7 +92,7 @@ func updateApp(info updateNeeds) error {
 	// Which, later, will be used to replace the binary.
 	cmdPath, err := osext.Executable()
 	if err != nil {
-		return fmt.Errorf("failed to get the executable's path: %s", err) //nolint:err113
+		return fmt.Errorf("failed to get the executable's path: %s", err) //nolint:err113,errorlint
 	}
 
 	// When on Windows, the executable path might have the '.exe' suffix.
@@ -103,14 +103,14 @@ func updateApp(info updateNeeds) error {
 	// Check if the binary is a symlink.
 	stat, err := os.Lstat(cmdPath)
 	if err != nil {
-		return fmt.Errorf("failed to stat: %s - file may not exist: %s", cmdPath, err)
+		return fmt.Errorf("failed to stat: %s - file may not exist: %s", cmdPath, err) //nolint:err113
 	}
 
 	// If it is, we resolve the symlink.
 	if stat.Mode()&os.ModeSymlink != 0 {
 		p, err := filepath.EvalSymlinks(cmdPath)
 		if err != nil {
-			return fmt.Errorf("failed to resolve symlink: %s - for executable: %s", cmdPath, err) //nolint:err113
+			return fmt.Errorf("failed to resolve symlink: %s - for executable: %s", cmdPath, err) //nolint:err113,errorlint
 		}
 		cmdPath = p
 	}

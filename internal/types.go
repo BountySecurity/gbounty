@@ -121,3 +121,21 @@ type FileSystemTemplates interface {
 //
 // Internal details will vary depending on the function that returns it.
 type CloseFunc func()
+
+// Writer defines the behavior expected from a [scan] writer, used to write
+// [Config], [Stats], [Match], [Error], and [TaskSummary] instances to a
+// specific output (e.g. stdout or file) in a specific format (e.g. JSON).
+type Writer interface {
+	WriteConfig(context.Context, Config) error
+
+	WriteStats(context.Context, FileSystem) error
+	WriteMatchesSummary(context.Context, FileSystem) error
+
+	WriteError(context.Context, Error) error
+	WriteErrors(context.Context, FileSystem) error
+
+	WriteMatch(context.Context, Match, bool) error
+	WriteMatches(context.Context, FileSystem, bool) error
+
+	WriteTasks(context.Context, FileSystem, bool, bool) error
+}

@@ -49,6 +49,31 @@ type Request struct {
 	Modifications     map[string]string
 }
 
+// Default is a named constructor to instantiate a new [Request] with the given
+// remote as the [Request]'s [Request.URL].
+//
+// By default, it sets the `GET` method, some basic headers, and a timeout of 20s.
+func Default(remote string) Request {
+	reqURL, _ := url.Parse(remote)
+	return Request{
+		URL:    remote,
+		Method: "GET",
+		Path:   reqURL.RequestURI(),
+		Proto:  "HTTP/1.1",
+		Headers: map[string][]string{
+			"Host":            {strings.Split(reqURL.Host, ":")[0]},
+			"Accept":          {"*/*"},
+			"Accept-Language": {"en"},
+			"Accept-Encoding": {"gzip, deflate"},
+			"User-Agent":      {"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36"},
+			"Connection":      {"close"},
+		},
+		// Default values
+		Timeout:      20 * time.Second,
+		RedirectType: profile.RedirectNever,
+	}
+}
+
 // IsEmpty returns whether the request is empty.
 func (r *Request) IsEmpty() bool {
 	return r.URL == "" && r.Method == "" && r.Path == "" && r.Proto == "" && r.Headers == nil && r.Body == nil

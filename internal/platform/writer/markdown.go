@@ -121,7 +121,7 @@ func (md Markdown) WriteMatchesSummary(ctx context.Context, fs scan.FileSystem) 
 
 		urlsStr := urls[0]
 		for _, url := range urls[1:] {
-			urlsStr += fmt.Sprintf("\n%s", url)
+			urlsStr += "\n" + url
 		}
 
 		builder.WriteString(fmt.Sprintf("**URL(s):** %s\n\n", urlsStr))

@@ -110,14 +110,12 @@ func (j JSON) WriteMatchesSummary(ctx context.Context, fs scan.FileSystem) error
 	for issue, mUrls := range byIssue {
 		urls, count := sortedKeys(mUrls)
 
-		urlsStr := fmt.Sprintf(`[
-				%s`, jsonMarshaled(urls[0]),
-		)
+		urlsStr := `[
+				` + jsonMarshaled(urls[0])
 
 		for _, url := range urls[1:] {
-			urlsStr += fmt.Sprintf(`,
-				%s`, jsonMarshaled(url),
-			)
+			urlsStr += `,
+				` + jsonMarshaled(url)
 		}
 
 		urlsStr += `

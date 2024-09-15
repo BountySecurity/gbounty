@@ -149,7 +149,8 @@ func CfgOptionsFromJSON(r io.Reader) ([]CfgOption, error) {
 		return nil, err
 	}
 
-	opts := make([]CfgOption, 0, 5)
+	const totalOpts = 6
+	opts := make([]CfgOption, 0, totalOpts)
 
 	if cfg.Concurrency != nil && *cfg.Concurrency > 0 {
 		opts = append(opts, WithConcurrency(*cfg.Concurrency))

@@ -6,11 +6,13 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 
+	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/config"
+	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/pterm/pterm"
 
-	"github.com/bountysecurity/gbounty/cmd/version"
+	"github.com/bountysecurity/gbounty"
 	"github.com/bountysecurity/gbounty/kit/selfupdate"
 	"github.com/bountysecurity/gbounty/kit/semver"
 	"github.com/bountysecurity/gbounty/kit/slices"
@@ -51,6 +53,17 @@ func checkVer() (u update, err error) {
 		}, nil
 	}
 
+	if slices.In(os.Args, "--force-update-profiles") {
+		return update{
+			app: appUpdate,
+			profiles: updateNeeds{
+				needed:  true,
+				current: semver.Zero().String(),
+				latest:  latestProfilesRelease,
+			},
+		}, nil
+	}
+
 	profilesDir, profErr := getProfilesDir()
 	if profErr != nil {
 		switch {
@@ -58,7 +71,6 @@ func checkVer() (u update, err error) {
 			pterm.Warning.Println("You either provided a specific profile file or more than one profile(s) path.")
 			pterm.Warning.Println("So, skipping profiles update check...")
 		case errors.Is(profErr, errNoProfilesFlag):
-			// TODO: Download profiles from the latest release.
 			pterm.Info.Println("No profiles path (-p/--profiles) specified nor default one found, will download...")
 			return update{
 				app: appUpdate,
@@ -78,23 +90,17 @@ func checkVer() (u update, err error) {
 		}, nil
 	}
 
-	profilesVersionFile, profErr := profilesVersionFilePath(profilesDir)
+	currentProfilesVersion, profErr := detectProfilesVersion(profilesDir)
 	if profErr != nil {
-		if errors.Is(profErr, errProfileFlagIsAFile) {
-			pterm.Warning.Println("You either provided a specific profile file or more than one profile(s) path.")
-			pterm.Warning.Println("So, skipping profiles update check...")
-		} else {
-			pterm.Warning.Printf("Unexpected error happened while checking profiles version: %s\n", err.Error())
-			pterm.Warning.Println("So, skipping profiles update check...")
+		if errors.Is(profErr, errProfilesRepositoryIsNotClean) ||
+			errors.Is(profErr, errProfilesRepositoryUnknownState) {
+			pterm.Warning.Println("The profiles repository is either not clean, or in an unknown state, so skipping profiles update check...")
+			pterm.Warning.Println("You can use the --force-update-profiles flag to force the update.")
+			return update{
+				app: appUpdate,
+			}, nil
 		}
-		fmt.Println() //nolint:forbidigo
-		return update{
-			app: appUpdate,
-		}, nil
-	}
 
-	currentProfilesVersion, profErr := readProfilesVersionFile(profilesVersionFile)
-	if profErr != nil {
 		pterm.Warning.Printf("Unexpected error happened while checking profiles version: %s\n", err.Error())
 		pterm.Warning.Println("So, skipping profiles update check...")
 		return update{
@@ -120,7 +126,7 @@ func updateAppNeeds() (updateNeeds, error) {
 	}
 
 	// Detect the latest release.
-	rel, ok, err := selfupdate.DetectLatest(context.Background(), slug)
+	rel, ok, err := selfupdate.DetectLatest(context.Background(), slug, true)
 	if err != nil {
 		return updateNeeds{}, err
 	}
@@ -129,7 +135,7 @@ func updateAppNeeds() (updateNeeds, error) {
 	}
 
 	// Determine whether an update is available for the application, or not.
-	appVer := semver.MustParse(version.Version)
+	appVer := semver.MustParse(gbounty.Version)
 	return updateNeeds{
 		current: appVer.String(),
 		latest:  rel,
@@ -144,7 +150,7 @@ func latestProfileRelease() (*selfupdate.Release, error) {
 		slug = s
 	}
 	// Detect the latest release.
-	rel, ok, err := selfupdate.DetectLatest(context.Background(), slug)
+	rel, ok, err := selfupdate.DetectLatest(context.Background(), slug, false)
 	if err != nil {
 		return nil, err
 	}
@@ -155,21 +161,90 @@ func latestProfileRelease() (*selfupdate.Release, error) {
 	return rel, nil
 }
 
-func readProfilesVersionFile(path string) (semver.Version, error) {
-	b, err := os.ReadFile(path)
+var (
+	errProfilesRepositoryIsNotClean   = errors.New("profiles repository is not clean")
+	errProfilesRepositoryUnknownState = errors.New("profiles repository is in an unknown state")
+)
+
+func detectProfilesVersion(path string) (semver.Version, error) {
+	// Open the repository in the given path.
+	// At this point, we assume the path is a directory, and it contains a Git repository.
+	repo, err := git.PlainOpen(path)
 	if err != nil {
-		if os.IsNotExist(err) {
-			return semver.Zero(), nil
-		}
-		return semver.Version{}, err
+		return semver.Version{}, fmt.Errorf("failed to open the profiles repository: %w", err)
 	}
 
-	return semver.ShouldParse(strings.TrimSpace(string(b)))
+	// Check if the repository's worktree is clean. Otherwise, it's risky to proceed.
+	worktree, err := repo.Worktree()
+	if err != nil {
+		return semver.Version{}, fmt.Errorf("failed to read the worktree of the profiles repository: %w", err)
+	}
+	worktreeStatus, err := worktree.Status()
+	if err != nil {
+		return semver.Version{}, fmt.Errorf("failed to read the worktree of the profiles repository: %w", err)
+	}
+	if !worktreeStatus.IsClean() {
+		return semver.Version{}, errProfilesRepositoryIsNotClean
+	}
+
+	// Get the HEAD reference.
+	ref, err := repo.Head()
+	if err != nil {
+		return semver.Version{}, fmt.Errorf("failed to read the profiles repository HEAD: %w", err)
+	}
+
+	// HEAD is not detached. So, probably it isn't on a known tag.
+	if ref.Name() != plumbing.HEAD {
+		return semver.Version{}, errProfilesRepositoryUnknownState
+	}
+
+	// Fetch the tags from remote.
+	err = repo.Fetch(&git.FetchOptions{
+		RefSpecs: []config.RefSpec{"refs/tags/*:refs/tags/*"},
+	})
+	if err != nil && !errors.Is(err, git.NoErrAlreadyUpToDate) {
+		return semver.Version{}, fmt.Errorf("failed to fetch the profiles repository: %w", err)
+	}
+
+	// Check if the current commit is a tag.
+	tags, err := repo.Tags()
+	if err != nil {
+		return semver.Version{}, fmt.Errorf("failed to list the profiles repository tags: %w", err)
+	}
+
+	var refName plumbing.ReferenceName
+	err = tags.ForEach(func(tag *plumbing.Reference) error {
+		commitHash, err := repo.ResolveRevision(plumbing.Revision(tag.Name().String()))
+		if err != nil {
+			return err
+		}
+
+		if commitHash.String() == ref.Hash().String() {
+			refName = tag.Name()
+			return nil
+		}
+
+		return nil
+	})
+	if err != nil {
+		return semver.Version{}, fmt.Errorf("failed to iterate over the profiles repository tags: %w", err)
+	}
+
+	// Current commit doesn't match any release tag.
+	if len(refName) == 0 {
+		return semver.Version{}, errProfilesRepositoryUnknownState
+	}
+
+	ver, err := semver.ShouldParse(filepath.Base(string(refName)))
+	if err != nil {
+		err = errors.Join(err, errProfilesRepositoryUnknownState)
+	}
+
+	return ver, err
 }
 
 const (
-	profilesDirName         = "profiles"
-	profilesVersionFileName = "version.txt"
+	profilesDirName = "profiles"
 )
 
 var (
@@ -177,19 +252,6 @@ var (
 	errMultipleProfilesFlag = errors.New("multiple profiles flag specified")
 	errProfileFlagIsAFile   = errors.New("specified profiles flag is a file")
 )
-
-func profilesVersionFilePath(dir string) (string, error) {
-	s, err := os.Stat(dir)
-	if err != nil {
-		return "", err
-	}
-
-	if !s.IsDir() {
-		return "", errProfileFlagIsAFile
-	}
-
-	return filepath.Join(dir, profilesVersionFileName), nil
-}
 
 func getProfilesDir() (string, error) {
 	flag, err := getProfilesFlag()

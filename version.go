@@ -1,4 +1,4 @@
-package version
+package gbounty
 
 import "github.com/bountysecurity/gbounty/kit/semver"
 

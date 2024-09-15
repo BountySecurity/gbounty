@@ -122,7 +122,7 @@ func (p Plain) WriteMatchesSummary(ctx context.Context, fs scan.FileSystem) erro
 
 		urlsStr := urls[0]
 		for _, url := range urls[1:] {
-			urlsStr += fmt.Sprintf("\n%s", url)
+			urlsStr += "\n" + url
 		}
 
 		builder.WriteString(printer.Plain(urlsPrinter()).Sprintln(urlsStr))

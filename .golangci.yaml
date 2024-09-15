@@ -70,3 +70,12 @@ issues:
     - path: kit/osext/.*\.go
       linters:
         - mnd
+    - path: internal/platform/filesystem/.*\.go
+      linters:
+        - dupl
+        - mnd
+    - path: internal/platform/writer/.*\.go
+      linters:
+        - dupl
+        - nestif
+        - mnd

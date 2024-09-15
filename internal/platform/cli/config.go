@@ -50,8 +50,8 @@ type Config struct {
 	Continue string
 	// URLS specifies the list of URLs used to define the scan.
 	URLS MultiValue
-	// URLSFile specifies the path to the URLs file to define the scan.
-	URLSFile string
+	// UrlsFile specifies the path to the URLs file to define the scan.
+	UrlsFile string
 	// RequestsFile specifies the path to the request(s) file to define the scan.
 	RequestsFile string
 	// RawRequests specifies the path(s) to the raw request file(s) to define the scan.
@@ -77,8 +77,8 @@ type Config struct {
 	ProfilesPath MultiValue
 	// Concurrency determines the amount of URLs scanned at the same time (concurrently).
 	Concurrency int
-	// RPS determines the maximum amount of requests per second per each URL.
-	RPS int
+	// Rps determines the maximum amount of requests per second per each URL.
+	Rps int
 	// OnlyActive determines whether the scan will only use active profiles.
 	OnlyActive bool
 	// OnlyPassive determines whether the scan will only use passive profiles.
@@ -134,6 +134,8 @@ type Config struct {
 	UpdateApp bool
 	// UpdateProfiles determines whether profiles will be updated.
 	UpdateProfiles bool
+	// ForceUpdateProfiles determines whether profiles will be updated forcefully.
+	ForceUpdateProfiles bool
 }
 
 // ScanAllProfiles returns true if [Config] is set to return a subset of any specific
@@ -142,14 +144,14 @@ func (cfg Config) ScanAllProfiles() bool {
 	return !cfg.OnlyActive && !cfg.OnlyPassive && !cfg.OnlyPassiveReq && !cfg.OnlyPassiveRes
 }
 
-// GetRPS returns the value set as the RPS (request per second).
+// GetRPS returns the value set as the Rps (request per second).
 func (cfg Config) GetRPS() int {
-	return cfg.RPS
+	return cfg.Rps
 }
 
 // AnyUpdate returns true if [Config] is set to perform any kind of update.
 func (cfg Config) AnyUpdate() bool {
-	return cfg.Update || cfg.UpdateApp || cfg.UpdateProfiles
+	return cfg.Update || cfg.UpdateApp || cfg.UpdateProfiles || cfg.ForceUpdateProfiles
 }
 
 // AppUpdate returns true if [Config] is set to perform an application update.
@@ -159,18 +161,18 @@ func (cfg Config) AppUpdate() bool {
 
 // ProfUpdate returns true if [Config] is set to perform a profiles update.
 func (cfg Config) ProfUpdate() bool {
-	return cfg.Update || cfg.UpdateProfiles
+	return cfg.Update || cfg.UpdateProfiles || cfg.ForceUpdateProfiles
 }
 
 // Validate validates the [Config] and returns an [error] if it isn't valid.
 func (cfg Config) Validate() error {
 	validations := []func() error{
 		cfg.checkProfilesPathFound,
-		cfg.checkInmemoryIncompatible,
+		cfg.checkInMemoryIncompatibility,
 		cfg.checkOnlyOneExecutionEntry,
 		cfg.checkOnlyOneAllOption,
 		cfg.checkExecutionEntryAcceptParams,
-		cfg.checkValidURLS,
+		cfg.checkValidUrls,
 		cfg.checkValidConcurrency,
 		cfg.checkValidRPS,
 		cfg.checkOutputForAnyAllFlag,
@@ -184,80 +186,76 @@ func (cfg Config) Validate() error {
 			return err
 		}
 	}
-
 	return nil
 }
+
+var errNoProfilesPathFound = errors.New("no profiles path (-p/--profiles) specified nor default one found")
 
 func (cfg Config) checkProfilesPathFound() error {
 	if len(cfg.ProfilesPath) == 0 || (len(cfg.ProfilesPath) == 1 && len(cfg.ProfilesPath[0]) == 0) {
-		return errors.New(
-			"no profiles path (-p/--profiles) specified nor default one found",
-		)
+		return errNoProfilesPathFound
 	}
-
 	return nil
 }
 
-func (cfg Config) checkInmemoryIncompatible() error {
+var errInMemoryIncompatibility = errors.New("you cannot use -sos/--save-on-stop on memory-only (-m/--inmem) executions")
+
+func (cfg Config) checkInMemoryIncompatibility() error {
 	if cfg.SaveOnStop && cfg.InMemory {
-		return errors.New(
-			"you cannot use -sos/--save-on-stop on memory-only (-m/--inmem) executions",
-		)
+		return errInMemoryIncompatibility
 	}
-
 	return nil
 }
+
+var errMultipleExecutionEntries = errors.New("you must specify either URL(s) (-u/--url), a URLs file (-uf/--urls-file), a request(s) file (-rf/--requests-file) or some raw request file(s) (-rr/--raw-request)")
 
 func (cfg Config) checkOnlyOneExecutionEntry() error {
 	if cfg.rawURLSAndFileDefined() || cfg.multipleFilesDefined() || cfg.noEntriesDefined() {
-		return errors.New(
-			"you must specify either URL(s) (-u/--url), a URLs file (-uf/--urls-file), a request(s) file (-rf/--requests-file) or some raw request file(s) (-rr/--raw-request)",
-		)
+		return errMultipleExecutionEntries
 	}
-
 	return nil
 }
+
+var errMultipleAllOptions = errors.New("you must specify either show all requests and responses (-a/--all), or more specifically all requests (-areq/--all-requests) or all responses (-ares/--all-responses), but not both")
 
 func (cfg Config) checkOnlyOneAllOption() error {
 	if (cfg.ShowAll && cfg.ShowAllRequests) || (cfg.ShowAll && cfg.ShowAllResponses) ||
 		(cfg.ShowAllRequests && cfg.ShowAllResponses) {
-		return errors.New(
-			"you must specify either show all requests and responses (-a/--all), or more specifically all requests (-areq/--all-requests) or all responses (-ares/--all-responses), but not both",
-		)
+		return errMultipleAllOptions
 	}
-
 	return nil
 }
+
+var errExecutionEntryAcceptParams = errors.New("you must specify either URL(s) (with -u/--url, or with -uf/--urls-file) with some options (-X, -H, -d) or a request(s) file (-rf/--requests-file) or some raw request file(s) (-rr/--raw-request)")
 
 func (cfg Config) checkExecutionEntryAcceptParams() error {
 	if cfg.requestsFileDefined() && cfg.requestOptsDefined() {
-		return errors.New(
-			"you must specify either URL(s) (with -u/--url, or with -uf/--urls-file) with some options (-X, -H, -d) or a request(s) file (-rf/--requests-file) or some raw request file(s) (-rr/--raw-request)",
-		)
+		return errExecutionEntryAcceptParams
 	}
-
 	return nil
 }
+
+var errInvalidConcurrency = errors.New("you must specify a concurrency (-c/--concurrency) higher than zero")
 
 func (cfg Config) checkValidConcurrency() error {
 	if !(cfg.Concurrency > 0) {
-		return errors.New("you must specify a concurrency (-c/--concurrency) higher than zero")
+		return errInvalidConcurrency
 	}
 
 	return nil
 }
+
+var errInvalidRPS = errors.New("you must specify an amount of req/s (-r/--rps) higher than zero")
 
 func (cfg Config) checkValidRPS() error {
-	if !(cfg.RPS > 0) {
-		return errors.New(
-			"you must specify an amount of req/s (-r/--rps) higher than zero",
-		)
+	if !(cfg.Rps > 0) {
+		return errInvalidRPS
 	}
 
 	return nil
 }
 
-func (cfg Config) checkValidURLS() error {
+func (cfg Config) checkValidUrls() error {
 	if len(cfg.URLS) == 0 {
 		return nil
 	}
@@ -272,13 +270,12 @@ func (cfg Config) checkValidURLS() error {
 	return nil
 }
 
+var errMissingOutputForAllFlags = errors.New("to include all requests and/or all responses within results, you must specify an output file path (-o/--output <path>)")
+
 func (cfg Config) checkOutputForAnyAllFlag() error {
 	if (cfg.ShowAll || cfg.ShowAllRequests || cfg.ShowAllResponses) && len(cfg.OutPath) == 0 {
-		return errors.New(
-			"to include all requests and/or all responses within results, you must specify an output file path (-o/--output <path>)",
-		)
+		return errMissingOutputForAllFlags
 	}
-
 	return nil
 }
 
@@ -289,18 +286,22 @@ func (cfg Config) checkValidOutput() error {
 
 	f, err := os.Create(cfg.OutPath)
 	if err != nil {
-		pathErr, ok := err.(*os.PathError)
-		if ok {
-			return fmt.Errorf(`invalid output path: "%s" - %s`, cfg.OutPath, pathErr.Err)
+		var pathErr *os.PathError
+		if errors.As(err, &pathErr) {
+			return fmt.Errorf(`invalid output path: "%s" - %s`, cfg.OutPath, pathErr.Err) //nolint:err113
 		}
-
-		return fmt.Errorf(`invalid output path: "%s" - %s`, cfg.OutPath, err)
+		return fmt.Errorf(`invalid output path: "%s" - %s`, cfg.OutPath, err) //nolint:err113
 	}
 
 	f.Close()
-
 	return nil
 }
+
+var (
+	errMissingParamsFileForParamsSplit    = errors.New("you must specify a parameters file (with -pf/--params-file) to make use of the parameters split (-ps/--params-split)")
+	errMissingParamsFileForParamsMethod   = errors.New("you must specify a parameters file (with -pf/--params-file) to make use of the parameters method (-pm/--params-method)")
+	errMissingParamsFileForParamsEncoding = errors.New("you must specify a parameters file (with -pf/--params-file) to make use of the parameters method (-pe/--params-encoding)")
+)
 
 func (cfg Config) checkValidParamsFlag() error {
 	// Case insensitiveness
@@ -311,21 +312,15 @@ func (cfg Config) checkValidParamsFlag() error {
 	if len(cfg.ParamsFile) == 0 {
 		// No default (10), therefore explicitly defined
 		if cfg.ParamsSplit != defaultParamsSplit {
-			return errors.New(
-				"you must specify a parameters file (with -pf/--params-file) to make use of the parameters split (-ps/--params-split)",
-			)
+			return errMissingParamsFileForParamsSplit
 		}
 		// No default (GET), therefore explicitly defined
 		if cfg.ParamsMethod != defaultParamsMethod {
-			return errors.New(
-				"you must specify a parameters file (with -pf/--params-file) to make use of the parameters method (-pm/--params-method)",
-			)
+			return errMissingParamsFileForParamsMethod
 		}
 		// No default (url), therefore explicitly defined
 		if cfg.ParamsEncoding != defaultParamsEncode {
-			return errors.New(
-				"you must specify a parameters file (with -pf/--params-file) to make use of the parameters method (-pe/--params-encoding)",
-			)
+			return errMissingParamsFileForParamsEncoding
 		}
 		// All defaults, nothing to check
 		return nil
@@ -333,25 +328,25 @@ func (cfg Config) checkValidParamsFlag() error {
 
 	// Not any of the supported values
 	if cfg.ParamsMethod != http.MethodGet && cfg.ParamsMethod != http.MethodPost {
-		return fmt.Errorf(`the provided parameters method (-pm/--params-method) is invalid: "%s" - only "GET and "POST" are supported"`, cfg.ParamsMethod)
+		return fmt.Errorf(`the provided parameters method (-pm/--params-method) is invalid: "%s" - only "GET and "POST" are supported"`, cfg.ParamsMethod) //nolint:err113
 	}
 
 	// Not any of the supported values
 	if cfg.ParamsEncoding != "url" && cfg.ParamsEncoding != "json" {
-		return fmt.Errorf(`the provided parameters encoding (-pe/--params-encoding) is invalid: "%s" - only "url and "json" are supported"`, cfg.ParamsMethod)
+		return fmt.Errorf(`the provided parameters encoding (-pe/--params-encoding) is invalid: "%s" - only "url and "json" are supported"`, cfg.ParamsMethod) //nolint:err113
 	}
 
 	info, err := os.Stat(cfg.ParamsFile)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return fmt.Errorf(`the provided parameters file does not exist: "%s"`, cfg.ParamsFile)
+			return fmt.Errorf(`the provided parameters file does not exist: "%s"`, cfg.ParamsFile) //nolint:err113
 		}
 
-		return fmt.Errorf(`the provided parameters file is invalid: "%s" - %s`, cfg.OutPath, err.Error())
+		return fmt.Errorf(`the provided parameters file is invalid: "%s" - %s`, cfg.OutPath, err.Error()) //nolint:err113
 	}
 
 	if info.IsDir() {
-		return fmt.Errorf(`the provided parameters file is a directory: "%s"`, cfg.ParamsFile)
+		return fmt.Errorf(`the provided parameters file is a directory: "%s"`, cfg.ParamsFile) //nolint:err113
 	}
 
 	return nil
@@ -387,7 +382,7 @@ func (cfg Config) multipleFilesDefined() bool {
 }
 
 func (cfg Config) urlsFileDefined() bool {
-	return len(cfg.URLSFile) > 0
+	return len(cfg.UrlsFile) > 0
 }
 
 func (cfg Config) requestsFileDefined() bool {

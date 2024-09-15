@@ -33,12 +33,13 @@ func Parse(args []string) (Config, error) {
 	fs.BoolVar("", &config.Update, "update", false, "Update app and profiles")
 	fs.BoolVar("", &config.UpdateApp, "update-app", false, "Update app")
 	fs.BoolVar("", &config.UpdateProfiles, "update-profiles", false, "Update profiles")
+	fs.BoolVar("", &config.ForceUpdateProfiles, "force-update-profiles", false, "Update profiles forcefully")
 
 	// target
 	fs.InitGroup(target, "TARGET INPUT:")
 	fs.Var(target, &config.URLS, "url", "If specified, it will be used as the target url\n\tCan be used more than once: -u url1 -u url2")
 	fs.Alias("u", "url")
-	fs.StringVar(target, &config.URLSFile, "urls-file", "", "If specified, each line present on the file will be used as the target urls")
+	fs.StringVar(target, &config.UrlsFile, "urls-file", "", "If specified, each line present on the file will be used as the target urls")
 	fs.Alias("uf", "urls-file")
 	fs.StringVar(target, &config.RequestsFile, "requests-file", "", "If specified, each file present on the requests file will be used as the target url and request template\n\tOnly zipped (.zip) requests files are supported")
 	fs.Alias("rf", "requests-file")
@@ -81,9 +82,11 @@ func Parse(args []string) (Config, error) {
 
 	// runtime
 	fs.InitGroup(runtime, "RUNTIME OPTIONS:")
-	fs.IntVar(runtime, &config.Concurrency, "concurrency", 10, "Determines how many target URL(s) will be scanned concurrently (default: 10)")
+	const defaultConcurrency = 10
+	fs.IntVar(runtime, &config.Concurrency, "concurrency", defaultConcurrency, "Determines how many target URL(s) will be scanned concurrently (default: 10)")
 	fs.Alias("c", "concurrency")
-	fs.IntVar(runtime, &config.RPS, "rps", 10, "Determines the limit of requests per second (per URL) (default: 10)")
+	const defaultRps = 10
+	fs.IntVar(runtime, &config.Rps, "rps", defaultRps, "Determines the limit of requests per second (per URL) (default: 10)")
 	fs.Alias("r", "rps")
 	fs.BoolVar(runtime, &config.Silent, "silent", false, "If specified, no results will be printed to stdout")
 	fs.Alias("s", "silent")

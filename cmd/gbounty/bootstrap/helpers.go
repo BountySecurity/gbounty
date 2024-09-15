@@ -33,6 +33,15 @@ func gbountyDir() (string, error) {
 	return filepath.Join(homedir, ".gbounty"), nil
 }
 
+func profilesDir() (string, error) {
+	gbountyDir, err := gbountyDir()
+	if err != nil {
+		return "", err
+	}
+
+	return filepath.Join(gbountyDir, profilesDirName), nil
+}
+
 func existsAsDir(err error, info os.FileInfo) bool {
 	return err == nil && info.IsDir()
 }

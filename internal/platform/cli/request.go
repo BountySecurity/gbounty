@@ -20,9 +20,9 @@ var (
 	// with requests, and it could not be processed successfully.
 	ErrProcessRequestFile = errors.New("could not process request(s) file")
 
-	// ErrProcessURLSFile is the error returned when [Config] points to a file
+	// ErrProcessUrlsFile is the error returned when [Config] points to a file
 	// with urls, and it could not be processed successfully.
-	ErrProcessURLSFile = errors.New("could not process url(s) file")
+	ErrProcessUrlsFile = errors.New("could not process url(s) file")
 
 	// ErrInvalidHeader is the error returned when [Config] contains some headers
 	// configured by they have an invalid format.
@@ -79,7 +79,7 @@ func createTemplates(ctx context.Context, fs scan.FileSystem, cfg Config, pCfg s
 		return createFromRawRequestFiles(ctx, fs, cfg.RawRequests, pCfg)
 	}
 
-	if len(cfg.URLSFile) > 0 {
+	if len(cfg.UrlsFile) > 0 {
 		logger.For(ctx).Info("Updating config with urls file")
 
 		err := updateConfigWithURLS(ctx, &cfg)
@@ -195,15 +195,15 @@ func createFromConfig(ctx context.Context, fs scan.FileSystem, cfg Config, pCfg 
 }
 
 func updateConfigWithURLS(ctx context.Context, cfg *Config) error {
-	file, err := os.Open(cfg.URLSFile)
+	file, err := os.Open(cfg.UrlsFile)
 	if err != nil {
 		var pathErr *os.PathError
 
 		if errors.As(err, &pathErr) {
-			return fmt.Errorf("%w(%s): %s", ErrProcessURLSFile, cfg.URLSFile, pathErr.Err)
+			return fmt.Errorf("%w(%s): %s", ErrProcessUrlsFile, cfg.UrlsFile, pathErr.Err) //nolint:errorlint
 		}
 
-		return fmt.Errorf("%w(%s): %s", ErrProcessURLSFile, cfg.OutPath, err)
+		return fmt.Errorf("%w(%s): %s", ErrProcessUrlsFile, cfg.OutPath, err) //nolint:errorlint
 	}
 	defer file.Close()
 
@@ -213,7 +213,7 @@ func updateConfigWithURLS(ctx context.Context, cfg *Config) error {
 
 		err := url.Validate(&line)
 		if err != nil {
-			logger.For(ctx).Warnf("Skipping url(s) file (%s) line (%s) - not a valid url: %s", cfg.URLSFile, line, err.Error())
+			logger.For(ctx).Warnf("Skipping url(s) file (%s) line (%s) - not a valid url: %s", cfg.UrlsFile, line, err.Error())
 			continue
 		}
 

@@ -3,10 +3,11 @@ package writer
 import (
 	"context"
 	"fmt"
-	"github.com/pterm/pterm"
 	"io"
 	"strings"
 	"time"
+
+	"github.com/pterm/pterm"
 
 	scan "github.com/bountysecurity/gbounty/internal"
 	"github.com/bountysecurity/gbounty/kit/console/color"
@@ -129,7 +130,7 @@ func (c Console) WriteMatchesSummary(ctx context.Context, fs scan.FileSystem) er
 
 		urlsStr := urls[0]
 		for _, url := range urls[1:] {
-			urlsStr += fmt.Sprintf("\n%s", url)
+			urlsStr += "\n" + url
 		}
 
 		builder.WriteString(urlsPrinter().Sprintln(urlsStr))

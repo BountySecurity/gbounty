@@ -69,7 +69,7 @@ func Default(remote string) Request {
 			"Connection":      {"close"},
 		},
 		// Default values
-		Timeout:      20 * time.Second,
+		Timeout:      defaultTimeout,
 		RedirectType: profile.RedirectNever,
 	}
 }

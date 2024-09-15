@@ -10,10 +10,10 @@ import (
 var (
 	ErrInvalidSlug        = errors.New("invalid slug format, it must be owner/name")
 	ErrRepositoryNotFound = errors.New("repository or release not found")
-	ErrDownload           = errors.New("release could not be downloaded")
+	ErrDownload           = errors.New("release download failed")
 	ErrChecksumValidation = errors.New("checksum validation failed")
-	ErrChecksumDownload   = errors.New("checksum could not be downloaded")
-	ErrDecompression      = errors.New("release could not be decompressed")
+	ErrChecksumDownload   = errors.New("checksum download failed")
+	ErrDecompression      = errors.New("release decompression failed")
 	ErrReleaseBinary      = errors.New("release archive does not contain the binary")
 )
 

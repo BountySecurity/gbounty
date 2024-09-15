@@ -6,14 +6,14 @@ import (
 	"github.com/bountysecurity/gbounty/kit/console/color"
 )
 
-// Info returns a [pterm.PrefixPrinter] with the "INFO" prefix
+// Info returns a [pterm.PrefixPrinter] with the "INFO" prefix.
 func Info() pterm.PrefixPrinter {
 	return pterm.PrefixPrinter{
 		Prefix: pterm.Prefix{Style: color.BoldYellow(), Text: "   INFO   "},
 	}
 }
 
-// Error returns a [pterm.PrefixPrinter] with the "ERROR" prefix
+// Error returns a [pterm.PrefixPrinter] with the "ERROR" prefix.
 func Error() pterm.PrefixPrinter {
 	return pterm.PrefixPrinter{
 		MessageStyle: color.Magenta(),

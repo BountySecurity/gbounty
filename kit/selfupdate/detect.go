@@ -12,11 +12,13 @@ import (
 	"github.com/bountysecurity/gbounty/kit/semver"
 )
 
-func DetectLatest(ctx context.Context, slug string) (release *Release, found bool, err error) {
-	return detectVersion(ctx, slug, semver.Zero())
+func DetectLatest(ctx context.Context, slug string, withAsset bool) (release *Release, found bool, err error) {
+	return detectVersion(ctx, slug, semver.Zero(), withAsset)
 }
 
-func detectVersion(ctx context.Context, slug string, min semver.Version) (release *Release, found bool, err error) {
+func detectVersion(
+	ctx context.Context, slug string, min semver.Version, withAsset bool,
+) (release *Release, found bool, err error) {
 	// The slug must be owner/name.
 	repo := strings.Split(slug, "/")
 	if len(repo) != 2 || repo[0] == "" || repo[1] == "" {
@@ -34,25 +36,33 @@ func detectVersion(ctx context.Context, slug string, min semver.Version) (releas
 
 	// Then, we try to find the release and asset we're looking for.
 	// If the given version is [semver.Zero()], the latest version will be fetched.
-	rel, asset, version, found := findReleaseAndAsset(releases, min)
-	if !found {
+	rel, asset, version, found := findReleaseAndAsset(releases, min, withAsset)
+	if !found || (withAsset && asset == nil) {
 		return nil, false, nil
 	}
 
 	// If found, we construct the release with all the information gathered.
 	publishedAt := rel.GetPublishedAt().Time
 	release = &Release{
-		Version:       version,
-		AssetURL:      asset.GetBrowserDownloadURL(),
-		AssetByteSize: asset.GetSize(),
-		AssetID:       asset.GetID(),
-		URL:           rel.GetHTMLURL(),
-		ReleaseNotes:  rel.GetBody(),
-		Name:          rel.GetName(),
-		PublishedAt:   &publishedAt,
-		RepoOwner:     repo[0],
-		RepoName:      repo[1],
+		Version:      version,
+		URL:          rel.GetHTMLURL(),
+		ReleaseNotes: rel.GetBody(),
+		Name:         rel.GetName(),
+		PublishedAt:  &publishedAt,
+		RepoOwner:    repo[0],
+		RepoName:     repo[1],
 	}
+
+	// If we're not looking for assets, we can early return.
+	// As, from now on, we're only looking for assets and its checksum validation.
+	if !withAsset {
+		return release, true, nil
+	}
+
+	// Set the information from the asset associated with the release.
+	release.AssetURL = asset.GetBrowserDownloadURL()
+	release.AssetByteSize = asset.GetSize()
+	release.AssetID = asset.GetID()
 
 	// Once we have the release basic information, we try to find the validation asset.
 	var validationFound bool
@@ -76,6 +86,7 @@ func detectVersion(ctx context.Context, slug string, min semver.Version) (releas
 func findReleaseAndAsset(
 	releases []*github.RepositoryRelease,
 	targetVersion semver.Version,
+	withAsset bool,
 ) (*github.RepositoryRelease, *github.ReleaseAsset, semver.Version, bool) {
 	// Generate candidates
 	suffixes := make([]string, 0, 2*7*2) //nolint:mnd
@@ -95,6 +106,23 @@ func findReleaseAndAsset(
 	var release *github.RepositoryRelease
 
 	for _, r := range releases {
+		// First, we check if the GitHub Release have a valid
+		// tag (version) name, following `semver` rules.
+		rver, err := semver.ShouldParse(r.GetTagName())
+		if err != nil { // Not a valid release, just skip
+			continue
+		}
+
+		// If we don't need the asset, we just check the version number.
+		if !withAsset {
+			if release == nil || rver.GreaterThanOrEquals(ver) {
+				ver = rver
+				release = r
+			}
+			continue // Nothing else to check.
+		}
+
+		// Otherwise, we look for a release with the asset.
 		if a, v, ok := findAssetFromRelease(r, suffixes, targetVersion); ok {
 			if release == nil || v.GreaterThanOrEquals(ver) {
 				ver = v

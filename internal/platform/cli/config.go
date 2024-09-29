@@ -288,9 +288,9 @@ func (cfg Config) checkValidOutput() error {
 	if err != nil {
 		var pathErr *os.PathError
 		if errors.As(err, &pathErr) {
-			return fmt.Errorf(`invalid output path: "%s" - %s`, cfg.OutPath, pathErr.Err) //nolint:err113
+			return fmt.Errorf(`invalid output path: "%s" - %s`, cfg.OutPath, pathErr.Err) //nolint:err113,errorlint
 		}
-		return fmt.Errorf(`invalid output path: "%s" - %s`, cfg.OutPath, err) //nolint:err113
+		return fmt.Errorf(`invalid output path: "%s" - %s`, cfg.OutPath, err) //nolint:err113,errorlint
 	}
 
 	f.Close()

@@ -27,6 +27,10 @@ func detectVersion(
 
 	// First, we list all the releases from the given repository.
 	releases, res, err := githubClient(ctx).Repositories.ListReleases(ctx, repo[0], repo[1], nil)
+	if res != nil && res.StatusCode == http.StatusUnauthorized {
+		// In case of authentication error, we try again with no authentication at all.
+		releases, res, err = github.NewClient(nil).Repositories.ListReleases(ctx, repo[0], repo[1], nil)
+	}
 	if err != nil {
 		if res != nil && res.StatusCode == http.StatusNotFound {
 			err = fmt.Errorf("%w: %s", ErrRepositoryNotFound, slug)

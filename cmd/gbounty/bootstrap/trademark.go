@@ -16,7 +16,7 @@ func PrintAppName() {
 		Render()
 
 	pterm.Info.Printf("GBounty %s\n", gbounty.Version)
-	pterm.Info.Println("GBounty is a web scanner that uses Bounty Security web vulnerability profiles.")
-	pterm.Warning.Println("By using this tool you are accepting the EULA: https://bountysecurity.ai/pages/eula")
+	pterm.Info.Println("GBounty is a web scanner that uses web vulnerability profiles")
+	pterm.Info.Println("GBounty profiles can be found at: https://github.com/BountySecurity/gbounty-profiles")
 	fmt.Println() //nolint:forbidigo
 }

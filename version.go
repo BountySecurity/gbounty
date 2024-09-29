@@ -3,7 +3,7 @@ package gbounty
 import "github.com/bountysecurity/gbounty/kit/semver"
 
 const (
-	Version = "v0.2.0"
+	Version = "v3.0.0"
 )
 
 // We want to make sure [Version] is always valid, following the

@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"github.com/bountysecurity/gbounty/internal/entrypoint"
+	"github.com/bountysecurity/gbounty/internal/profile"
 	"github.com/bountysecurity/gbounty/internal/request"
 	"github.com/bountysecurity/gbounty/internal/response"
 	"github.com/bountysecurity/gbounty/kit/strings/occurrence"
@@ -60,82 +62,17 @@ type Error struct {
 	Err       string
 }
 
-// FileSystem defines the behavior expected from a [scan] file system,
-// used to store and retrieve [Match], [Error], and [TaskSummary] instances.
-type FileSystem interface {
-	FileSystemStats
-	FileSystemErrors
-	FileSystemMatches
-	FileSystemSummaries
-	FileSystemTemplates
-	Cleanup(ctx context.Context) error
-}
+// RequesterBuilder is a function that returns a [Requester] instance.
+type RequesterBuilder func() (Requester, error)
 
-// FileSystemStats defines the behavior expected from a [scan] file system
-// to store and retrieve [Stats] instances.
-type FileSystemStats interface {
-	StoreStats(ctx context.Context, stats *Stats) error
-	LoadStats(ctx context.Context) (*Stats, error)
-}
+type (
+	onMatchFunc func(context.Context, string, []*request.Request, []*response.Response, profile.Profile, profile.IssueInformation, entrypoint.Entrypoint, string, [][]occurrence.Occurrence)
+	onErrorFunc func(context.Context, string, []*request.Request, []*response.Response, error)
+	onTaskFunc  func(context.Context, string, []*request.Request, []*response.Response)
+)
 
-// FileSystemErrors defines the behavior expected from a [scan] file system
-// to store and retrieve [Error] instances.
-type FileSystemErrors interface {
-	StoreError(ctx context.Context, err Error) error
-	LoadErrors(ctx context.Context) ([]Error, error)
-	ErrorsIterator(ctx context.Context) (chan Error, CloseFunc, error)
-}
-
-// FileSystemMatches defines the behavior expected from a [scan] file system
-// to store and retrieve [Match] instances.
-type FileSystemMatches interface {
-	StoreMatch(ctx context.Context, match Match) error
-	LoadMatches(ctx context.Context) ([]Match, error)
-	MatchesIterator(ctx context.Context) (chan Match, CloseFunc, error)
-}
-
-// FileSystemSummaries defines the behavior expected from a [scan] file system
-// to store and retrieve [TaskSummary] instances.
-type FileSystemSummaries interface {
-	StoreTaskSummary(ctx context.Context, ts TaskSummary) error
-	LoadTasksSummaries(ctx context.Context) ([]TaskSummary, error)
-	TasksSummariesIterator(ctx context.Context) (chan TaskSummary, CloseFunc, error)
-}
-
-// FileSystemTemplates defines the behavior expected from a [scan] file system
-// to store and retrieve [Template] instances.
-type FileSystemTemplates interface {
-	StoreTemplate(ctx context.Context, tpl Template) error
-	LoadTemplates(ctx context.Context) ([]Template, error)
-
-	// TemplatesIterator returns a channel of Template (or an error),
-	// so the channel can be used as an iterator.
-	// The returned channel is closed when the iterator is done (no more elements)
-	// or when the context is canceled.
-	// Thus, the context cancellation can also be used to stop the iteration.
-	TemplatesIterator(ctx context.Context) (chan Template, error)
-}
-
-// CloseFunc is a function that can be used to close something that's open.
-// For instance, a channel, a socket or a file descriptor.
-//
-// Internal details will vary depending on the function that returns it.
-type CloseFunc func()
-
-// Writer defines the behavior expected from a [scan] writer, used to write
-// [Config], [Stats], [Match], [Error], and [TaskSummary] instances to a
-// specific output (e.g. stdout or file) in a specific format (e.g. JSON).
-type Writer interface {
-	WriteConfig(ctx context.Context, cfg Config) error
-
-	WriteStats(ctx context.Context, fs FileSystem) error
-	WriteMatchesSummary(ctx context.Context, fs FileSystem) error
-
-	WriteError(ctx context.Context, err Error) error
-	WriteErrors(ctx context.Context, fs FileSystem) error
-
-	WriteMatch(ctx context.Context, match Match, includeResponse bool) error
-	WriteMatches(ctx context.Context, fs FileSystem, includeResponses bool) error
-
-	WriteTasks(ctx context.Context, fs FileSystem, allRequests, allResponses bool) error
+type update struct {
+	newMatch   bool
+	newSuccess bool
+	newErr     bool
 }

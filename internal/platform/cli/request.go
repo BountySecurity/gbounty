@@ -158,12 +158,13 @@ func createFromConfig(ctx context.Context, fs scan.FileSystem, cfg Config, pCfg 
 		logger.For(ctx).Infof("HTTP headers inherited from config: %s", cfg.Headers.String())
 
 		for _, header := range cfg.Headers {
-			if len(strings.SplitN(header, ":", 2)) != 2 {
+			key, value, found := strings.Cut(header, ":")
+			if !found {
 				return fmt.Errorf("%w: %s", ErrInvalidHeader, header)
 			}
 
-			key := strings.TrimSpace(strings.SplitN(header, ":", 2)[0])
-			value := strings.TrimSpace(strings.SplitN(header, ":", 2)[1])
+			key = strings.TrimSpace(key)
+			value = strings.TrimSpace(value)
 			options = append(options, request.WithHeader(key, value))
 		}
 	}

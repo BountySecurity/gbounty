@@ -15,7 +15,7 @@ func apply(src io.Reader, cmdPath string) error {
 
 	// Copy the contents of the new binary to a new executable file.
 	newPath := filepath.Join(updateDir, fmt.Sprintf(".%s.new", filename))
-	fp, err := os.OpenFile(newPath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0o755)
+	fp, err := os.OpenFile(newPath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0o755) //nolint:mnd
 	if err != nil {
 		return err
 	}

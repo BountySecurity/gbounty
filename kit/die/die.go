@@ -19,7 +19,7 @@ func OnErr(fn func() error, mm ...string) {
 // in case of error, it prints the error message and exits (1) the program.
 // It is similar to [OnErr], but in case of success it returns the value.
 //
-//nolint:ireturn
+//nolint:nolintlint,ireturn
 func OrRet[T any](fn func() (T, error), mm ...string) (t T) {
 	v, err := fn()
 	if err == nil {

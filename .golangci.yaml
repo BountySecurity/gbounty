@@ -24,11 +24,14 @@ linters:
     - nonamedreturns # we are fine with named returns so far
     - musttag # sometimes we are just fine with defaults
     - containedctx # for now, we are fine with context being passed around
+    - stylecheck # it is annoying, and sometimes ugly to have to write certain things capitalized
     # perhaps revisit?
     - cyclop
     - funlen
     - gocognit
-
+    # enable when on Go v1.22
+    - copyloopvar
+    - intrange
 
 linters-settings:
   revive:
@@ -79,3 +82,9 @@ issues:
         - dupl
         - nestif
         - mnd
+    - path: internal/profile/profilefakes/.*\.go
+      linters:
+        - dupl
+    - path: cmd/gbounty/bootstrap/bootstrap.go
+      linters:
+        - nestif

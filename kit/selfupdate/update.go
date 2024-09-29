@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+
+	"github.com/google/go-github/v64/github"
 )
 
 func UpdateTo(ctx context.Context, r *Release, path string) error {
@@ -16,7 +18,15 @@ func UpdateTo(ctx context.Context, r *Release, path string) error {
 		ctx, r.RepoOwner, r.RepoName, r.AssetID, http.DefaultClient,
 	)
 	if err != nil {
-		return errors.Join(ErrDownload, fmt.Errorf("(%s/%s): %w", r.Version.String(), r.AssetURL, err))
+		var errResp *github.ErrorResponse
+		if errors.As(err, &errResp) && errResp.Response.StatusCode == http.StatusUnauthorized {
+			src, _, err = github.NewClient(nil).Repositories.DownloadReleaseAsset(
+				ctx, r.RepoOwner, r.RepoName, r.AssetID, http.DefaultClient,
+			)
+		}
+		if err != nil {
+			return errors.Join(ErrDownload, fmt.Errorf("(%s/%s): %w", r.Version.String(), r.AssetURL, err))
+		}
 	}
 	defer src.Close()
 
@@ -30,10 +40,18 @@ func UpdateTo(ctx context.Context, r *Release, path string) error {
 		ctx, r.RepoOwner, r.RepoName, r.ValidationAssetID, http.DefaultClient,
 	)
 	if err != nil {
-		return errors.Join(
-			ErrChecksumDownload,
-			fmt.Errorf("(%s/%s): %w", r.Version.String(), r.AssetURL, err),
-		)
+		var errResp *github.ErrorResponse
+		if errors.As(err, &errResp) && errResp.Response.StatusCode == http.StatusUnauthorized {
+			vSrc, _, err = github.NewClient(nil).Repositories.DownloadReleaseAsset(
+				ctx, r.RepoOwner, r.RepoName, r.ValidationAssetID, http.DefaultClient,
+			)
+		}
+		if err != nil {
+			return errors.Join(
+				ErrChecksumDownload,
+				fmt.Errorf("(%s/%s): %w", r.Version.String(), r.AssetURL, err),
+			)
+		}
 	}
 	defer vSrc.Close()
 

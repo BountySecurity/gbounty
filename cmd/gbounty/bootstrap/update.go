@@ -69,7 +69,7 @@ func CheckForUpdates() {
 
 	if update.profiles.needed {
 		if profUpdate || forceProfUpdate {
-			pterm.Info.Println("Checking out profiles...")
+			pterm.Info.Println("Downloading new profiles...")
 			wg.Add(1)
 			checkoutProfiles := func() error { defer wg.Done(); return checkoutProfiles(update.profiles, forceProfUpdate) }
 			go die.OnErr(checkoutProfiles, "Failed to check out the profiles")
@@ -88,7 +88,7 @@ func CheckForUpdates() {
 	}
 
 	if update.profiles.needed && (profUpdate || forceProfUpdate) {
-		pterm.Success.Println("Profiles updated successfully!")
+		pterm.Success.Println("Profiles downloaded successfully!")
 	}
 
 	fmt.Println() //nolint:forbidigo

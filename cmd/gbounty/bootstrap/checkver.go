@@ -71,7 +71,8 @@ func checkVer() (u update, err error) {
 			pterm.Warning.Println("You either provided a specific profile file or more than one profile(s) path.")
 			pterm.Warning.Println("So, skipping profiles update check...")
 		case errors.Is(profErr, errNoProfilesFlag):
-			pterm.Info.Println("No profiles path (-p/--profiles) specified nor default one found, will download...")
+			pterm.Info.Println("No profiles were found, and no profiles path (-p/--profiles) was specified.")
+			pterm.Info.Println("So, the official profiles will be downloaded...")
 			return update{
 				app: appUpdate,
 				profiles: updateNeeds{
@@ -92,16 +93,23 @@ func checkVer() (u update, err error) {
 
 	currentProfilesVersion, profErr := detectProfilesVersion(profilesDir)
 	if profErr != nil {
+		if errors.Is(profErr, git.ErrRepositoryNotExists) {
+			pterm.Warning.Println("Looks like you are not using the official GBounty profiles repository.")
+			pterm.Warning.Println("So, skipping profiles update check...")
+			return update{
+				app: appUpdate,
+			}, nil
+		}
 		if errors.Is(profErr, errProfilesRepositoryIsNotClean) ||
 			errors.Is(profErr, errProfilesRepositoryUnknownState) {
 			pterm.Warning.Println("The profiles repository is either not clean, or in an unknown state, so skipping profiles update check...")
-			pterm.Warning.Println("You can use the --force-update-profiles flag to force the update.")
+			pterm.Warning.Println("You can use the --force-update-profiles flag to force the download of the latest version.")
 			return update{
 				app: appUpdate,
 			}, nil
 		}
 
-		pterm.Warning.Printf("Unexpected error happened while checking profiles version: %s\n", err.Error())
+		pterm.Warning.Printf("Unexpected error happened while checking profiles version: %s\n", profErr.Error())
 		pterm.Warning.Println("So, skipping profiles update check...")
 		return update{
 			app: appUpdate,
@@ -265,6 +273,15 @@ func getProfilesDir() (string, error) {
 		return "", err
 	// Happy path, single profiles flag
 	case err == nil:
+		s, err := os.Stat(flag)
+		if err != nil {
+			return "", err
+		}
+
+		if !s.IsDir() {
+			return "", errProfileFlagIsAFile
+		}
+
 		return filepath.Abs(flag)
 	}
 

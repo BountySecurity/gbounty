@@ -133,14 +133,14 @@ func parseCLIArgs() (cli.Config, error) {
 		return cli.Config{}, err
 	}
 
-	if cliConfig.ShowHelp || cliConfig.PrintTags || cliConfig.AnyUpdate() {
-		return cliConfig, nil
-	}
-
 	if len(cliConfig.ProfilesPath) == 0 {
 		if defaultPath := defaultProfilesLocation(); len(defaultPath) > 0 {
 			cliConfig.ProfilesPath = []string{defaultPath}
 		}
+	}
+
+	if cliConfig.ShowHelp || cliConfig.PrintTags || cliConfig.AnyUpdate() {
+		return cliConfig, nil
 	}
 
 	if err := cliConfig.Validate(); err != nil {

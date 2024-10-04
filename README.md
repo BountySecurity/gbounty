@@ -14,7 +14,7 @@
 <p align="center">
   •
   <a href="#install-gbounty">Install</a> •
-  <a href="https://gbounty.net/documentation/" target="_blank">Documentation</a> •
+  <a href="https://gbounty.bountysecurity.ai" target="_blank">Documentation</a> •
 </p>
 
 ---

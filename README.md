@@ -18,6 +18,8 @@
 </p>
 
 ---
+[![Downloads](https://img.shields.io/github/downloads/bountysecurity/gbounty/total.svg)](https://github.com/bountysecurity/gbounty/releases)
+[![Contributors](https://img.shields.io/github/contributors/bountysecurity/gbounty.svg)](https://github.com/bountysecurity/gbounty/graphs/contributors)
 
 Fast, reliable, and highly customizable website vulnerability scanner.
 
@@ -61,10 +63,7 @@ Unfortunately, currently we don't have support for other installation mechanisms
 [Snap](https://snapcraft.io/), [Choco](https://chocolatey.org/) or [Docker](https://www.docker.com/), but contributions
 are welcome! _See [#1](https://github.com/BountySecurity/gbounty/issues/1), for instance._
 
-<br/>
-<br/>
-<br/>
-
+### Credits
 
 Please, consider exploring the following comparable open-source projects that might also be beneficial for you:
 

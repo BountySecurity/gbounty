@@ -21,7 +21,7 @@
 [![Downloads](https://img.shields.io/github/downloads/bountysecurity/gbounty/total.svg)](https://github.com/bountysecurity/gbounty/releases)
 [![Contributors](https://img.shields.io/github/contributors/bountysecurity/gbounty.svg)](https://github.com/bountysecurity/gbounty/graphs/contributors)
 
-Fast, reliable, and highly customizable website vulnerability scanner.
+Multi-step website vulnerability scanner designed to help pentesters and bug hunters identify potential vulnerabilities in web applications.
 
 We have a [dedicated repository](https://github.com/bountysecurity/gbounty-profiles) that houses various type of
 web vulnerability profiles contributed by security researchers and engineers.

@@ -69,7 +69,7 @@ are welcome! _See [#1](https://github.com/BountySecurity/gbounty/issues/1), for 
 gbounty -h
 ```
 
-This will display help for the tool. Here are all the switches it supports.
+This will display help for the tool.
 
 
 ```console

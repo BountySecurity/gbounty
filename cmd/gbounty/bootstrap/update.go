@@ -9,6 +9,7 @@ import (
 	"runtime"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
@@ -22,11 +23,40 @@ import (
 	"github.com/bountysecurity/gbounty/kit/slices"
 )
 
+func getLastCheckTime() (time.Time, error) {
+	filePath, err := lastCheckFilePath()
+	if err != nil {
+		return time.Time{}, err
+	}
+
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return time.Time{}, nil
+		}
+		return time.Time{}, err
+	}
+
+	return time.Parse(time.RFC3339, string(data))
+}
+func checkForUpdatesRequired() bool {
+	lastCheckTime, err := getLastCheckTime()
+	currentTime := time.Now()
+
+	if err != nil || lastCheckTime.IsZero() || currentTime.Sub(lastCheckTime) > UpdateInterval {
+		pterm.Info.Println("Updates Required. Checking for updates...")
+		return true
+	}
+	pterm.Info.Println("Updates Not Required.")
+	return false
+}
+
 func CheckForUpdates() {
-	// Disable checks on CI jobs.
-	if _, isCI := os.LookupEnv("CI"); isCI {
+	// Disable checks on CI jobs and when updates not required.
+	if _, isCI := os.LookupEnv("CI"); isCI || !checkForUpdatesRequired() {
 		return
 	}
+	updateLastCheckFile()
 
 	// Ensure the home directory exists.
 	die.OnErr(homeDir, "Failed to create the $HOME directory (.gbounty)")

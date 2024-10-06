@@ -3,6 +3,7 @@ package bootstrap
 import (
 	"os"
 	"path/filepath"
+	"time"
 )
 
 func homeDir() error {
@@ -32,6 +33,23 @@ func gbountyDir() (string, error) {
 
 	return filepath.Join(homedir, ".gbounty"), nil
 }
+
+func lastCheckFilePath() (string, error) {
+	dir, err := gbountyDir()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(dir, "last_check.txt"), nil
+}
+
+func updateLastCheckFile() error {
+	filePath, _ := lastCheckFilePath()
+	return os.WriteFile(filePath, []byte(time.Now().Format(time.RFC3339)), 0644)
+}
+
+const (
+	UpdateInterval = 24 * time.Hour
+)
 
 func profilesDir() (string, error) {
 	gbountyDir, err := gbountyDir()

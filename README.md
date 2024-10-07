@@ -1,7 +1,7 @@
 <h1 align="center">
   <br>
   <a href="https://gbounty.bountysecurity.ai/">
-        <img src="static/gbounty-logo.png" width="400px" alt="GBounty">
+        <img src="static/logo.png" width="800px" alt="GBounty">
   </a>
 </h1>
 

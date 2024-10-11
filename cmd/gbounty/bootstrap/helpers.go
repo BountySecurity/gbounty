@@ -43,13 +43,12 @@ func lastCheckFilePath() (string, error) {
 }
 
 func updateLastCheckFile() error {
-	filePath, _ := lastCheckFilePath()
+	filePath, err := lastCheckFilePath()
+	if err != nil {
+		return err
+	}
 	return os.WriteFile(filePath, []byte(time.Now().Format(time.RFC3339)), 0644)
 }
-
-const (
-	UpdateInterval = 24 * time.Hour
-)
 
 func profilesDir() (string, error) {
 	gbountyDir, err := gbountyDir()

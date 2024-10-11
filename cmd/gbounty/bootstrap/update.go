@@ -40,14 +40,13 @@ func getLastCheckTime() (time.Time, error) {
 	return time.Parse(time.RFC3339, string(data))
 }
 func checkForUpdatesRequired() bool {
+	const updateInterval = 24 * time.Hour
 	lastCheckTime, err := getLastCheckTime()
 	currentTime := time.Now()
 
-	if err != nil || lastCheckTime.IsZero() || currentTime.Sub(lastCheckTime) > UpdateInterval {
-		pterm.Info.Println("Updates Required. Checking for updates...")
+	if err != nil || lastCheckTime.IsZero() || currentTime.Sub(lastCheckTime) > updateInterval {
 		return true
 	}
-	pterm.Info.Println("Updates Not Required.")
 	return false
 }
 

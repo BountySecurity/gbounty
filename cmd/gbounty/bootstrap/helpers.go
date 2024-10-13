@@ -43,11 +43,12 @@ func lastCheckFilePath() (string, error) {
 }
 
 func updateLastCheckFile() error {
+	const fullPermOwnerOnly = 0o600
 	filePath, err := lastCheckFilePath()
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(filePath, []byte(time.Now().Format(time.RFC3339)), 0644)
+	return os.WriteFile(filePath, []byte(time.Now().Format(time.RFC3339)), fullPermOwnerOnly)
 }
 
 func profilesDir() (string, error) {

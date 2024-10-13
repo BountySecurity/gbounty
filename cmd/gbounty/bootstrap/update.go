@@ -39,6 +39,7 @@ func getLastCheckTime() (time.Time, error) {
 
 	return time.Parse(time.RFC3339, string(data))
 }
+
 func checkForUpdatesRequired() bool {
 	const updateInterval = 24 * time.Hour
 	lastCheckTime, err := getLastCheckTime()
@@ -55,7 +56,10 @@ func CheckForUpdates() {
 	if _, isCI := os.LookupEnv("CI"); isCI || !checkForUpdatesRequired() {
 		return
 	}
-	updateLastCheckFile()
+	err := updateLastCheckFile()
+	if err != nil {
+		return
+	}
 
 	// Ensure the home directory exists.
 	die.OnErr(homeDir, "Failed to create the $HOME directory (.gbounty)")

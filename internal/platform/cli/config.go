@@ -136,6 +136,8 @@ type Config struct {
 	UpdateProfiles bool
 	// ForceUpdateProfiles determines whether profiles will be updated forcefully.
 	ForceUpdateProfiles bool
+	// Show only URLs/Request where vulnerabilities is present
+	Poc bool
 }
 
 // ScanAllProfiles returns true if [Config] is set to return a subset of any specific

@@ -86,7 +86,7 @@ func (c Console) WriteStats(ctx context.Context, fs scan.FileSystem) error {
 }
 
 // WriteMatchesSummary writes a summary of the [scan.Match] instances found during the scan, to the console.
-func (c Console) WriteMatchesSummary(ctx context.Context, fs scan.FileSystem) error {
+func (c Console) WriteMatchesSummary(ctx context.Context, fs scan.FileSystem, pocEnabled bool) error {
 	_, err := fmt.Fprint(c.writer, defaultSection().Sprintln("# Summary"))
 	if err != nil {
 		return err
@@ -122,11 +122,13 @@ func (c Console) WriteMatchesSummary(ctx context.Context, fs scan.FileSystem) er
 		issueChunks := strings.Split(issue, "\n")
 
 		builder := strings.Builder{}
-		builder.WriteString(issuePrinter().Sprintln(issueChunks[0]))
-		builder.WriteString(severityPrinter(issueChunks[1]).Sprintln(issueChunks[1]))
-		builder.WriteString(confidencePrinter(issueChunks[2]).Sprintln(issueChunks[2]))
-		builder.WriteString(typePrinter().Sprintln(profileTypes[issue]))
-		builder.WriteString(countPrinter().Sprintln(count))
+		if !pocEnabled {
+			builder.WriteString(issuePrinter().Sprintln(issueChunks[0]))
+			builder.WriteString(severityPrinter(issueChunks[1]).Sprintln(issueChunks[1]))
+			builder.WriteString(confidencePrinter(issueChunks[2]).Sprintln(issueChunks[2]))
+			builder.WriteString(typePrinter().Sprintln(profileTypes[issue]))
+			builder.WriteString(countPrinter().Sprintln(count))
+		}
 
 		urlsStr := urls[0]
 		for _, url := range urls[1:] {
@@ -235,14 +237,16 @@ func (c Console) WriteErrors(ctx context.Context, fs scan.FileSystem) error {
 }
 
 // WriteMatch writes the [scan.Match] to the console.
-func (c Console) WriteMatch(_ context.Context, m scan.Match, includeResponse bool) error {
+func (c Console) WriteMatch(_ context.Context, m scan.Match, includeResponse bool, pocEnabled bool) error {
 	builder := strings.Builder{}
 	builder.WriteString("\n")
-	builder.WriteString(issuePrinter().Sprintln(m.IssueName))
-	builder.WriteString(severityPrinter(m.IssueSeverity).Sprintln(m.IssueSeverity))
-	builder.WriteString(confidencePrinter(m.IssueConfidence).Sprintln(m.IssueConfidence))
-	builder.WriteString(typePrinter().Sprintln(m.ProfileType))
-	builder.WriteString(urlPrinter().Sprintln(m.URL))
+	if !pocEnabled {
+		builder.WriteString(issuePrinter().Sprintln(m.IssueName))
+		builder.WriteString(severityPrinter(m.IssueSeverity).Sprintln(m.IssueSeverity))
+		builder.WriteString(confidencePrinter(m.IssueConfidence).Sprintln(m.IssueConfidence))
+		builder.WriteString(typePrinter().Sprintln(m.ProfileType))
+		builder.WriteString(urlPrinter().Sprintln(m.URL))
+	}
 
 	if len(m.IssueParam) > 0 {
 		builder.WriteString(paramPrinter().Sprintln(m.IssueParam))

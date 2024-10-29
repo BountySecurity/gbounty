@@ -79,6 +79,8 @@ func Parse(args []string) (Config, error) {
 	fs.Alias("psres", "only-passive-res")
 	fs.BoolVar(profile, &config.PrintTags, "print-tags", false, "Print available profile tags")
 	fs.Alias("tags", "print-tags")
+	fs.BoolVar(profile, &config.Poc, "poc", false, "Print only URLs")
+	fs.Alias("poc", "only-poc")
 
 	// runtime
 	fs.InitGroup(runtime, "RUNTIME OPTIONS:")

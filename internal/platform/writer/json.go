@@ -72,7 +72,7 @@ func (j JSON) WriteStats(ctx context.Context, fs scan.FileSystem) error {
 
 // WriteMatchesSummary writes a summary of the [scan.Match] instances found during the [scan],
 // to the [io.Writer] as a JSON array of JSON objects.
-func (j JSON) WriteMatchesSummary(ctx context.Context, fs scan.FileSystem) error {
+func (j JSON) WriteMatchesSummary(ctx context.Context, fs scan.FileSystem, _ bool) error {
 	_, err := fmt.Fprint(j.writer, `,
 	"summary": [`)
 	if err != nil {
@@ -360,7 +360,7 @@ func (j JSON) WriteErrors(ctx context.Context, fs scan.FileSystem) error {
 }
 
 // WriteMatch writes a [scan.Match] to the [io.Writer] as a JSON object.
-func (j JSON) WriteMatch(_ context.Context, m scan.Match, includeResponse bool) error {
+func (j JSON) WriteMatch(_ context.Context, m scan.Match, includeResponse bool, _ bool) error {
 	_, err := fmt.Fprintf(j.writer, `{
 	"url": %s,
 	"issue": {

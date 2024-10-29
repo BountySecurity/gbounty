@@ -78,7 +78,7 @@ func (p Plain) WriteStats(ctx context.Context, fs scan.FileSystem) error {
 
 // WriteMatchesSummary writes a summary of the [scan.Match] instances found during the [scan],
 // to the [io.Writer] as plain text.
-func (p Plain) WriteMatchesSummary(ctx context.Context, fs scan.FileSystem) error {
+func (p Plain) WriteMatchesSummary(ctx context.Context, fs scan.FileSystem, _ bool) error {
 	_, err := fmt.Fprint(p.writer, pterm.DefaultSection.WithTopPadding(0).WithStyle(nil).Sprintln("Summary"))
 	if err != nil {
 		return err
@@ -227,7 +227,7 @@ func (p Plain) WriteErrors(ctx context.Context, fs scan.FileSystem) error {
 }
 
 // WriteMatch writes a [scan.Match] to the [io.Writer] as plain text.
-func (p Plain) WriteMatch(_ context.Context, m scan.Match, includeResponse bool) error {
+func (p Plain) WriteMatch(_ context.Context, m scan.Match, includeResponse bool, _ bool) error {
 	builder := strings.Builder{}
 	builder.WriteString(printer.Plain(issuePrinter()).Sprintln(m.IssueName))
 	builder.WriteString(printer.Plain(severityPrinter(m.IssueSeverity)).Sprintln(m.IssueSeverity))

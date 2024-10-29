@@ -10,7 +10,9 @@ import (
 )
 
 func main() {
-	bootstrap.PrintAppName()
+	if !bootstrap.PocEnabled {
+		bootstrap.PrintAppName()
+	}
 	bootstrap.CheckForUpdates()
 
 	if err := bootstrap.Run(); err != nil {

@@ -239,8 +239,8 @@ func (c Console) WriteErrors(ctx context.Context, fs scan.FileSystem) error {
 // WriteMatch writes the [scan.Match] to the console.
 func (c Console) WriteMatch(_ context.Context, m scan.Match, includeResponse bool, pocEnabled bool) error {
 	builder := strings.Builder{}
-	builder.WriteString("\n")
 	if !pocEnabled {
+		builder.WriteString("\n")
 		builder.WriteString(issuePrinter().Sprintln(m.IssueName))
 		builder.WriteString(severityPrinter(m.IssueSeverity).Sprintln(m.IssueSeverity))
 		builder.WriteString(confidencePrinter(m.IssueConfidence).Sprintln(m.IssueConfidence))
@@ -257,7 +257,12 @@ func (c Console) WriteMatch(_ context.Context, m scan.Match, includeResponse boo
 			if r == nil {
 				continue
 			}
-			builder.WriteString(requestPrinter().Sprintln(string(r.Bytes())))
+			if !pocEnabled {
+				builder.WriteString(requestPrinter().Sprintln(string(r.Bytes())))
+			} else {
+				styledText := pterm.NewStyle(pterm.FgLightCyan).Sprint(string(r.Bytes()))
+				builder.WriteString(styledText)
+			}
 		}
 	}
 

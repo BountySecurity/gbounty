@@ -492,7 +492,9 @@ func loadProfiles(
 
 	loadingFrom := provider.From()
 	if len(loadingFrom) == 1 {
-		pterm.Info.Printf("Loading profiles from: %s\n", loadingFrom[0])
+		if !PocEnabled {
+			pterm.Info.Printf("Loading profiles from: %s\n", loadingFrom[0])
+		}
 	} else {
 		pterm.Info.Printf(
 			`Loading profiles from... 
@@ -500,10 +502,12 @@ func loadProfiles(
 `, strings.Join(provider.From(), "\n\t- "))
 	}
 
-	pterm.Success.Printf(
-		"Profiles loaded successfully... active(s): %d, passive request(s): %d, passive response(s): %d\n",
-		len(actives), len(passiveReqs), len(passiveRes),
-	)
+	if !PocEnabled {
+		pterm.Success.Printf(
+			"Profiles loaded successfully... active(s): %d, passive request(s): %d, passive response(s): %d\n",
+			len(actives), len(passiveReqs), len(passiveRes),
+		)
+	}
 
 	if len(cfg.FilterTags) > 0 {
 		logger.For(ctx).Infof("Filtering loaded profiles by tag: %s", cfg.FilterTags.String())

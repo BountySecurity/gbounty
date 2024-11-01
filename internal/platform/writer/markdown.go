@@ -75,7 +75,7 @@ func (md Markdown) WriteStats(ctx context.Context, fs scan.FileSystem) error {
 
 // WriteMatchesSummary writes a summary of the [scan.Match] instances found during the [scan],
 // to the [io.Writer] in the Markdown format.
-func (md Markdown) WriteMatchesSummary(ctx context.Context, fs scan.FileSystem, _ bool) error {
+func (md Markdown) WriteMatchesSummary(ctx context.Context, fs scan.FileSystem) error {
 	_, err := fmt.Fprint(md.writer, pterm.DefaultSection.WithStyle(nil).Sprintln("Summary"))
 	if err != nil {
 		return err
@@ -240,7 +240,7 @@ func (md Markdown) WriteErrors(ctx context.Context, fs scan.FileSystem) error {
 }
 
 // WriteMatch writes a [scan.Match] to the [io.Writer] in the Markdown format.
-func (md Markdown) WriteMatch(_ context.Context, m scan.Match, includeResponse bool, _ bool) error {
+func (md Markdown) WriteMatch(_ context.Context, m scan.Match, includeResponse bool) error {
 	builder := strings.Builder{}
 	builder.WriteString(fmt.Sprintf("**%s**\n\n", m.URL))
 	builder.WriteString(fmt.Sprintf("**Issue name:** %s\n\n**Issue severity:** %s\n\n**Issue confidence:** %s\n\n",

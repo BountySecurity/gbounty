@@ -17,12 +17,12 @@ type Writer interface {
 	WriteConfig(ctx context.Context, cfg Config) error
 
 	WriteStats(ctx context.Context, fs FileSystem) error
-	WriteMatchesSummary(ctx context.Context, fs FileSystem, pocEnabled bool) error
+	WriteMatchesSummary(ctx context.Context, fs FileSystem) error
 
 	WriteError(ctx context.Context, err Error) error
 	WriteErrors(ctx context.Context, fs FileSystem) error
 
-	WriteMatch(ctx context.Context, match Match, includeResponse bool, pocEnabled bool) error
+	WriteMatch(ctx context.Context, match Match, includeResponse bool) error
 	WriteMatches(ctx context.Context, fs FileSystem, includeResponses bool) error
 
 	WriteTasks(ctx context.Context, fs FileSystem, allRequests, allResponses bool) error

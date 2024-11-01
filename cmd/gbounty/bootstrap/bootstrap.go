@@ -320,7 +320,7 @@ func runScan(
 			WithSaveAllResponses(cfg.ShowAll || cfg.ShowAllResponses).
 			WithFileSystem(fs)
 
-		w := writer.NewConsole(os.Stdout)
+		w := writer.NewConsole(os.Stdout, writer.WithPOCEnabled(cfg.Poc))
 
 		if cfg.StreamErrors && !cfg.Silent {
 			logger.For(ctx).Info("Errors streaming enabled")
@@ -381,7 +381,7 @@ func runScan(
 						Occurrences:           occ,
 						ProfileType:           prof.GetType().String(),
 						At:                    time.Now().UTC(),
-					}, cfg.ShowResponses, PocEnabled,
+					}, cfg.ShowResponses,
 				); err != nil {
 					logger.For(ctx).Errorf("Error while streaming scan match: %s", err.Error())
 				}
@@ -616,7 +616,7 @@ func finalizeScan(ctx context.Context, updatesChan chan *scan.Stats, cfg scan.Co
 					logger.For(ctx).Errorf("Error while printing scan stats: %s", err)
 				}
 
-				if err := consoleWriter.WriteMatchesSummary(ctx, fs, PocEnabled); err != nil {
+				if err := consoleWriter.WriteMatchesSummary(ctx, fs); err != nil {
 					pterm.Error.WithShowLineNumber(false).Printf(`Error while printing matches summary: %s`, err)
 					logger.For(ctx).Errorf("Error while printing matches summary: %s", err)
 				}
@@ -698,7 +698,7 @@ func writeScanFromFs(ctx context.Context, w scan.Writer, cfg scan.Config, fs sca
 	}
 
 	if !PocEnabled {
-		err = w.WriteMatchesSummary(ctx, fs, PocEnabled)
+		err = w.WriteMatchesSummary(ctx, fs)
 	}
 	if err != nil {
 		return err

@@ -75,6 +75,9 @@ func (c Console) WriteConfig(_ context.Context, cfg scan.Config) error {
 
 // WriteStats writes the [scan.Stats] to the console.
 func (c Console) WriteStats(ctx context.Context, fs scan.FileSystem) error {
+	if c.pocEnabled {
+		return nil
+	}
 	stats, err := fs.LoadStats(ctx)
 	if err != nil {
 		return err
@@ -106,6 +109,9 @@ func (c Console) WriteStats(ctx context.Context, fs scan.FileSystem) error {
 
 // WriteMatchesSummary writes a summary of the [scan.Match] instances found during the scan, to the console.
 func (c Console) WriteMatchesSummary(ctx context.Context, fs scan.FileSystem) error {
+	if c.pocEnabled {
+		return nil
+	}
 	_, err := fmt.Fprint(c.writer, defaultSection().Sprintln("# Summary"))
 	if err != nil {
 		return err

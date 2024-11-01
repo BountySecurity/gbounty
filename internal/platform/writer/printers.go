@@ -101,13 +101,6 @@ func requestPrinter() pterm.PrefixPrinter {
 	}
 }
 
-func normalPrinter() pterm.PrefixPrinter {
-	return pterm.PrefixPrinter{
-		MessageStyle: color.LightCyan(),
-		Prefix:       pterm.Prefix{Text: "", Style: pterm.NewStyle()},
-	}
-}
-
 func responsePrinter() pterm.PrefixPrinter {
 	return pterm.PrefixPrinter{
 		MessageStyle: color.Cyan(),

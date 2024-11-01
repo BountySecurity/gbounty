@@ -42,10 +42,6 @@ const (
 	debugServerShutdownTime = 5 * time.Second
 )
 
-var (
-	PocEnabled = isPocEnabled()
-)
-
 // Run is the main entrypoint of the `gbounty` command-line interface.
 func Run() error {
 	cfg, err := parseCLIArgs()
@@ -152,16 +148,6 @@ func parseCLIArgs() (cli.Config, error) {
 	}
 
 	return cliConfig, nil
-}
-
-func isPocEnabled() bool {
-	cfg, _ := parseCLIArgs()
-
-	if cfg.Poc {
-		return true
-	}
-
-	return false
 }
 
 func printUpdates(ctx context.Context, updatesChan chan *scan.Stats) func() error {
@@ -460,6 +446,7 @@ func configFromArgs(cfg cli.Config) scan.Config {
 		ShowAllResponses: cfg.ShowAllResponses,
 		OutPath:          cfg.OutPath,
 		OutFormat:        cfg.OutFormat,
+		Poc:              cfg.Poc,
 	}
 }
 
@@ -492,7 +479,7 @@ func loadProfiles(
 
 	loadingFrom := provider.From()
 	if len(loadingFrom) == 1 {
-		if !PocEnabled {
+		if !cfg.Poc {
 			pterm.Info.Printf("Loading profiles from: %s\n", loadingFrom[0])
 		}
 	} else {
@@ -502,7 +489,7 @@ func loadProfiles(
 `, strings.Join(provider.From(), "\n\t- "))
 	}
 
-	if !PocEnabled {
+	if !cfg.Poc {
 		pterm.Success.Printf(
 			"Profiles loaded successfully... active(s): %d, passive request(s): %d, passive response(s): %d\n",
 			len(actives), len(passiveReqs), len(passiveRes),
@@ -610,7 +597,7 @@ func finalizeScan(ctx context.Context, updatesChan chan *scan.Stats, cfg scan.Co
 			storeOutput(ctx, cfg, fs)
 
 			// If no silent, we print the summary as well.
-			if !cfg.Silent || !PocEnabled {
+			if !cfg.Silent || !cfg.Poc {
 				if err := consoleWriter.WriteStats(ctx, fs); err != nil {
 					pterm.Error.WithShowLineNumber(false).Printf(`Error while printing scan stats: %s`, err)
 					logger.For(ctx).Errorf("Error while printing scan stats: %s", err)
@@ -690,16 +677,12 @@ func writeScanFromFs(ctx context.Context, w scan.Writer, cfg scan.Config, fs sca
 
 	var err error
 
-	if !PocEnabled {
-		err = w.WriteStats(ctx, fs)
-	}
+	err = w.WriteStats(ctx, fs)
 	if err != nil {
 		return err
 	}
 
-	if !PocEnabled {
-		err = w.WriteMatchesSummary(ctx, fs)
-	}
+	err = w.WriteMatchesSummary(ctx, fs)
 	if err != nil {
 		return err
 	}
@@ -729,7 +712,8 @@ func writeScanFromFs(ctx context.Context, w scan.Writer, cfg scan.Config, fs sca
 }
 
 func writeConfig(ctx context.Context, writer scan.Writer, cfg scan.Config) error {
-	if PocEnabled {
+	if cfg.Poc {
+		logger.For(ctx).Debug("POC mode enabled: scan configuration not displayed in the output")
 		return nil
 	}
 	if cfg.Silent {

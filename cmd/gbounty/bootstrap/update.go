@@ -41,6 +41,10 @@ func getLastCheckTime() (time.Time, error) {
 }
 
 func checkForUpdatesRequired() bool {
+	if slices.In(os.Args, "--update") || slices.In(os.Args, "--check-updates") {
+		return true
+	}
+
 	const updateInterval = 24 * time.Hour
 	lastCheckTime, err := getLastCheckTime()
 	currentTime := time.Now()
@@ -52,13 +56,22 @@ func checkForUpdatesRequired() bool {
 }
 
 func CheckForUpdates() {
-	// Disable checks on CI jobs and when updates not required.
-	if _, isCI := os.LookupEnv("CI"); isCI || !checkForUpdatesRequired() {
+	// Disable checks on CI jobs.
+	if _, isCI := os.LookupEnv("CI"); isCI {
 		return
 	}
-	err := updateLastCheckFile()
-	if err != nil {
+
+	updatesRequired := checkForUpdatesRequired()
+	if !updatesRequired {
 		return
+	}
+
+	// Not Update the last check file if --check-updates flag is passed
+	if updatesRequired && !slices.In(os.Args, "--check-updates") {
+		err := updateLastCheckFile()
+		if err != nil {
+			return
+		}
 	}
 
 	// Ensure the home directory exists.

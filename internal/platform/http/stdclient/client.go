@@ -70,6 +70,7 @@ func (c *Client) Do(ctx context.Context, req *request.Request) (response.Respons
 				DialTLSContext: func(_ context.Context, network, addr string, _ *tls.Config) (net.Conn, error) {
 					return net.Dial(network, addr) // Skip TLS handshake for plaintext.
 				},
+				IdleConnTimeout: 5 * time.Second,
 			}
 			defer func() {
 				c.c.Transport = defaultTransport
@@ -81,15 +82,39 @@ func (c *Client) Do(ctx context.Context, req *request.Request) (response.Respons
 		logger.For(ctx).Warn("You can find it at: `internal/platform/http/client`.")
 	}
 
+	// We translate the [request.Request] into a [http.Request].
 	var resp response.Response
 	httpReq, err := req.ToStdlibWithContext(ctx)
 	if err != nil {
 		return resp, err
 	}
 
+	// Then, we perform the request.
 	httpRes, httpErr := c.c.Do(httpReq)
 	if httpRes != nil {
+		// If there's a response, we translate the [http.Response] into a [response.Response].
 		resp, err = response.FromStdlib(httpRes)
+		// Once we have read the body, we close it. So, later we can close the connection.
+		// Also, to make sure we don't leak file descriptors.
+		if httpRes.Body != nil {
+			closeErr := httpRes.Body.Close()
+			if closeErr != nil {
+				logger.For(ctx).Warnf("Error while closing stdlib client's response body: %s", closeErr)
+			}
+		}
+	}
+
+	// Finally, before returning, we try to close the idle connections, with the aim of not
+	// leaving connections open, especially in HTTP/2, where persistent connections are the default.
+	//
+	// In the future, we might explore a way to reuse connections per host, so we take benefit of
+	// this default HTTP/2 behavior. However, re-usability isn't that simple, because we don't know
+	// how many different hosts are we reaching concurrently and over the whole scan.
+	switch t := c.c.Transport.(type) {
+	case *http.Transport:
+		t.CloseIdleConnections()
+	case *http2.Transport:
+		t.CloseIdleConnections()
 	}
 
 	return resp, errors.Join(httpErr, err)
@@ -99,11 +124,12 @@ var DefaultTransport = &http.Transport{
 	Proxy: http.ProxyFromEnvironment,
 	DialContext: defaultTransportDialContext(&net.Dialer{
 		Timeout:   30 * time.Second,
-		KeepAlive: 30 * time.Second,
+		KeepAlive: 5 * time.Second,
 	}),
 	ForceAttemptHTTP2:     true,
-	MaxIdleConns:          100,
-	IdleConnTimeout:       90 * time.Second,
+	MaxIdleConns:          1,
+	DisableKeepAlives:     true,
+	IdleConnTimeout:       5 * time.Second,
 	TLSHandshakeTimeout:   10 * time.Second,
 	ExpectContinueTimeout: 1 * time.Second,
 	TLSClientConfig: &tls.Config{

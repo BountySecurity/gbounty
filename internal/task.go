@@ -139,7 +139,12 @@ func (t *Task) run(
 	if err != nil {
 		// If the step failed, we log the error.
 		// However, we log it as .Warn because a failed step is not necessarily an execution error.
-		logger.For(ctx).Warnf(
+		// If the step failed because of a manual interruption, we log it as .Debug.
+		var log = logger.For(ctx).Warnf
+		if errors.Is(err, ErrManuallyInterrupted) {
+			log = logger.For(ctx).Debugf
+		}
+		log(
 			"Step failed: step %d out of %d, method=%s, host=%s, path=%s, err=%s",
 			t.StepIdx, len(t.Profile.Steps), req.Method, req.URL, req.Path, err,
 		)

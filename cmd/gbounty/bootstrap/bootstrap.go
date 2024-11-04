@@ -398,7 +398,7 @@ func gracefulContext(ctx context.Context) context.Context {
 	go func() {
 		sign := <-done
 		logger.For(ctx).Infof("Scan interrupted manually, signal: %s", sign.String())
-		cancel(fmt.Errorf("scan interrupted manually, signal: %s", sign.String())) //nolint:goerr113
+		cancel(fmt.Errorf("%w, signal: %s", scan.ErrManuallyInterrupted, sign.String())) //nolint:goerr113
 	}()
 
 	return ctx

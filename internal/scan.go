@@ -2,6 +2,7 @@ package scan
 
 import (
 	"context"
+	"errors"
 	stdurl "net/url"
 	"strings"
 	"sync"
@@ -16,6 +17,8 @@ import (
 	"github.com/bountysecurity/gbounty/kit/panics"
 	"github.com/bountysecurity/gbounty/kit/syncutil"
 )
+
+var ErrManuallyInterrupted = errors.New("scan interrupted manually")
 
 // LineOfWork is the aggregation for all the Task, for a given Template.
 // In other words:

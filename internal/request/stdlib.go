@@ -37,7 +37,9 @@ func (r *Request) ToStdlibWithContext(ctx context.Context) (*http.Request, error
 		if len(protoParts) == 2 {
 			httpReq.Proto = r.Proto
 			httpReq.ProtoMajor = int(protoParts[1][0] - '0')
-			httpReq.ProtoMinor = int(protoParts[1][2] - '0')
+			if len(protoParts[1]) == 3 {
+				httpReq.ProtoMinor = int(protoParts[1][2] - '0')
+			}
 		}
 	}
 

@@ -57,13 +57,13 @@ func (c *Client) Do(ctx context.Context, req *request.Request) (response.Respons
 	// For HTTP/2 requests that aren't using TLS, we need to use custom
 	// transport that allows HTTP/2 without TLS.
 	defaultTransport := c.c.Transport
-	if req.Proto == "HTTP/2.0" {
+	if strings.Contains(req.Proto, "HTTP/2") {
 		// We only need to hack-in, when it is not using TLS.
 		if strings.HasPrefix(req.URL, "http://") {
 			// In case the proxy is enabled, with return an error directly.
-			// Because, we (the stdlib) don't have support to proxy non-TLS HTTP/2.0 requests.
+			// Because, we (the stdlib) don't have support to proxy non-TLS HTTP/2 requests.
 			if c.proxyAddr != "" {
-				return response.Response{}, errors.New("non-TLS HTTP/2.0 requests cannot be proxy-ed")
+				return response.Response{}, errors.New("non-TLS HTTP/2 requests cannot be proxy-ed")
 			}
 			c.c.Transport = &http2.Transport{
 				AllowHTTP: true, // Allows HTTP/2 without TLS.
@@ -76,8 +76,8 @@ func (c *Client) Do(ctx context.Context, req *request.Request) (response.Respons
 			}()
 		}
 	} else {
-		logger.For(ctx).Warn("In theory, this should never happen - the request is not using HTTP/2.0.")
-		logger.For(ctx).Warn("Instead, you should use the custom client to perform non-HTTP/2.0 requests.")
+		logger.For(ctx).Warn("In theory, this should never happen - the request is not using HTTP/2.")
+		logger.For(ctx).Warn("Instead, you should use the custom client to perform non-HTTP/2 requests.")
 		logger.For(ctx).Warn("You can find it at: `internal/platform/http/client`.")
 	}
 

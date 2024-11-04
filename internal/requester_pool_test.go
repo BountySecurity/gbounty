@@ -128,7 +128,7 @@ func TestPool_Complete(t *testing.T) {
 		ctx,
 		func(r *request.Request) (scan.Requester, error) {
 			// If it looks like an HTTP/2 request:
-			if strings.HasPrefix(r.Proto, "HTTP/2.0") {
+			if strings.Contains(r.Proto, "HTTP/2") {
 				return stdPool(r)
 			}
 			// Otherwise, we use our own client.
@@ -141,7 +141,7 @@ func TestPool_Complete(t *testing.T) {
 	require.NotNil(t, baseReq)
 	require.NoError(t, err)
 
-	stdReq, err := reqBuilder(&request.Request{Proto: "HTTP/2.0"})
+	stdReq, err := reqBuilder(&request.Request{Proto: "HTTP/2"})
 	require.NotNil(t, stdReq)
 	require.NoError(t, err)
 
@@ -163,7 +163,7 @@ func TestPool_Complete(t *testing.T) {
 	require.NotNil(t, baseReq2)
 	require.NoError(t, err)
 
-	stdReq2, err := reqBuilder(&request.Request{Proto: "HTTP/2.0"})
+	stdReq2, err := reqBuilder(&request.Request{Proto: "HTTP/2"})
 	require.NotNil(t, stdReq2)
 	require.NoError(t, err)
 }

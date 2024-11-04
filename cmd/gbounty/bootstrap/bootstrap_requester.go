@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	scan "github.com/bountysecurity/gbounty/internal"
@@ -69,7 +70,7 @@ func setupScanRequester(ctx context.Context, cfg cli.Config) func(*request.Reque
 		ctx,
 		func(r *request.Request) (scan.Requester, error) {
 			// If it looks like an HTTP/2 request:
-			if r.Proto == "HTTP/2.0" {
+			if strings.Contains(r.Proto, "HTTP/2") {
 				return stdPool(r)
 			}
 			// Otherwise, we use our own client.

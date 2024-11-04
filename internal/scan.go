@@ -157,7 +157,7 @@ func profileShouldBeSkipped(
 //nolint:nolintlint,gocyclo
 func (low *LineOfWork) executeTasks(
 	ctx context.Context,
-	fn RequesterBuilder,
+	reqBuilder RequesterBuilder,
 	bhPoller BlindHostPoller,
 	onRequestsScheduled, onRequestsSkipped func(int),
 	onUpdate func(bool, bool, bool),
@@ -243,7 +243,7 @@ func (low *LineOfWork) executeTasks(
 			task.run(
 				ctx,
 				low.Template,
-				fn,
+				reqBuilder,
 				bhPoller,
 				onRequestsScheduled,
 				onRequestsSkipped,

@@ -21,13 +21,35 @@ var _ scan.Writer = Console{}
 // Console is a [scan.Writer] implementation that writes the output
 // to the given [io.Writer], following console/terminal standards
 // in a human-friendly fashion.
+
+type ConsoleOption func(*Console)
+
 type Console struct {
-	writer io.Writer
+	writer     io.Writer
+	pocEnabled bool
+}
+
+// WithPOCEnabled is a [ConsoleOption] that enables the Proof of Concept (PoC) mode.
+// When enabled, the console will print the matches in a more readable format.
+// This is useful when the user wants to copy the PoC to a file or another tool.
+func WithPOCEnabled(enabled bool) func(*Console) {
+	return func(c *Console) {
+		c.pocEnabled = enabled
+	}
 }
 
 // NewConsole creates a new instance of [Console] with the given [io.Writer].
-func NewConsole(writer io.Writer) Console {
-	return Console{writer: writer}
+func NewConsole(writer io.Writer, opts ...ConsoleOption) Console {
+	c := Console{
+		writer:     writer,
+		pocEnabled: false, // default value
+	}
+
+	for _, opt := range opts {
+		opt(&c)
+	}
+
+	return c
 }
 
 // WriteConfig writes the [scan.Config] to the console.
@@ -56,6 +78,9 @@ func (c Console) WriteConfig(_ context.Context, cfg scan.Config) error {
 
 // WriteStats writes the [scan.Stats] to the console.
 func (c Console) WriteStats(ctx context.Context, fs scan.FileSystem) error {
+	if c.pocEnabled {
+		return nil
+	}
 	stats, err := fs.LoadStats(ctx)
 	if err != nil {
 		return err
@@ -87,6 +112,9 @@ func (c Console) WriteStats(ctx context.Context, fs scan.FileSystem) error {
 
 // WriteMatchesSummary writes a summary of the [scan.Match] instances found during the scan, to the console.
 func (c Console) WriteMatchesSummary(ctx context.Context, fs scan.FileSystem) error {
+	if c.pocEnabled {
+		return nil
+	}
 	_, err := fmt.Fprint(c.writer, defaultSection().Sprintln("# Summary"))
 	if err != nil {
 		return err
@@ -122,11 +150,13 @@ func (c Console) WriteMatchesSummary(ctx context.Context, fs scan.FileSystem) er
 		issueChunks := strings.Split(issue, "\n")
 
 		builder := strings.Builder{}
-		builder.WriteString(issuePrinter().Sprintln(issueChunks[0]))
-		builder.WriteString(severityPrinter(issueChunks[1]).Sprintln(issueChunks[1]))
-		builder.WriteString(confidencePrinter(issueChunks[2]).Sprintln(issueChunks[2]))
-		builder.WriteString(typePrinter().Sprintln(profileTypes[issue]))
-		builder.WriteString(countPrinter().Sprintln(count))
+		if !c.pocEnabled {
+			builder.WriteString(issuePrinter().Sprintln(issueChunks[0]))
+			builder.WriteString(severityPrinter(issueChunks[1]).Sprintln(issueChunks[1]))
+			builder.WriteString(confidencePrinter(issueChunks[2]).Sprintln(issueChunks[2]))
+			builder.WriteString(typePrinter().Sprintln(profileTypes[issue]))
+			builder.WriteString(countPrinter().Sprintln(count))
+		}
 
 		urlsStr := urls[0]
 		for _, url := range urls[1:] {
@@ -237,12 +267,14 @@ func (c Console) WriteErrors(ctx context.Context, fs scan.FileSystem) error {
 // WriteMatch writes the [scan.Match] to the console.
 func (c Console) WriteMatch(_ context.Context, m scan.Match, includeResponse bool) error {
 	builder := strings.Builder{}
-	builder.WriteString("\n")
-	builder.WriteString(issuePrinter().Sprintln(m.IssueName))
-	builder.WriteString(severityPrinter(m.IssueSeverity).Sprintln(m.IssueSeverity))
-	builder.WriteString(confidencePrinter(m.IssueConfidence).Sprintln(m.IssueConfidence))
-	builder.WriteString(typePrinter().Sprintln(m.ProfileType))
-	builder.WriteString(urlPrinter().Sprintln(m.URL))
+	if !c.pocEnabled {
+		builder.WriteString("\n")
+		builder.WriteString(issuePrinter().Sprintln(m.IssueName))
+		builder.WriteString(severityPrinter(m.IssueSeverity).Sprintln(m.IssueSeverity))
+		builder.WriteString(confidencePrinter(m.IssueConfidence).Sprintln(m.IssueConfidence))
+		builder.WriteString(typePrinter().Sprintln(m.ProfileType))
+		builder.WriteString(urlPrinter().Sprintln(m.URL))
+	}
 
 	if len(m.IssueParam) > 0 {
 		builder.WriteString(paramPrinter().Sprintln(m.IssueParam))
@@ -253,7 +285,12 @@ func (c Console) WriteMatch(_ context.Context, m scan.Match, includeResponse boo
 			if r == nil {
 				continue
 			}
-			builder.WriteString(requestPrinter().Sprintln(string(r.Bytes())))
+			if !c.pocEnabled {
+				builder.WriteString(requestPrinter().Sprintln(string(r.Bytes())))
+			} else {
+				styledText := pterm.NewStyle(pterm.FgLightCyan).Sprint(string(r.Bytes()))
+				builder.WriteString(styledText)
+			}
 		}
 	}
 

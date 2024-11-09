@@ -306,7 +306,7 @@ func runScan(
 			WithSaveAllResponses(cfg.ShowAll || cfg.ShowAllResponses).
 			WithFileSystem(fs)
 
-		w := writer.NewConsole(os.Stdout)
+		w := writer.NewConsole(os.Stdout, writer.WithPOCEnabled(cfg.Poc))
 
 		if cfg.StreamErrors && !cfg.Silent {
 			logger.For(ctx).Info("Errors streaming enabled")
@@ -446,6 +446,7 @@ func configFromArgs(cfg cli.Config) scan.Config {
 		ShowAllResponses: cfg.ShowAllResponses,
 		OutPath:          cfg.OutPath,
 		OutFormat:        cfg.OutFormat,
+		Poc:              cfg.Poc,
 	}
 }
 
@@ -478,7 +479,9 @@ func loadProfiles(
 
 	loadingFrom := provider.From()
 	if len(loadingFrom) == 1 {
-		pterm.Info.Printf("Loading profiles from: %s\n", loadingFrom[0])
+		if !cfg.Poc {
+			pterm.Info.Printf("Loading profiles from: %s\n", loadingFrom[0])
+		}
 	} else {
 		pterm.Info.Printf(
 			`Loading profiles from... 
@@ -486,10 +489,12 @@ func loadProfiles(
 `, strings.Join(provider.From(), "\n\t- "))
 	}
 
-	pterm.Success.Printf(
-		"Profiles loaded successfully... active(s): %d, passive request(s): %d, passive response(s): %d\n",
-		len(actives), len(passiveReqs), len(passiveRes),
-	)
+	if !cfg.Poc {
+		pterm.Success.Printf(
+			"Profiles loaded successfully... active(s): %d, passive request(s): %d, passive response(s): %d\n",
+			len(actives), len(passiveReqs), len(passiveRes),
+		)
+	}
 
 	if len(cfg.FilterTags) > 0 {
 		logger.For(ctx).Infof("Filtering loaded profiles by tag: %s", cfg.FilterTags.String())
@@ -592,7 +597,7 @@ func finalizeScan(ctx context.Context, updatesChan chan *scan.Stats, cfg scan.Co
 			storeOutput(ctx, cfg, fs)
 
 			// If no silent, we print the summary as well.
-			if !cfg.Silent {
+			if !cfg.Silent || !cfg.Poc {
 				if err := consoleWriter.WriteStats(ctx, fs); err != nil {
 					pterm.Error.WithShowLineNumber(false).Printf(`Error while printing scan stats: %s`, err)
 					logger.For(ctx).Errorf("Error while printing scan stats: %s", err)
@@ -670,7 +675,9 @@ func writeScanFromFs(ctx context.Context, w scan.Writer, cfg scan.Config, fs sca
 		}
 	}
 
-	err := w.WriteStats(ctx, fs)
+	var err error
+
+	err = w.WriteStats(ctx, fs)
 	if err != nil {
 		return err
 	}
@@ -705,6 +712,10 @@ func writeScanFromFs(ctx context.Context, w scan.Writer, cfg scan.Config, fs sca
 }
 
 func writeConfig(ctx context.Context, writer scan.Writer, cfg scan.Config) error {
+	if cfg.Poc {
+		logger.For(ctx).Debug("POC mode enabled: scan configuration not displayed in the output")
+		return nil
+	}
 	if cfg.Silent {
 		logger.For(ctx).Debug("Silent mode enabled: scan configuration not displayed in the output")
 		return nil

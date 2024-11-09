@@ -35,6 +35,8 @@ type Config struct {
 
 	OutPath   string
 	OutFormat string
+
+	Poc bool
 }
 
 // Clone returns a deep copy of the [Config] instance.

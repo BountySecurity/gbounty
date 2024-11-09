@@ -181,6 +181,7 @@ func (cfg Config) Validate() error {
 		cfg.checkValidOutput,
 		cfg.checkValidParamsFlag,
 		cfg.checkInteractionHostIsValid,
+		cfg.checkIfVerboseAndPocNotTogether,
 	}
 
 	for _, validation := range validations {
@@ -360,6 +361,13 @@ func (cfg Config) checkInteractionHostIsValid() error {
 		if err != nil {
 			return err
 		}
+	}
+	return nil
+}
+
+func (cfg Config) checkIfVerboseAndPocNotTogether() error {
+	if cfg.Verbosity.Level() != logger.LevelDisabled && cfg.Poc {
+		return errors.New("you cannot use --verbose and --poc together")
 	}
 	return nil
 }

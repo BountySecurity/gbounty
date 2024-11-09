@@ -202,6 +202,20 @@ func printUpdates(ctx context.Context, updatesChan chan *scan.Stats) func() erro
 	}
 }
 
+func filterBySeverity[P profile.Profile](profiles []P, severity cli.Severity) []P {
+	filtered := make([]P, 0, len(profiles))
+	for _, p := range profiles {
+		steps := p.GetSteps()
+		for _, s := range steps {
+			if s.IssueSeverity == severity.String() {
+				filtered = append(filtered, p)
+			}
+		}
+	}
+
+	return filtered
+}
+
 //nolint:funlen
 func runScan(
 	ctx context.Context,
@@ -213,6 +227,7 @@ func runScan(
 		defer panics.Log(ctx)
 
 		actives, passiveReqs, passiveRes := loadProfiles(ctx, cfg, profilesProvider)
+		actives = filterBySeverity(actives, cfg.Severity)
 
 		id := ulid.New()
 		if len(cfg.Continue) > 0 {
@@ -495,8 +510,6 @@ func loadProfiles(
 		logger.For(ctx).Infof("Filtering loaded profiles by tag: %s", cfg.FilterTags.String())
 
 		actives = filter(ctx, actives, cfg.FilterTags)
-		passiveReqs = filter(ctx, passiveReqs, cfg.FilterTags)
-		passiveRes = filter(ctx, passiveRes, cfg.FilterTags)
 
 		logger.For(ctx).Infof("Active profile(s) remaining after filtering by tag: %d", len(actives))
 		logger.For(ctx).Infof("Passive request profile(s) remaining after filtering by tag: %d", len(passiveReqs))

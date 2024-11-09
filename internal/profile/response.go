@@ -15,6 +15,7 @@ type Response struct {
 	Type    Type     `json:"scanner"`
 	Author  string   `json:"author"`
 	Tags    []string `json:"Tags"`
+	Steps   []Step   `json:"steps"`
 
 	Greps []string `json:"grep"`
 
@@ -46,6 +47,11 @@ func (p Response) IsEnabled() bool {
 // GetTags returns the tags of the response profile.
 func (p Response) GetTags() []string {
 	return p.Tags
+}
+
+// GetSteps returns the steps of the response profile.
+func (p Response) GetSteps() []Step {
+	return p.Steps
 }
 
 // GetIssueName returns the issue name associated with the response profile.

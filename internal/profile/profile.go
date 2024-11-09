@@ -1,6 +1,8 @@
 package profile
 
-import "errors"
+import (
+	"errors"
+)
 
 const unknown = "Unknown"
 
@@ -19,6 +21,7 @@ type Profile interface {
 	GetType() Type
 	IsEnabled() bool
 	GetTags() []string
+	GetSteps() []Step
 }
 
 // IssueInformation represents the information of an issue.

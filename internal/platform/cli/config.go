@@ -28,6 +28,24 @@ type Verbosity struct {
 	Output string
 }
 
+type Severity struct {
+	High   bool
+	Medium bool
+	Low    bool
+}
+
+func (s Severity) String() string {
+	switch {
+	case s.High:
+		return "high"
+	case s.Medium:
+		return "medium"
+	case s.Low:
+		return "low"
+	}
+	return "information"
+}
+
 // Level returns the corresponding [logger.Level] from a [Verbosity] instance.
 func (v Verbosity) Level() logger.Level {
 	switch {
@@ -136,6 +154,8 @@ type Config struct {
 	UpdateProfiles bool
 	// ForceUpdateProfiles determines whether profiles will be updated forcefully.
 	ForceUpdateProfiles bool
+	// Severity determines the severity level of the vulnerabilities to be shown.
+	Severity Severity
 }
 
 // ScanAllProfiles returns true if [Config] is set to return a subset of any specific

@@ -1,6 +1,8 @@
 package profile
 
-import "errors"
+import (
+	"errors"
+)
 
 const unknown = "Unknown"
 
@@ -12,6 +14,25 @@ var (
 	ErrInvalidGrepIdx = errors.New("invalid grep index")
 )
 
+type SeverityGetter interface {
+	GetSeverity() string
+}
+
+func (r *Request) GetSeverity() string {
+	return r.IssueSeverity
+}
+
+func (r *Response) GetSeverity() string {
+	return r.IssueSeverity
+}
+
+func (a *Active) GetSeverity() string {
+	if len(a.GetSteps()) > 0 {
+		return a.GetSteps()[0].IssueSeverity
+	}
+	return ""
+}
+
 // Profile represents the behavior expected from a scan profile.
 // It can be a passive or active profile (e.g. Active).
 type Profile interface {
@@ -19,6 +40,7 @@ type Profile interface {
 	GetType() Type
 	IsEnabled() bool
 	GetTags() []string
+	GetSteps() []Step
 }
 
 // IssueInformation represents the information of an issue.

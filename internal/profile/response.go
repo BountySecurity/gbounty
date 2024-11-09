@@ -28,6 +28,11 @@ type Response struct {
 	RemediationBackground string `json:"remediation_background"`
 }
 
+// GetSteps implements Profile.
+func (p Response) GetSteps() []Step {
+	panic("unimplemented")
+}
+
 // GetName returns the name of the response profile.
 func (p Response) GetName() string {
 	return p.Name

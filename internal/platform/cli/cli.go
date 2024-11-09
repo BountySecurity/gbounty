@@ -127,6 +127,8 @@ func Parse(args []string) (Config, error) {
 	fs.Alias("ste", "stream-errors")
 	fs.BoolVar(output, &config.StreamMatches, "stream-matches", true, "If specified, those requests that caused a match are printed to stdout during the scan (live)\n\tEnabled by default, can be disabled with --stream-matches=false or -stm=false")
 	fs.Alias("stm", "stream-matches")
+	fs.StringVar(output, &config.Severity, "severity-filter", "", "If specified, only results with the given severity will be included in the output\n\t")
+	fs.Alias("sf", "severity-filter")
 
 	// debug
 	fs.InitGroup(debug, "DEBUG OPTIONS:")

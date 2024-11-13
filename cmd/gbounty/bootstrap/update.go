@@ -60,7 +60,6 @@ func CheckForUpdates() {
 	if _, isCI := os.LookupEnv("CI"); isCI {
 		return
 	}
-	
 	// Ensure the home directory exists.
 	die.OnErr(homeDir, "Failed to create the $HOME directory (.gbounty)")
 

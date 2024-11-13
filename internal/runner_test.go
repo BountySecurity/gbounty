@@ -49,7 +49,7 @@ func TestRunner(t *testing.T) {
 	t.Run("SingleActiveProfile+Entrypoints+ReqBuilder", func(t *testing.T) {
 		t.Parallel()
 		r := scan.NewRunner((&scan.RunnerOpts{}).
-			WithRequesterBuilder(func() (scan.Requester, error) {
+			WithRequesterBuilder(func(_ *request.Request) (scan.Requester, error) {
 				return &fakeRequester{}, nil
 			}).
 			WithEntrypointFinders(entrypoint.Finders()).
@@ -67,7 +67,7 @@ func TestRunner(t *testing.T) {
 		require.NoError(t, err)
 
 		r := scan.NewRunner((&scan.RunnerOpts{}).
-			WithRequesterBuilder(func() (scan.Requester, error) {
+			WithRequesterBuilder(func(_ *request.Request) (scan.Requester, error) {
 				return &fakeRequester{}, nil
 			}).
 			WithFileSystem(fs).

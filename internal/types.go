@@ -63,7 +63,7 @@ type Error struct {
 }
 
 // RequesterBuilder is a function that returns a [Requester] instance.
-type RequesterBuilder func() (Requester, error)
+type RequesterBuilder func(req *request.Request) (Requester, error)
 
 type (
 	onMatchFunc func(context.Context, string, []*request.Request, []*response.Response, profile.Profile, profile.IssueInformation, entrypoint.Entrypoint, string, [][]occurrence.Occurrence)

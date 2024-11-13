@@ -2,6 +2,7 @@ package scan
 
 import (
 	"context"
+	"errors"
 	stdurl "net/url"
 	"strings"
 	"sync"
@@ -16,6 +17,8 @@ import (
 	"github.com/bountysecurity/gbounty/kit/panics"
 	"github.com/bountysecurity/gbounty/kit/syncutil"
 )
+
+var ErrManuallyInterrupted = errors.New("scan interrupted manually")
 
 // LineOfWork is the aggregation for all the Task, for a given Template.
 // In other words:
@@ -157,7 +160,7 @@ func profileShouldBeSkipped(
 //nolint:nolintlint,gocyclo
 func (low *LineOfWork) executeTasks(
 	ctx context.Context,
-	fn RequesterBuilder,
+	reqBuilder RequesterBuilder,
 	bhPoller BlindHostPoller,
 	onRequestsScheduled, onRequestsSkipped func(int),
 	onUpdate func(bool, bool, bool),
@@ -243,7 +246,7 @@ func (low *LineOfWork) executeTasks(
 			task.run(
 				ctx,
 				low.Template,
-				fn,
+				reqBuilder,
 				bhPoller,
 				onRequestsScheduled,
 				onRequestsSkipped,

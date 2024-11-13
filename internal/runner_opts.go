@@ -100,8 +100,8 @@ func (opts *RunnerOpts) WithConfiguration(cfg Config) *RunnerOpts {
 }
 
 // WithRequesterBuilder sets the given request builder to the [RunnerOpts] instance.
-func (opts *RunnerOpts) WithRequesterBuilder(fn RequesterBuilder) *RunnerOpts {
-	opts.reqBuilder = fn
+func (opts *RunnerOpts) WithRequesterBuilder(reqBuilder RequesterBuilder) *RunnerOpts {
+	opts.reqBuilder = reqBuilder
 	return opts
 }
 

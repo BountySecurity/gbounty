@@ -48,6 +48,8 @@ type Config struct {
 	SaveOnStop bool
 	// Continue contains the scan's identifier to be used to continue.
 	Continue string
+	// ForceHTTP2 determines whether the scan will use HTTP/2.
+	ForceHTTP2 bool
 	// URLS specifies the list of URLs used to define the scan.
 	URLS MultiValue
 	// UrlsFile specifies the path to the URLs file to define the scan.

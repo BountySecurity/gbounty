@@ -24,7 +24,10 @@ func (r *Request) ToStdlibWithContext(ctx context.Context) (*http.Request, error
 	}
 
 	if r.Path != "" {
-		parsedURL.Path = r.Path
+		if parsedPath, err := url.Parse(r.Path); err == nil {
+			parsedURL.Path = parsedPath.Path
+			parsedURL.RawQuery = parsedPath.RawQuery
+		}
 	}
 
 	httpReq, err := http.NewRequestWithContext(ctx, r.Method, parsedURL.String(), bytes.NewReader(r.Body))

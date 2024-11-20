@@ -82,7 +82,7 @@ func checkVer() (u update, err error) {
 				},
 			}, nil
 		default:
-			pterm.Warning.Printf("Unexpected error happened while checking the current profiles version: %s\n", err.Error())
+			pterm.Warning.Printf("Unexpected error happened while checking the current profiles version: %s\n", profErr.Error())
 			pterm.Warning.Println("So, skipping profiles update check...")
 		}
 		fmt.Println() //nolint:forbidigo

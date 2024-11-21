@@ -136,6 +136,8 @@ type Config struct {
 	UpdateProfiles bool
 	// ForceUpdateProfiles determines whether profiles will be updated forcefully.
 	ForceUpdateProfiles bool
+	// Severity determines the severity level of the issues to be shown.
+	Severity string
 	// CheckUpdates Invalidates behavior of checking updates once per day
 	CheckUpdates bool
 }

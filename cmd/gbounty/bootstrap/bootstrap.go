@@ -446,6 +446,7 @@ func configFromArgs(cfg cli.Config) scan.Config {
 		ShowAllResponses: cfg.ShowAllResponses,
 		OutPath:          cfg.OutPath,
 		OutFormat:        cfg.OutFormat,
+		Severity:         cfg.Severity,
 	}
 }
 
@@ -460,16 +461,21 @@ func loadProfiles(
 		passiveRes  []*profile.Response
 	)
 
+	severity := strings.ToLower(strings.Trim(cfg.Severity, " "))
+
 	if cfg.OnlyActive || cfg.ScanAllProfiles() {
 		actives = provider.ActivesEnabled()
+		actives = filterBySeverity(actives, severity)
 	}
 
 	if cfg.OnlyPassive || cfg.OnlyPassiveReq || cfg.ScanAllProfiles() {
 		passiveReqs = provider.PassiveReqsEnabled()
+		passiveReqs = filterBySeverity(passiveReqs, severity)
 	}
 
 	if cfg.OnlyPassive || cfg.OnlyPassiveRes || cfg.ScanAllProfiles() {
 		passiveRes = provider.PassiveResEnabled()
+		passiveRes = filterBySeverity(passiveRes, severity)
 	}
 
 	logger.For(ctx).Infof("Loaded %d enabled active profile(s) successfully", len(actives))
@@ -509,6 +515,21 @@ func loadProfiles(
 	}
 
 	return actives, passiveReqs, passiveRes
+}
+
+func filterBySeverity[T profile.SeverityGetter](profiles []T, severity string) []T {
+	validSeverities := []string{"info", "low", "medium", "high"}
+	if severity == "" || !strings.Contains(strings.Join(validSeverities, " "), severity) {
+		return profiles
+	}
+	filtered := make([]T, 0, len(profiles))
+	for _, p := range profiles {
+		if strings.ToLower(p.GetSeverity()) == severity {
+			filtered = append(filtered, p)
+		}
+	}
+
+	return filtered
 }
 
 func filter[P profile.Profile](ctx context.Context, profiles []P, tags []string) []P {

@@ -127,7 +127,7 @@ func Parse(args []string) (Config, error) {
 	fs.Alias("ste", "stream-errors")
 	fs.BoolVar(output, &config.StreamMatches, "stream-matches", true, "If specified, those requests that caused a match are printed to stdout during the scan (live)\n\tEnabled by default, can be disabled with --stream-matches=false or -stm=false")
 	fs.Alias("stm", "stream-matches")
-	fs.BoolVar(profile, &config.Poc, "poc", false, "Print only URLs")
+	fs.BoolVar(profile, &config.UsePocMode, "only-poc", false, "Print only URLs")
 	fs.Alias("poc", "only-poc")
 
 	// debug

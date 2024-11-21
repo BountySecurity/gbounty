@@ -136,8 +136,9 @@ type Config struct {
 	UpdateProfiles bool
 	// ForceUpdateProfiles determines whether profiles will be updated forcefully.
 	ForceUpdateProfiles bool
-	// Show only URLs/Request where vulnerabilities is present
-	Poc bool
+	// UsePocMode determines whether the proof-of-concept mode is enabled or not.
+	// When enabled, only those requests that produce a match (issue) will be printed to the standard output. Nothing else.
+	UsePocMode bool
 }
 
 // ScanAllProfiles returns true if [Config] is set to return a subset of any specific
@@ -366,8 +367,8 @@ func (cfg Config) checkInteractionHostIsValid() error {
 }
 
 func (cfg Config) checkIfVerboseAndPocNotTogether() error {
-	if cfg.Verbosity.Level() != logger.LevelDisabled && cfg.Poc {
-		return errors.New("you cannot use --verbose and --poc together")
+	if cfg.Verbosity.Level() != logger.LevelDisabled && cfg.UsePocMode {
+		return errors.New("you cannot use -v/-vv/-vv and -poc together")
 	}
 	return nil
 }

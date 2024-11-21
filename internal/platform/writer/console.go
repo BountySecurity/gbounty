@@ -21,13 +21,12 @@ var _ scan.Writer = Console{}
 // Console is a [scan.Writer] implementation that writes the output
 // to the given [io.Writer], following console/terminal standards
 // in a human-friendly fashion.
-
-type ConsoleOption func(*Console)
-
 type Console struct {
 	writer     io.Writer
 	pocEnabled bool
 }
+
+type ConsoleOption func(*Console)
 
 // WithPOCEnabled is a [ConsoleOption] that enables the Proof of Concept (PoC) mode.
 // When enabled, the console will print the matches in a more readable format.

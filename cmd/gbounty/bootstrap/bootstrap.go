@@ -306,7 +306,7 @@ func runScan(
 			WithSaveAllResponses(cfg.ShowAll || cfg.ShowAllResponses).
 			WithFileSystem(fs)
 
-		w := writer.NewConsole(os.Stdout, writer.WithPOCEnabled(cfg.Poc))
+		w := writer.NewConsole(os.Stdout, writer.WithPOCEnabled(cfg.UsePocMode))
 
 		if cfg.StreamErrors && !cfg.Silent {
 			logger.For(ctx).Info("Errors streaming enabled")
@@ -446,7 +446,7 @@ func configFromArgs(cfg cli.Config) scan.Config {
 		ShowAllResponses: cfg.ShowAllResponses,
 		OutPath:          cfg.OutPath,
 		OutFormat:        cfg.OutFormat,
-		Poc:              cfg.Poc,
+		Poc:              cfg.UsePocMode,
 	}
 }
 

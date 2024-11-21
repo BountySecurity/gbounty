@@ -446,6 +446,7 @@ func configFromArgs(cfg cli.Config) scan.Config {
 		ShowAllResponses: cfg.ShowAllResponses,
 		OutPath:          cfg.OutPath,
 		OutFormat:        cfg.OutFormat,
+		Severity:         cfg.Severity,
 	}
 }
 

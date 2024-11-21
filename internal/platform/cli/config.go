@@ -139,6 +139,8 @@ type Config struct {
 	// UsePocMode determines whether the proof-of-concept mode is enabled or not.
 	// When enabled, only those requests that produce a match (issue) will be printed to the standard output. Nothing else.
 	UsePocMode bool
+	// CheckUpdates Invalidates behavior of checking updates once per day
+	CheckUpdates bool
 }
 
 // ScanAllProfiles returns true if [Config] is set to return a subset of any specific

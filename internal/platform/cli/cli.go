@@ -34,6 +34,7 @@ func Parse(args []string) (Config, error) {
 	fs.BoolVar("", &config.UpdateApp, "update-app", false, "Update app")
 	fs.BoolVar("", &config.UpdateProfiles, "update-profiles", false, "Update profiles")
 	fs.BoolVar("", &config.ForceUpdateProfiles, "force-update-profiles", false, "Update profiles forcefully")
+	fs.BoolVar("", &config.CheckUpdates, "check-updates", false, "Invalidates behavior of checking updates once per day")
 
 	// target
 	fs.InitGroup(target, "TARGET INPUT:")

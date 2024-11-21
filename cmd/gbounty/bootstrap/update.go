@@ -9,6 +9,7 @@ import (
 	"runtime"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
@@ -22,6 +23,38 @@ import (
 	"github.com/bountysecurity/gbounty/kit/slices"
 )
 
+func getLastCheckTime() (time.Time, error) {
+	filePath, err := lastCheckFilePath()
+	if err != nil {
+		return time.Time{}, err
+	}
+
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return time.Time{}, nil
+		}
+		return time.Time{}, err
+	}
+
+	return time.Parse(time.RFC3339, string(data))
+}
+
+func checkForUpdatesRequired() bool {
+	if slices.In(os.Args, "--update") || slices.In(os.Args, "--check-updates") {
+		return true
+	}
+
+	const updateInterval = 24 * time.Hour
+	lastCheckTime, err := getLastCheckTime()
+	currentTime := time.Now()
+
+	if err != nil || lastCheckTime.IsZero() || currentTime.Sub(lastCheckTime) > updateInterval {
+		return true
+	}
+	return false
+}
+
 func CheckForUpdates() {
 	// Disable checks on CI jobs.
 	if _, isCI := os.LookupEnv("CI"); isCI {
@@ -30,6 +63,21 @@ func CheckForUpdates() {
 
 	// Ensure the home directory exists.
 	die.OnErr(homeDir, "Failed to create the $HOME directory (.gbounty)")
+
+	// Test whether check for updates is required or not.
+	// Check for updates is required when:
+	//    - It has never been checked before.
+	//    - The last check was more than 24h ago.
+	//    - It is forced with CLI flag (e.g. --check-updates).
+	updatesRequired := checkForUpdatesRequired()
+	if !updatesRequired {
+		return
+	}
+
+	// We proceed even if there is any error.
+	// Cause in the worst case, we'll check it again,
+	// but we don't want to stop the update process.
+	_ = updateLastCheckFile()
 
 	// Fetch current and latest version.
 	update := die.OrRet(checkVer, "Could not detect if there are updates available")

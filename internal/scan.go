@@ -47,10 +47,14 @@ func (low *LineOfWork) appendEntrypoints(entrypoints []entrypoint.Entrypoint) {
 	low.Entrypoints = append(low.Entrypoints, entrypoints...)
 }
 
-func (low *LineOfWork) registerMatch(matchId string) {
+func (low *LineOfWork) registerMatch(matchId string) bool {
 	low.Lock()
 	defer low.Unlock()
+	if _, ok := low.Matches[matchId]; ok {
+		return false
+	}
 	low.Matches[matchId] = struct{}{}
+	return true
 }
 
 func (low *LineOfWork) isThereAnyEquivalentMatch(matchId string) bool {

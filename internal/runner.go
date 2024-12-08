@@ -327,10 +327,10 @@ func (r *Runner) calculateTasks(ctx context.Context) {
 					once.Do(func() {
 						// Q: Do we really want this???
 						// fmt.Println() //nolint:forbidigo
-						// pterm.Warning.Println("Some requests have been skipped because they contain one of the following labels: {IH}, {BH}, {BC}, {EMAIL}.")
+						// pterm.Warning.Println("Some requests have been skipped because they contain one of the following labels: {BH}, {EMAIL}.")
 						// pterm.Warning.Println("But either no blind host or email have been defined.")
 						// pterm.Warning.Println("Please, try again with the --blind-host/-bh and --email-address/email flags.")
-						logger.For(ctx).Warn("Some requests have been skipped because they contain one of the following labels: {IH}, {BH}, {BC}, {EMAIL}.")
+						logger.For(ctx).Warn("Some requests have been skipped because they contain one of the following labels: {BH}, {EMAIL}.")
 						logger.For(ctx).Warn("But either no blind host or email have been defined.")
 						logger.For(ctx).Warn("Please, try again with the --blind-host/-bh and --email-address/email flags.")
 					})

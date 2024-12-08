@@ -64,12 +64,10 @@ func (low *LineOfWork) isThereAnyEquivalentMatch(matchId string) bool {
 	return ok
 }
 
-// Consider: Moving these labels to the to `scan`  package (entrypoints might be independent of the label itself).
+// Consider: Moving these labels to the `scan`  package (entrypoints might be independent of the label itself).
 const (
-	bhLabel     = "{BH}"
-	ihLabel     = "{IH}"
-	legacyLabel = "{BC}"
-	emailLabel  = "{EMAIL}"
+	bhLabel    = "{BH}"
+	emailLabel = "{EMAIL}"
 )
 
 func (low *LineOfWork) prepareTasks(
@@ -117,7 +115,7 @@ func (low *LineOfWork) prepareTasks(
 			continue
 		}
 
-		if ((strings.Contains(payload, bhLabel) || strings.Contains(payload, ihLabel) || strings.Contains(payload, legacyLabel)) && !blindHostDefined) ||
+		if (strings.Contains(payload, bhLabel) && !blindHostDefined) ||
 			(strings.Contains(payload, emailLabel) && !emailAddressDefined) {
 			skipped = true
 			continue // Skipping
@@ -141,17 +139,17 @@ func (low *LineOfWork) prepareTasks(
 
 // profileShouldBeSkipped checks if the profile should be skipped.
 // Conditions checked:
-// - Any step is a raw request that contains an undefined label ({IH}, {BC}, {EMAIL}).
+// - Any step is a raw request that contains an undefined label ({BH}, {EMAIL}).
 func profileShouldBeSkipped(
 	_ context.Context,
 	prof *profile.Active,
 	blindHostDefined bool,
 	emailAddressDefined bool,
 ) bool {
-	// Any step is a raw request that contains an undefined label ({IH}, {BC}, {EMAIL}).
+	// Any step is a raw request that contains an undefined label ({BH}, {EMAIL}).
 	for _, step := range prof.Steps {
 		if step.RequestType.RawRequest() {
-			if ((strings.Contains(step.RawRequest, bhLabel) || strings.Contains(step.RawRequest, ihLabel) || strings.Contains(step.RawRequest, legacyLabel)) && !blindHostDefined) ||
+			if (strings.Contains(step.RawRequest, bhLabel) && !blindHostDefined) ||
 				(strings.Contains(step.RawRequest, emailLabel) && !emailAddressDefined) {
 				return true // Skipping
 			}

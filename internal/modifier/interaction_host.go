@@ -15,8 +15,8 @@ import (
 // InteractionHost must implement the [scan.Modifier] interface.
 var _ scan.Modifier = InteractionHost{}
 
-// InteractionHost is a [scan.Modifier] implementation that replaces the interaction host
-// placeholders (e.g. {IH}, {BH} and {BC}) of a [request.Request] with unique
+// InteractionHost is a [scan.Modifier] implementation that replaces the blind host
+// placeholders (e.g. {BH}) of a [request.Request] with unique
 // request urls.
 type InteractionHost struct {
 	scheme string
@@ -25,15 +25,8 @@ type InteractionHost struct {
 }
 
 const (
-	// {IH} is the label used by GBounty for interaction host.
-	ihLabel = "{IH}"
-
 	// {BH} is the label used by GBounty for blind host.
 	bhLabel = "{BH}"
-
-	// {BC} is the legacy label used for interaction host,
-	// inherited from (B)urp (C)ollaborator (by Burp Suite).
-	legacyLabel = "{BC}"
 )
 
 // NewInteractionHost is a constructor function that creates a new instance of
@@ -51,7 +44,7 @@ func NewInteractionHost(base string, hid blindhost.HostIdentifier) InteractionHo
 func (ih InteractionHost) Modify(_ *profile.Step, _ scan.Template, req request.Request) request.Request {
 	req.UID = uuid.New().String()[:8]
 	bh := ih.hid.HostReqURL(ih.scheme, ih.base, req.UID)
-	return replace(req, map[string]string{bhLabel: bh, ihLabel: bh, legacyLabel: bh})
+	return replace(req, map[string]string{bhLabel: bh})
 }
 
 func urlScheme(addr string) string {

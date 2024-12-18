@@ -2,6 +2,7 @@ package scan
 
 import (
 	"context"
+	"net/url"
 	"time"
 
 	"github.com/bountysecurity/gbounty/internal/entrypoint"
@@ -22,6 +23,15 @@ type TaskSummary struct {
 	URL       string
 	Requests  []*request.Request
 	Responses []*response.Response
+}
+
+func (ts TaskSummary) Domain() string {
+	u, err := url.Parse(ts.URL)
+	if err != nil {
+		return ts.URL
+	}
+
+	return u.Scheme + "://" + u.Hostname()
 }
 
 // Match represents a match found during a [scan], containing the URL,
@@ -51,6 +61,15 @@ type Match struct {
 	At                    time.Time
 }
 
+func (m Match) Domain() string {
+	u, err := url.Parse(m.URL)
+	if err != nil {
+		return m.URL
+	}
+
+	return u.Scheme + "://" + u.Hostname()
+}
+
 // Error represents an error that occurred during a [scan], containing the URL,
 // the requests and responses that were made, and the error message.
 //
@@ -60,6 +79,15 @@ type Error struct {
 	Requests  []*request.Request
 	Responses []*response.Response
 	Err       string
+}
+
+func (e Error) Domain() string {
+	u, err := url.Parse(e.URL)
+	if err != nil {
+		return e.URL
+	}
+
+	return u.Scheme + "://" + u.Hostname()
 }
 
 // RequesterBuilder is a function that returns a [Requester] instance.

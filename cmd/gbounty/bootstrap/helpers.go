@@ -3,6 +3,7 @@ package bootstrap
 import (
 	"os"
 	"path/filepath"
+	"time"
 )
 
 func homeDir() error {
@@ -31,6 +32,23 @@ func gbountyDir() (string, error) {
 	}
 
 	return filepath.Join(homedir, ".gbounty"), nil
+}
+
+func lastCheckFilePath() (string, error) {
+	dir, err := gbountyDir()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(dir, "last_check.txt"), nil
+}
+
+func updateLastCheckFile() error {
+	const fullPermOwnerOnly = 0o600
+	filePath, err := lastCheckFilePath()
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(filePath, []byte(time.Now().Format(time.RFC3339)), fullPermOwnerOnly)
 }
 
 func profilesDir() (string, error) {

@@ -35,6 +35,8 @@ type Config struct {
 
 	OutPath   string
 	OutFormat string
+
+	Severity string
 }
 
 // Clone returns a deep copy of the [Config] instance.

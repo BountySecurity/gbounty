@@ -93,3 +93,7 @@ func (r Request) GrepAt(idx int, rr map[string]string) (Grep, error) {
 
 	return GrepFromString(r.Greps[idx], rr, true)
 }
+
+func (r Request) GetSteps() []Step {
+	return nil
+}

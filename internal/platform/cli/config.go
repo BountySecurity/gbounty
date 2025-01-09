@@ -139,6 +139,10 @@ type Config struct {
 	// (b) the step number (index),
 	// and (c) the entry point (index).
 	StopAtFirstMatch bool
+	// Severity determines the severity level of the issues to be shown.
+	Severity string
+	// CheckUpdates Invalidates behavior of checking updates once per day
+	CheckUpdates bool
 }
 
 // ScanAllProfiles returns true if [Config] is set to return a subset of any specific

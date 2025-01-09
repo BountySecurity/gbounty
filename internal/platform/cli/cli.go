@@ -30,10 +30,11 @@ func Parse(args []string) (Config, error) {
 	fs.BoolVar("", &config.ShowHelp, "help", false, "Show help")
 	fs.Alias("h", "help")
 
-	fs.BoolVar("", &config.Update, "update", false, "Update the binary and profiles to the latest version")
+	fs.BoolVar("", &config.Update, "update", false, "Update the binary and profiles to their latest version")
 	fs.BoolVar("", &config.UpdateApp, "update-app", false, "Update the binary to the latest version")
-	fs.BoolVar("", &config.UpdateProfiles, "update-profiles", false, "Update profiles to the latest version")
+	fs.BoolVar("", &config.UpdateProfiles, "update-profiles", false, "Update profiles to their latest version")
 	fs.BoolVar("", &config.ForceUpdateProfiles, "force-update-profiles", false, "Re-download the latest version of profiles")
+	fs.BoolVar("", &config.CheckUpdates, "check-updates", false, "Forcefully checks if there are new updates (by default, only once per day")
 
 	// Target
 	fs.InitGroup(target, "TARGET INPUT:")
@@ -129,6 +130,8 @@ func Parse(args []string) (Config, error) {
 	fs.Alias("ste", "stream-errors")
 	fs.BoolVar(output, &config.StreamMatches, "stream-matches", true, "If specified, those requests that caused a match are printed to stdout during the scan (live)\n\tEnabled by default, can be disabled with --stream-matches=false or -stm=false")
 	fs.Alias("stm", "stream-matches")
+	fs.StringVar(output, &config.Severity, "severity-filter", "", "If specified, only results with the given severity will be included in the output\n\t")
+	fs.Alias("sf", "severity-filter")
 
 	// Debug
 	fs.InitGroup(debug, "DEBUG OPTIONS:")

@@ -34,3 +34,7 @@ func (a Active) IsEnabled() bool {
 func (a Active) GetTags() []string {
 	return a.Tags
 }
+
+func (a Active) GetSteps() []Step {
+	return a.Steps
+}

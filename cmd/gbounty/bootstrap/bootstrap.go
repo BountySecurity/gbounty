@@ -406,12 +406,13 @@ func gracefulContext(ctx context.Context) context.Context {
 
 func configFromArgs(cfg cli.Config) scan.Config {
 	return scan.Config{
-		RPS:          cfg.Rps,
-		Concurrency:  cfg.Concurrency,
-		Version:      gbounty.Version,
-		SaveOnStop:   cfg.SaveOnStop,
-		InMemory:     cfg.InMemory,
-		EmailAddress: len(cfg.EmailAddress) > 0,
+		RPS:             cfg.Rps,
+		Concurrency:     cfg.Concurrency,
+		Version:         gbounty.Version,
+		SaveOnStop:      cfg.SaveOnStop,
+		InMemory:        cfg.InMemory,
+		EmailAddress:    len(cfg.EmailAddress) > 0,
+		PayloadStrategy: scan.PayloadStrategyOnlyOnce,
 
 		Silent:             cfg.Silent,
 		StreamErrors:       cfg.StreamErrors,

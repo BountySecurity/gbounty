@@ -151,12 +151,13 @@ func (t *Task) run(
 	}
 
 	// In case of match, we report it to the LineOfWork (see PayloadStrategy)
+	var matchAlreadyRegistered bool
 	if payloadStrategy.IsOnlyOnce() && isMatch {
 		logger.For(ctx).Infof(
 			"Registering match (for future equivalents): profile=%s, stepIdx=%d, entrypointIdx=%d, payloadIdx=%d",
 			t.Profile.Name, t.StepIdx, t.EntrypointIdx, t.PayloadIdx,
 		)
-		t.LoW.registerMatch(t.matchId())
+		matchAlreadyRegistered = !t.LoW.registerMatch(t.matchId())
 	}
 
 	// We update the task with the request & response, depending on the result.
@@ -179,14 +180,15 @@ func (t *Task) run(
 	// Finally, we act according to the results of the step execution.
 	switch {
 	// The current step is a match:
-	// - We report the match if it's marked to be shown.
+	// - We report the match if it's marked to be shown and not already registered.
 	// - We schedule the next step if there are more steps to take.
 	case err == nil && isMatch:
 		//nolint:godox
-		// We only report the issue if it's marked to be shown.
+		// We only report the issue if it's marked to be shown,
+		// and it's not already registered.
 		// TODO: Handle only once per domain
 		// TODO: Use 'show_alert' for passive profiles
-		if t.Profile.Steps[t.StepIdx].ShowAlert.Enabled() {
+		if !matchAlreadyRegistered && t.Profile.Steps[t.StepIdx].ShowAlert.Enabled() {
 			matched = true
 			onUpdate(true, false, false) // Report the match, the request will be reported later.
 			if onMatchFn != nil {
@@ -221,7 +223,7 @@ func (t *Task) run(
 	// - isMatch and last step (matched!)
 	// - !isMatch (don't continue)
 	// - err != nil (failed)
-	if (matched || !isMatch || err != nil) && onTaskFn != nil {
+	if (matched || matchAlreadyRegistered || !isMatch || err != nil) && onTaskFn != nil {
 		onTaskFn(ctx, tpl.OriginalURL, t.Requests, t.Responses)
 	}
 }

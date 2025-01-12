@@ -283,7 +283,7 @@ func runScan(
 			WithSaveAllResponses(cfg.ShowAll || cfg.ShowAllResponses).
 			WithFileSystem(fs)
 
-		w := writer.NewConsole(os.Stdout)
+		w := writer.NewConsole(os.Stdout, writer.WithProofOfConceptEnabled(cfg.OnlyProofOfConcept))
 
 		if cfg.StreamErrors && !cfg.Silent {
 			logger.For(ctx).Info("Errors streaming enabled")
@@ -413,16 +413,17 @@ func configFromArgs(cfg cli.Config) scan.Config {
 		InMemory:     cfg.InMemory,
 		EmailAddress: len(cfg.EmailAddress) > 0,
 
-		Silent:           cfg.Silent,
-		StreamErrors:     cfg.StreamErrors,
-		StreamMatches:    cfg.StreamMatches,
-		ShowResponses:    cfg.ShowResponses,
-		ShowErrors:       cfg.ShowErrors,
-		ShowAll:          cfg.ShowAll,
-		ShowAllRequests:  cfg.ShowAllRequests,
-		ShowAllResponses: cfg.ShowAllResponses,
-		OutPath:          cfg.OutPath,
-		OutFormat:        cfg.OutFormat,
+		Silent:             cfg.Silent,
+		StreamErrors:       cfg.StreamErrors,
+		StreamMatches:      cfg.StreamMatches,
+		ShowResponses:      cfg.ShowResponses,
+		ShowErrors:         cfg.ShowErrors,
+		ShowAll:            cfg.ShowAll,
+		ShowAllRequests:    cfg.ShowAllRequests,
+		ShowAllResponses:   cfg.ShowAllResponses,
+		OutPath:            cfg.OutPath,
+		OutFormat:          cfg.OutFormat,
+		OnlyProofOfConcept: cfg.OnlyProofOfConcept,
 	}
 }
 
@@ -454,19 +455,23 @@ func loadProfiles(
 	logger.For(ctx).Infof("Loaded %d enabled passive response profile(s) successfully", len(passiveRes))
 
 	loadingFrom := provider.From()
-	if len(loadingFrom) == 1 {
-		pterm.Info.Printf("Loading profiles from: %s\n", loadingFrom[0])
-	} else {
-		pterm.Info.Printf(
-			`Loading profiles from... 
+	if !cfg.OnlyProofOfConcept {
+		if len(loadingFrom) == 1 {
+			pterm.Info.Printf("Loading profiles from: %s\n", loadingFrom[0])
+		} else {
+			pterm.Info.Printf(
+				`Loading profiles from... 
 	- %s
 `, strings.Join(provider.From(), "\n\t- "))
+		}
 	}
 
-	pterm.Success.Printf(
-		"Profiles loaded successfully... active(s): %d, passive request(s): %d, passive response(s): %d\n",
-		len(actives), len(passiveReqs), len(passiveRes),
-	)
+	if !cfg.OnlyProofOfConcept {
+		pterm.Success.Printf(
+			"Profiles loaded successfully... active(s): %d, passive request(s): %d, passive response(s): %d\n",
+			len(actives), len(passiveReqs), len(passiveRes),
+		)
+	}
 
 	if len(cfg.FilterTags) > 0 {
 		logger.For(ctx).Infof("Filtering loaded profiles by tag: %s", cfg.FilterTags.String())
@@ -479,10 +484,12 @@ func loadProfiles(
 		logger.For(ctx).Infof("Passive request profile(s) remaining after filtering by tag: %d", len(passiveReqs))
 		logger.For(ctx).Infof("Passive response profile(s) remaining after filtering by tag: %d", len(passiveRes))
 
-		pterm.Success.Printf(
-			"Profiles filtered (%s) successfully, remaining... active(s): %d, passive request(s): %d, passive response(s): %d\n",
-			cfg.FilterTags.String(), len(actives), len(passiveReqs), len(passiveRes),
-		)
+		if !cfg.OnlyProofOfConcept {
+			pterm.Success.Printf(
+				"Profiles filtered (%s) successfully, remaining... active(s): %d, passive request(s): %d, passive response(s): %d\n",
+				cfg.FilterTags.String(), len(actives), len(passiveReqs), len(passiveRes),
+			)
+		}
 	}
 
 	return actives, passiveReqs, passiveRes
@@ -561,7 +568,7 @@ func finalizeScan(ctx context.Context, updatesChan chan *scan.Stats, cfg scan.Co
 
 		// We declare the console writer that
 		// will (most likely) be used below later.
-		consoleWriter := writer.NewConsole(os.Stdout)
+		consoleWriter := writer.NewConsole(os.Stdout, writer.WithProofOfConceptEnabled(cfg.OnlyProofOfConcept))
 
 		// We write the results to the specified output.
 		if len(cfg.OutPath) > 0 {
@@ -569,7 +576,7 @@ func finalizeScan(ctx context.Context, updatesChan chan *scan.Stats, cfg scan.Co
 			storeOutput(ctx, cfg, fs)
 
 			// If no silent, we print the summary as well.
-			if !cfg.Silent {
+			if !cfg.Silent || !cfg.OnlyProofOfConcept {
 				if err := consoleWriter.WriteStats(ctx, fs); err != nil {
 					pterm.Error.WithShowLineNumber(false).Printf(`Error while printing scan stats: %s`, err)
 					logger.For(ctx).Errorf("Error while printing scan stats: %s", err)
@@ -682,6 +689,11 @@ func writeScanFromFs(ctx context.Context, w scan.Writer, cfg scan.Config, fs sca
 }
 
 func writeConfig(ctx context.Context, writer scan.Writer, cfg scan.Config) error {
+	if cfg.OnlyProofOfConcept {
+		logger.For(ctx).Debug("OnlyProofOfConcept mode enabled: scan configuration not displayed in the output")
+		return nil
+	}
+
 	if cfg.Silent {
 		logger.For(ctx).Debug("Silent mode enabled: scan configuration not displayed in the output")
 		return nil

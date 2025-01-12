@@ -266,7 +266,7 @@ func (r *Request) Bytes() []byte {
 	ret += "\n"
 	ret += string(r.Body)
 
-	return []byte(ret)
+	return []byte(strings.TrimSuffix(ret, "\n"))
 }
 
 // EscapedBytes returns the request as a byte slice, with the body

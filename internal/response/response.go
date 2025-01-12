@@ -64,7 +64,7 @@ func (r Response) Bytes() []byte {
 	ret += "\r\n"
 	ret += string(r.Body)
 
-	return []byte(ret)
+	return []byte(strings.TrimSuffix(ret, "\n"))
 }
 
 // EscapedBytes returns the response as a byte slice, with the body

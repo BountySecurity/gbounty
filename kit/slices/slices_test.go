@@ -58,6 +58,32 @@ func TestIn(t *testing.T) {
 	}
 }
 
+func TestNoneIn(t *testing.T) {
+	t.Parallel()
+
+	tcs := map[string]struct {
+		in     []string
+		lookup []string
+		out    bool
+	}{
+		"nil slice":                {in: nil, lookup: nil, out: true},
+		"empty slice":              {in: []string{}, lookup: nil, out: true},
+		"single matching elem":     {in: []string{"elem"}, lookup: []string{"elem"}, out: false},
+		"single non-matching elem": {in: []string{"other"}, lookup: []string{"elem"}, out: true},
+		"multiple, none matching":  {in: []string{"one", "two", "three"}, lookup: []string{"elem", "elem2"}, out: true},
+		"multiple, some matching":  {in: []string{"one", "other", "elem"}, lookup: []string{"elem", "elem2"}, out: false},
+		"multiple, all matching":   {in: []string{"one", "other", "elem"}, lookup: []string{"one", "other", "elem"}, out: false},
+	}
+
+	for name, tc := range tcs {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			assert.Equal(t, tc.out, slices.NoneIn(tc.in, tc.lookup))
+		})
+	}
+}
+
 func TestValForKey(t *testing.T) {
 	t.Parallel()
 

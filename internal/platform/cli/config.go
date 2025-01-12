@@ -138,8 +138,11 @@ type Config struct {
 	UpdateProfiles bool
 	// ForceUpdateProfiles determines whether profiles will be updated forcefully.
 	ForceUpdateProfiles bool
-	// CheckUpdates Invalidates behavior of checking updates once per day
+	// CheckUpdates checks for updates forcefully. By default, only once per day.
 	CheckUpdates bool
+	// OnlyProofOfConcept determines whether the proof-of-concept mode is enabled or not.
+	// When enabled, only matched requests will be printed, nothing else.
+	OnlyProofOfConcept bool
 }
 
 // ScanAllProfiles returns true if [Config] is set to return a subset of any specific
@@ -183,6 +186,7 @@ func (cfg Config) Validate() error {
 		cfg.checkValidOutput,
 		cfg.checkValidParamsFlag,
 		cfg.checkInteractionHostIsValid,
+		cfg.checkIfVerboseAndPocNotTogether,
 	}
 
 	for _, validation := range validations {
@@ -362,6 +366,13 @@ func (cfg Config) checkInteractionHostIsValid() error {
 		if err != nil {
 			return err
 		}
+	}
+	return nil
+}
+
+func (cfg Config) checkIfVerboseAndPocNotTogether() error {
+	if cfg.Verbosity.Level() != logger.LevelDisabled && cfg.OnlyProofOfConcept {
+		return errors.New("you cannot use verbose (-v/-vv/-vvv) and proof-of-concept (--only-poc/-poc) modes together") //nolint:err113
 	}
 	return nil
 }

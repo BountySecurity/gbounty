@@ -61,6 +61,9 @@ issues:
       linters:
         - dupl # false positives
         - perfsprint # performance doesn't matter in tests
+    - path: internal/profile/profilefakes/.*\.go
+      linters:
+        - dupl
     - path: internal/profile/request.go
       linters:
         - dupl
@@ -82,9 +85,9 @@ issues:
         - dupl
         - nestif
         - mnd
-    - path: internal/profile/profilefakes/.*\.go
+    - path: kit/slices/slices.go
       linters:
-        - dupl
+        - ireturn
     - path: cmd/gbounty/bootstrap/bootstrap.go
       linters:
         - nestif

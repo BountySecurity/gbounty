@@ -199,11 +199,16 @@ func (c Console) WriteError(_ context.Context, scanError scan.Error) error {
 	builder.WriteString(printer.Error().Sprintln(scanError.Err))
 
 	if scanError.Requests != nil {
+		first := true
 		for _, r := range scanError.Requests {
 			if r == nil {
 				continue
 			}
-			builder.WriteString(requestPrinter().Sprintln(string(r.Bytes())))
+			if first {
+				builder.WriteString(requestPrinter().Sprintln())
+				first = false
+			}
+			builder.WriteString(string(r.Bytes()))
 		}
 	}
 
@@ -244,11 +249,16 @@ func (c Console) WriteErrors(ctx context.Context, fs scan.FileSystem) error {
 		builder.WriteString(printer.Error().Sprintln(scanError.Err))
 
 		if scanError.Requests != nil {
+			first := true
 			for _, r := range scanError.Requests {
 				if r == nil {
 					continue
 				}
-				builder.WriteString(requestPrinter().Sprintln(string(r.Bytes())))
+				if first {
+					builder.WriteString(requestPrinter().Sprintln())
+					first = false
+				}
+				builder.WriteString(string(r.Bytes()))
 			}
 		}
 
@@ -295,12 +305,17 @@ func (c Console) WriteMatch(_ context.Context, m scan.Match, includeResponse boo
 	}
 
 	if m.Requests != nil {
+		first := true
 		for _, r := range m.Requests {
 			if r == nil {
 				continue
 			}
 			if !c.pocEnabled {
-				builder.WriteString(requestPrinter().Sprintln(string(r.Bytes())))
+				if first {
+					builder.WriteString(requestPrinter().Sprintln())
+					first = false
+				}
+				builder.WriteString(string(r.Bytes()))
 				builder.WriteString("\n")
 			} else {
 				styledText := pterm.NewStyle(pterm.FgLightCyan).Sprintln(string(r.Bytes()))
@@ -371,11 +386,16 @@ func (c Console) WriteMatches(ctx context.Context, fs scan.FileSystem, includeRe
 		}
 
 		if m.Requests != nil {
+			first := true
 			for _, r := range m.Requests {
 				if r == nil {
 					continue
 				}
-				builder.WriteString(requestPrinter().Sprintln(string(r.Bytes())))
+				if first {
+					builder.WriteString(requestPrinter().Sprintln())
+					first = false
+				}
+				builder.WriteString(string(r.Bytes()))
 			}
 		}
 
@@ -425,11 +445,16 @@ func (c Console) WriteTasks(ctx context.Context, fs scan.FileSystem, allRequests
 		builder.WriteString(urlPrinter().Sprintln(scanTask.URL))
 
 		if !allResponses && scanTask.Requests != nil {
+			first := true
 			for _, r := range scanTask.Requests {
 				if r == nil {
 					continue
 				}
-				builder.WriteString(requestPrinter().Sprintln(string(r.Bytes())))
+				if first {
+					builder.WriteString(requestPrinter().Sprintln())
+					first = false
+				}
+				builder.WriteString(string(r.Bytes()))
 			}
 		}
 

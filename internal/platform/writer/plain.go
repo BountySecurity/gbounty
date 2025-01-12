@@ -154,11 +154,16 @@ func (p Plain) WriteError(_ context.Context, scanError scan.Error) error {
 	builder.WriteString(printer.Plain(printer.Error()).Sprintln(scanError.Err))
 
 	if scanError.Requests != nil {
+		first := true
 		for _, r := range scanError.Requests {
 			if r == nil {
 				continue
 			}
-			builder.WriteString(printer.Plain(requestPrinter()).Sprintln(string(r.Bytes())))
+			if first {
+				builder.WriteString(printer.Plain(requestPrinter()).Sprintln())
+				first = false
+			}
+			builder.WriteString(string(r.Bytes()))
 		}
 	}
 
@@ -195,11 +200,16 @@ func (p Plain) WriteErrors(ctx context.Context, fs scan.FileSystem) error {
 		builder.WriteString(printer.Plain(printer.Error()).Sprintln(scanError.Err))
 
 		if scanError.Requests != nil {
+			first := true
 			for _, r := range scanError.Requests {
 				if r == nil {
 					continue
 				}
-				builder.WriteString(printer.Plain(requestPrinter()).Sprintln(string(r.Bytes())))
+				if first {
+					builder.WriteString(printer.Plain(requestPrinter()).Sprintln())
+					first = false
+				}
+				builder.WriteString(string(r.Bytes()))
 			}
 		}
 
@@ -240,11 +250,16 @@ func (p Plain) WriteMatch(_ context.Context, m scan.Match, includeResponse bool)
 	}
 
 	if m.Requests != nil {
+		first := true
 		for _, r := range m.Requests {
 			if r == nil {
 				continue
 			}
-			builder.WriteString(printer.Plain(requestPrinter()).Sprintln(string(r.Bytes())))
+			if first {
+				builder.WriteString(printer.Plain(requestPrinter()).Sprintln())
+				first = false
+			}
+			builder.WriteString(string(r.Bytes()))
 		}
 	}
 
@@ -289,11 +304,16 @@ func (p Plain) WriteMatches(ctx context.Context, fs scan.FileSystem, includeResp
 		}
 
 		if m.Requests != nil {
+			first := true
 			for _, r := range m.Requests {
 				if r == nil {
 					continue
 				}
-				builder.WriteString(printer.Plain(requestPrinter()).Sprintln(string(r.Bytes())))
+				if first {
+					builder.WriteString(printer.Plain(requestPrinter()).Sprintln())
+					first = false
+				}
+				builder.WriteString(string(r.Bytes()))
 			}
 		}
 
@@ -337,11 +357,16 @@ func (p Plain) WriteTasks(ctx context.Context, fs scan.FileSystem, allRequests, 
 		builder.WriteString(printer.Plain(urlPrinter()).Sprintln(scanTask.URL))
 
 		if !allResponses && scanTask.Requests != nil {
+			first := true
 			for _, r := range scanTask.Requests {
 				if r == nil {
 					continue
 				}
-				builder.WriteString(printer.Plain(requestPrinter()).Sprintln(string(r.Bytes())))
+				if first {
+					builder.WriteString(printer.Plain(requestPrinter()).Sprintln())
+					first = false
+				}
+				builder.WriteString(string(r.Bytes()))
 			}
 		}
 

@@ -163,7 +163,7 @@ func (p Plain) WriteError(_ context.Context, scanError scan.Error) error {
 			} else {
 				builder.WriteString(printer.Plain(requestPrinter()).Sprintln())
 			}
-			builder.WriteString(string(r.Bytes()))
+			builder.Write(r.Bytes())
 		}
 	}
 
@@ -209,7 +209,7 @@ func (p Plain) WriteErrors(ctx context.Context, fs scan.FileSystem) error {
 				} else {
 					builder.WriteString(printer.Plain(requestPrinter()).Sprintln())
 				}
-				builder.WriteString(string(r.Bytes()))
+				builder.Write(r.Bytes())
 			}
 		}
 
@@ -259,7 +259,7 @@ func (p Plain) WriteMatch(_ context.Context, m scan.Match, includeResponse bool)
 			} else {
 				builder.WriteString(printer.Plain(requestPrinter()).Sprintln())
 			}
-			builder.WriteString(string(r.Bytes()))
+			builder.Write(r.Bytes())
 		}
 	}
 
@@ -313,7 +313,7 @@ func (p Plain) WriteMatches(ctx context.Context, fs scan.FileSystem, includeResp
 				} else {
 					builder.WriteString(printer.Plain(requestPrinter()).Sprintln())
 				}
-				builder.WriteString(string(r.Bytes()))
+				builder.Write(r.Bytes())
 			}
 		}
 
@@ -366,7 +366,7 @@ func (p Plain) WriteTasks(ctx context.Context, fs scan.FileSystem, allRequests, 
 				} else {
 					builder.WriteString(printer.Plain(requestPrinter()).Sprintln())
 				}
-				builder.WriteString(string(r.Bytes()))
+				builder.Write(r.Bytes())
 			}
 		}
 

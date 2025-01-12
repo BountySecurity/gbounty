@@ -208,7 +208,7 @@ func (c Console) WriteError(_ context.Context, scanError scan.Error) error {
 			} else {
 				builder.WriteString(requestPrinter().Sprintln())
 			}
-			builder.WriteString(string(r.Bytes()))
+			builder.Write(r.Bytes())
 		}
 	}
 
@@ -258,7 +258,7 @@ func (c Console) WriteErrors(ctx context.Context, fs scan.FileSystem) error {
 				} else {
 					builder.WriteString(requestPrinter().Sprintln())
 				}
-				builder.WriteString(string(r.Bytes()))
+				builder.Write(r.Bytes())
 			}
 		}
 
@@ -315,7 +315,7 @@ func (c Console) WriteMatch(_ context.Context, m scan.Match, includeResponse boo
 				} else {
 					builder.WriteString(requestPrinter().Sprintln())
 				}
-				builder.WriteString(string(r.Bytes()))
+				builder.Write(r.Bytes())
 				builder.WriteString("\n")
 			} else {
 				styledText := pterm.NewStyle(pterm.FgLightCyan).Sprintln(string(r.Bytes()))
@@ -395,7 +395,7 @@ func (c Console) WriteMatches(ctx context.Context, fs scan.FileSystem, includeRe
 				} else {
 					builder.WriteString(requestPrinter().Sprintln())
 				}
-				builder.WriteString(string(r.Bytes()))
+				builder.Write(r.Bytes())
 			}
 		}
 
@@ -454,7 +454,7 @@ func (c Console) WriteTasks(ctx context.Context, fs scan.FileSystem, allRequests
 				} else {
 					builder.WriteString(requestPrinter().Sprintln())
 				}
-				builder.WriteString(string(r.Bytes()))
+				builder.Write(r.Bytes())
 			}
 		}
 

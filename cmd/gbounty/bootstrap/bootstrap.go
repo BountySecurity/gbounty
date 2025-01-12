@@ -86,17 +86,14 @@ func Run() error {
 
 	initBar := func() error {
 		var err error
+
 		pbPrinter.ProgressbarPrinter, err = pterm.DefaultProgressbar.
 			WithBarStyle(pterm.NewStyle(pterm.FgLightCyan)).
 			WithTitleStyle(pterm.NewStyle(pterm.FgLightMagenta)).
 			WithRemoveWhenDone(true).
 			Start()
 
-		if err != nil {
-			return err
-		}
-
-		return nil
+		return err
 	}
 
 	// We set everything up,
@@ -545,7 +542,8 @@ func finalizeScan(
 	pbPrinter *progressbar.Printer,
 	cfg scan.Config,
 	fs scan.FileSystem,
-	id string) func(*scan.Stats, error) {
+	id string,
+) func(*scan.Stats, error) {
 	return func(stats *scan.Stats, err error) {
 		logger.For(ctx).Info("Finalizing scan...")
 

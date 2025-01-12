@@ -405,6 +405,11 @@ func gracefulContext(ctx context.Context) context.Context {
 }
 
 func configFromArgs(cfg cli.Config) scan.Config {
+	payloadStrategy := scan.PayloadStrategyOnlyOnce
+	if !cfg.StopAtFirstMatch {
+		payloadStrategy = scan.PayloadStrategyAll
+	}
+
 	return scan.Config{
 		RPS:             cfg.Rps,
 		Concurrency:     cfg.Concurrency,
@@ -412,7 +417,7 @@ func configFromArgs(cfg cli.Config) scan.Config {
 		SaveOnStop:      cfg.SaveOnStop,
 		InMemory:        cfg.InMemory,
 		EmailAddress:    len(cfg.EmailAddress) > 0,
-		PayloadStrategy: scan.PayloadStrategyOnlyOnce,
+		PayloadStrategy: payloadStrategy,
 
 		Silent:             cfg.Silent,
 		StreamErrors:       cfg.StreamErrors,

@@ -36,7 +36,7 @@ func Parse(args []string) (Config, error) {
 	fs.BoolVar("", &config.ForceUpdateProfiles, "force-update-profiles", false, "Update profiles forcefully")
 	fs.BoolVar("", &config.CheckUpdates, "check-updates", false, "Check for available updates forcefully\n\tBy default, available updates are checked only once a day")
 
-	// target
+	// Target
 	fs.InitGroup(target, "TARGET INPUT:")
 	fs.Var(target, &config.URLS, "url", "If specified, it will be used as the target url\n\tCan be used more than once: -u url1 -u url2")
 	fs.Alias("u", "url")
@@ -57,7 +57,7 @@ func Parse(args []string) (Config, error) {
 	fs.BoolVar(target, &config.ForceHTTP2, "http2", false, "Forces HTTP/2. If enabled, the request's proto, if present, will be ignored")
 	fs.Alias("h2", "http2")
 
-	// targetOpts
+	// TargetOpts
 	fs.InitGroup(targetOpts, "Options for --url (-u) and --urls-file:")
 	fs.StringVar(targetOpts, &config.Method, "method", "", "If specified, it will be used as default HTTP method for request templates")
 	fs.Alias("X", "method")
@@ -66,7 +66,7 @@ func Parse(args []string) (Config, error) {
 	fs.Var(targetOpts, &config.Data, "data", "If specified, it will be used as the default HTTP body data for request templates")
 	fs.Alias("d", "data")
 
-	// profile
+	// Profile
 	fs.InitGroup(profile, "PROFILE OPTIONS:")
 	fs.Var(profile, &config.ProfilesPath, "profiles", "Determines the path where profile file(s) will be read from (default: \"./profiles/\")\n\tIt can also be used with the path to a specific profile file\n\tCan be used more than once: -p profiles/XSS.bb -p profiles/SQLi.bb")
 	fs.Alias("p", "profiles")
@@ -83,7 +83,7 @@ func Parse(args []string) (Config, error) {
 	fs.BoolVar(profile, &config.PrintTags, "print-tags", false, "Print available profile tags")
 	fs.Alias("tags", "print-tags")
 
-	// runtime
+	// Runtime
 	fs.InitGroup(runtime, "RUNTIME OPTIONS:")
 	const defaultConcurrency = 10
 	fs.IntVar(runtime, &config.Concurrency, "concurrency", defaultConcurrency, "Determines how many target URL(s) will be scanned concurrently (default: 10)")
@@ -91,14 +91,10 @@ func Parse(args []string) (Config, error) {
 	const defaultRps = 10
 	fs.IntVar(runtime, &config.Rps, "rps", defaultRps, "Determines the limit of requests per second (per URL) (default: 10)")
 	fs.Alias("r", "rps")
+	fs.BoolVar(runtime, &config.StopAtFirstMatch, "stop-at-first-match", true, "If specified, the scan will stop at the first match found for each combination of\n\t(a) profile, (b) step and (c) entrypoint\n\tEnabled by default.")
+	fs.Alias("safm", "stop-at-first-match")
 	fs.BoolVar(runtime, &config.Silent, "silent", false, "If specified, no results will be printed to stdout")
 	fs.Alias("s", "silent")
-	fs.BoolVar(runtime, &config.SaveOnStop, "save-on-stop", false, "Saves the scan's status when stopped")
-	fs.Alias("sos", "save-on-stop")
-	fs.StringVar(runtime, &config.Continue, "from", "", "Scan's identifier to be used to continue")
-	fs.Alias("f", "from")
-	fs.BoolVar(runtime, &config.InMemory, "in-memory", false, "Use memory (only) as scan storage")
-	fs.Alias("m", "in-memory")
 	fs.StringVar(runtime, &config.BlindHost, "interaction-host", "", "(Deprecated) If specified, the interaction host is injected into {IH}, {BH} and {BC} labels")
 	fs.Alias("ih", "interaction-host")
 	fs.StringVar(runtime, &config.BlindHost, "blind-host", "", "If specified, the interaction host is injected into {IH}, {BH} and {BC} labels")
@@ -107,8 +103,14 @@ func Parse(args []string) (Config, error) {
 	fs.Alias("email", "email-address")
 	fs.StringVar(runtime, &config.ProxyAddress, "proxy-address", "", "If specified, requests are proxied to the given address\n\tTo specify host and port use host:port")
 	fs.StringVar(runtime, &config.ProxyAuth, "proxy-auth", "", "If specified, proxied requests will include authentication details")
+	fs.BoolVar(runtime, &config.InMemory, "in-memory", false, "Use memory (only) as scan storage")
+	fs.Alias("m", "in-memory")
+	fs.BoolVar(runtime, &config.SaveOnStop, "save-on-stop", false, "Saves the scan's status when stopped")
+	fs.Alias("sos", "save-on-stop")
+	fs.StringVar(runtime, &config.Continue, "from", "", "Scan's identifier to be used to continue")
+	fs.Alias("f", "from")
 
-	// output
+	// Output
 	fs.InitGroup(output, "OUTPUT OPTIONS:")
 	fs.StringVar(output, &config.OutPath, "output", "", "Determines the path where the output file will be stored to\n\tBy default, the output file is formatted as plain text")
 	fs.Alias("o", "output")
@@ -133,7 +135,7 @@ func Parse(args []string) (Config, error) {
 	fs.BoolVar(profile, &config.OnlyProofOfConcept, "only-poc", false, "If specified, only matched requests will be printed, nothing else.")
 	fs.Alias("poc", "only-poc")
 
-	// debug
+	// Debug
 	fs.InitGroup(debug, "DEBUG OPTIONS:")
 	fs.BoolVar(debug, &config.Verbosity.Warn, "verbose", false, "If specified, the internal logger will write warning and error log messages")
 	fs.Alias("v", "verbose")

@@ -60,14 +60,11 @@ type Config struct {
 	RawRequests MultiValue
 	// ParamsFile specifies the path to the paths file to define the scan.
 	ParamsFile string
-	// ParamsSplit determines the size of the params groups the params from file will be
-	// grouped into.
+	// ParamsSplit determines the size of the params groups the params from file will be grouped into.
 	ParamsSplit int
-	// ParamsMethod determines the HTTP method that will be used to inject the params
-	// into the request.
+	// ParamsMethod determines the HTTP method that will be used to inject the params into the request.
 	ParamsMethod string
-	// ParamsEncoding specifies the encoding that will be used to inject the params
-	// into the request.
+	// ParamsEncoding specifies the encoding that will be used to inject the params into the request.
 	ParamsEncoding string
 	// Method specifies the HTTP method used to define the scan's requests.
 	Method string
@@ -121,8 +118,7 @@ type Config struct {
 	BlindHost string
 	// EmailAddress determines the email address that will be used during the scan.
 	EmailAddress string
-	// CustomTokens can be used to replace certain tokens or labels (like {MY_TOKEN}) with
-	// user-configured values.
+	// CustomTokens can be used to replace certain tokens or labels (like {MY_TOKEN}) with user-configured values.
 	CustomTokens map[string]string
 	// ProxyAddress determines the proxy host and port that will be used during the scan.
 	ProxyAddress string
@@ -143,6 +139,11 @@ type Config struct {
 	// OnlyProofOfConcept determines whether the proof-of-concept mode is enabled or not.
 	// When enabled, only matched requests will be printed, nothing else.
 	OnlyProofOfConcept bool
+	// StopAtFirstMatch determines whether the scan will stop at the first match, considering the combination of
+	// (a) the profile name,
+	// (b) the step number (index),
+	// and (c) the entry point (index).
+	StopAtFirstMatch bool
 }
 
 // ScanAllProfiles returns true if [Config] is set to return a subset of any specific

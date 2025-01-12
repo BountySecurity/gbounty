@@ -195,18 +195,18 @@ func (c Console) WriteError(_ context.Context, scanError scan.Error) error {
 
 	builder := strings.Builder{}
 	builder.WriteString("\n")
-	builder.WriteString(urlPrinter().Sprintln(scanError.URL))
+	builder.WriteString(domainPrinter().Sprintln(scanError.Domain()))
 	builder.WriteString(printer.Error().Sprintln(scanError.Err))
 
 	if scanError.Requests != nil {
-		first := true
-		for _, r := range scanError.Requests {
+		for idx, r := range scanError.Requests {
 			if r == nil {
 				continue
 			}
-			if first {
+			if len(scanError.Requests) > 1 {
+				builder.WriteString(requestNPrinter(idx + 1).Sprintln())
+			} else {
 				builder.WriteString(requestPrinter().Sprintln())
-				first = false
 			}
 			builder.WriteString(string(r.Bytes()))
 		}
@@ -245,18 +245,18 @@ func (c Console) WriteErrors(ctx context.Context, fs scan.FileSystem) error {
 
 	for scanError := range ch {
 		builder := strings.Builder{}
-		builder.WriteString(urlPrinter().Sprintln(scanError.URL))
+		builder.WriteString(domainPrinter().Sprintln(scanError.Domain()))
 		builder.WriteString(printer.Error().Sprintln(scanError.Err))
 
 		if scanError.Requests != nil {
-			first := true
-			for _, r := range scanError.Requests {
+			for idx, r := range scanError.Requests {
 				if r == nil {
 					continue
 				}
-				if first {
+				if len(scanError.Requests) > 1 {
+					builder.WriteString(requestNPrinter(idx + 1).Sprintln())
+				} else {
 					builder.WriteString(requestPrinter().Sprintln())
-					first = false
 				}
 				builder.WriteString(string(r.Bytes()))
 			}
@@ -294,7 +294,7 @@ func (c Console) WriteMatch(_ context.Context, m scan.Match, includeResponse boo
 		builder.WriteString(severityPrinter(m.IssueSeverity).Sprintln(m.IssueSeverity))
 		builder.WriteString(confidencePrinter(m.IssueConfidence).Sprintln(m.IssueConfidence))
 		builder.WriteString(typePrinter().Sprintln(m.ProfileType))
-		builder.WriteString(urlPrinter().Sprintln(m.URL))
+		builder.WriteString(domainPrinter().Sprintln(m.Domain()))
 		if len(m.IssueParam) > 0 {
 			builder.WriteString(paramPrinter().Sprintln(m.IssueParam))
 		}
@@ -305,15 +305,15 @@ func (c Console) WriteMatch(_ context.Context, m scan.Match, includeResponse boo
 	}
 
 	if m.Requests != nil {
-		first := true
-		for _, r := range m.Requests {
+		for idx, r := range m.Requests {
 			if r == nil {
 				continue
 			}
 			if !c.pocEnabled {
-				if first {
+				if len(m.Requests) > 1 {
+					builder.WriteString(requestNPrinter(idx + 1).Sprintln())
+				} else {
 					builder.WriteString(requestPrinter().Sprintln())
-					first = false
 				}
 				builder.WriteString(string(r.Bytes()))
 				builder.WriteString("\n")
@@ -379,21 +379,21 @@ func (c Console) WriteMatches(ctx context.Context, fs scan.FileSystem, includeRe
 		builder.WriteString(severityPrinter(m.IssueSeverity).Sprintln(m.IssueSeverity))
 		builder.WriteString(confidencePrinter(m.IssueConfidence).Sprintln(m.IssueConfidence))
 		builder.WriteString(typePrinter().Sprintln(m.ProfileType))
-		builder.WriteString(urlPrinter().Sprintln(m.URL))
+		builder.WriteString(domainPrinter().Sprintln(m.Domain()))
 
 		if len(m.IssueParam) > 0 {
 			builder.WriteString(paramPrinter().Sprintln(m.IssueParam))
 		}
 
 		if m.Requests != nil {
-			first := true
-			for _, r := range m.Requests {
+			for idx, r := range m.Requests {
 				if r == nil {
 					continue
 				}
-				if first {
+				if len(m.Requests) > 1 {
+					builder.WriteString(requestNPrinter(idx + 1).Sprintln())
+				} else {
 					builder.WriteString(requestPrinter().Sprintln())
-					first = false
 				}
 				builder.WriteString(string(r.Bytes()))
 			}
@@ -442,17 +442,17 @@ func (c Console) WriteTasks(ctx context.Context, fs scan.FileSystem, allRequests
 
 	for scanTask := range ch {
 		builder := strings.Builder{}
-		builder.WriteString(urlPrinter().Sprintln(scanTask.URL))
+		builder.WriteString(domainPrinter().Sprintln(scanTask.Domain()))
 
 		if !allResponses && scanTask.Requests != nil {
-			first := true
-			for _, r := range scanTask.Requests {
+			for idx, r := range scanTask.Requests {
 				if r == nil {
 					continue
 				}
-				if first {
+				if len(scanTask.Requests) > 1 {
+					builder.WriteString(requestNPrinter(idx + 1).Sprintln())
+				} else {
 					builder.WriteString(requestPrinter().Sprintln())
-					first = false
 				}
 				builder.WriteString(string(r.Bytes()))
 			}

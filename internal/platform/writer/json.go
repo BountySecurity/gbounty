@@ -153,8 +153,8 @@ func (j JSON) WriteMatchesSummary(ctx context.Context, fs scan.FileSystem) error
 // WriteError writes a [scan.Error] to the [io.Writer] as a JSON object.
 func (j JSON) WriteError(_ context.Context, scanError scan.Error) error {
 	_, err := fmt.Fprintf(j.writer, `{
-	"url": %s,
-	"error": %s`, jsonMarshaled(scanError.URL), jsonMarshaled(scanError.Err))
+	"domain": %s,
+	"error": %s`, jsonMarshaled(scanError.Domain()), jsonMarshaled(scanError.Err))
 	if err != nil {
 		return err
 	}
@@ -265,8 +265,8 @@ func (j JSON) WriteErrors(ctx context.Context, fs scan.FileSystem) error {
 
 		_, err = fmt.Fprintf(j.writer, `
 		{
-			"url": %s,
-			"error": %s`, jsonMarshaled(scanError.URL), jsonMarshaled(scanError.Err))
+			"domain": %s,
+			"error": %s`, jsonMarshaled(scanError.Domain()), jsonMarshaled(scanError.Err))
 		if err != nil {
 			return err
 		}
@@ -362,14 +362,14 @@ func (j JSON) WriteErrors(ctx context.Context, fs scan.FileSystem) error {
 // WriteMatch writes a [scan.Match] to the [io.Writer] as a JSON object.
 func (j JSON) WriteMatch(_ context.Context, m scan.Match, includeResponse bool) error {
 	_, err := fmt.Fprintf(j.writer, `{
-	"url": %s,
+	"domain": %s,
 	"issue": {
 		"name": "%s",
 		"severity": "%s",
 		"confidence": "%s",
 		"param": %s
 	},
-	"type": "%s"`, jsonMarshaled(m.URL), m.IssueName, m.IssueSeverity, m.IssueConfidence, jsonMarshaled(m.IssueParam), m.ProfileType)
+	"type": "%s"`, jsonMarshaled(m.Domain()), m.IssueName, m.IssueSeverity, m.IssueConfidence, jsonMarshaled(m.IssueParam), m.ProfileType)
 	if err != nil {
 		return err
 	}
@@ -481,14 +481,14 @@ func (j JSON) WriteMatches(ctx context.Context, fs scan.FileSystem, includeRespo
 
 		_, err = fmt.Fprintf(j.writer, `
 		{
-			"url": %s,
+			"domain": %s,
 			"issue": {
 				"name": "%s",
 				"severity": "%s",
 				"confidence": "%s",
 				"param": %s
 			},
-			"type": "%s"`, jsonMarshaled(m.URL), m.IssueName, m.IssueSeverity, m.IssueConfidence, jsonMarshaled(m.IssueParam), m.ProfileType)
+			"type": "%s"`, jsonMarshaled(m.Domain()), m.IssueName, m.IssueSeverity, m.IssueConfidence, jsonMarshaled(m.IssueParam), m.ProfileType)
 		if err != nil {
 			return err
 		}
@@ -608,7 +608,7 @@ func (j JSON) WriteTasks(ctx context.Context, fs scan.FileSystem, allRequests, a
 
 		_, err = fmt.Fprintf(j.writer, `
 		{
-			"url": %s`, jsonMarshaled(scanTask.URL))
+			"domain": %s`, jsonMarshaled(scanTask.Domain()))
 		if err != nil {
 			return err
 		}

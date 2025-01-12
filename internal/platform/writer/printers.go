@@ -1,15 +1,17 @@
 package writer
 
 import (
+	"strconv"
+
 	"github.com/pterm/pterm"
 
 	"github.com/bountysecurity/gbounty/kit/console/color"
 )
 
-func urlPrinter() pterm.PrefixPrinter {
+func domainPrinter() pterm.PrefixPrinter {
 	return pterm.PrefixPrinter{
 		MessageStyle: color.Green(),
-		Prefix:       pterm.Prefix{Style: color.BoldYellow(), Text: "   URL    "},
+		Prefix:       pterm.Prefix{Style: color.BoldYellow(), Text: "  DOMAIN  "},
 	}
 }
 
@@ -98,6 +100,13 @@ func requestPrinter() pterm.PrefixPrinter {
 	return pterm.PrefixPrinter{
 		MessageStyle: color.LightCyan(),
 		Prefix:       pterm.Prefix{Style: color.BoldYellow(), Text: "  REQUEST "},
+	}
+}
+
+func requestNPrinter(idx int) pterm.PrefixPrinter {
+	return pterm.PrefixPrinter{
+		MessageStyle: color.LightCyan(),
+		Prefix:       pterm.Prefix{Style: color.BoldYellow(), Text: " REQUEST " + strconv.Itoa(idx)},
 	}
 }
 

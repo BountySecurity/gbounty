@@ -84,26 +84,27 @@ Flags:
   -h, --help
     	Show help
   --update
-    	Update app and profiles
+    	Update the binary and profiles to the latest version
   --update-app
-    	Update app
+    	Update the binary to the latest version
   --update-profiles
-    	Update profiles
+    	Update profiles to the latest version
   --force-update-profiles
-    	Update profiles forcefully
+    	Re-download the latest version of profiles
 
 TARGET INPUT:
   -u, --url value
-    	If specified, it will be used as the target url
+    	If specified, it will be used as a target url
 	Can be used more than once: -u url1 -u url2
   -uf, --urls-file string
-    	If specified, each line present on the file will be used as the target urls
+    	If specified, each line present on the file will be used as a target urls
   -rf, --requests-file string
-    	If specified, each file present on the requests file will be used as the target url and request template
+    	If specified, each file present on the compressed file will be used as a target url and request template
 	Only zipped (.zip) requests files are supported
   -rr, --raw-request value
-    	If specified, contents on given path will be used as the target url and request template
+    	If specified, contents on given path will be used as a target url and request template
 	Can be used more than once: --raw-request path/requests/req1.txt --raw-request path/requests/req2.txt
+	The host address must be in the first line before the raw request. Otherwise, the 'Host' header will be used
   -pf, --params-file string
     	If specified, each line present on the file will be used as a request parameter
 	Used in combination with --params-split
@@ -117,21 +118,23 @@ TARGET INPUT:
     	Determines the encoding the params (-pf/--params-file) will be included into (default: "url")
 	Supported encodings are: "url" (application/x-www-form-urlencoded) and "json" (application/json)
 	Only used when --params-method/-pm is set to "POST"
+   -h2, --http2
+    	Forces HTTP/2. If enabled, the proto from the request template, if present, will be ignored
 
 Options for --url (-u) and --urls-file:
   -X, --method string
-    	If specified, it will be used as default HTTP method for request templates
+    	If specified, it will be used as the HTTP method for request templates
   -H, --header value
-    	If specified, they will be used as the default HTTP header(s) for request templates
+    	If specified, it will be used as the HTTP header(s) for request templates
 	Can be used more than once: -H "Accept: application/json" -H "Content-Type: application/json"
   -d, --data value
-    	If specified, it will be used as the default HTTP body data for request templates
+    	If specified, it will be used as the HTTP body data for request templates
 
 PROFILE OPTIONS:
   -p, --profiles value
     	Determines the path where profile file(s) will be read from (default: "./profiles/")
 	It can also be used with the path to a specific profile file
-	Can be used more than once: -p profiles/XSS.bb -p profiles/SQLi.bb
+	Can be used more than once: -p profiles/XSS.bb2 -p profiles/SQLi.bb2
   -t, --tag value
     	If specified, only profiles tagged with provided tags will be used
 	Can be used more than once: -t tag1 -t tag2
@@ -145,35 +148,40 @@ PROFILE OPTIONS:
     	If specified, only passive response profiles will be analyzed during the scan
   -tags, --print-tags
     	Print available profile tags
+	Used in combination with --tag
 
 RUNTIME OPTIONS:
   -c, --concurrency int
     	Determines how many target URL(s) will be scanned concurrently (default: 10)
   -r, --rps int
     	Determines the limit of requests per second (per URL) (default: 10)
+  -safm, --stop-at-first-match
+    	If specified, the scan will stop at the first match found for each combination of
+	(a) profile, (b) step and (c) entrypoint
+	Enabled by default, can be disabled with --stop-at-first-match=false or -safm=false
   -s, --silent
     	If specified, no results will be printed to stdout
-  -sos, --save-on-stop
-    	Saves the scan's status when stopped
-  -f, --from string
-    	Scan's identifier to be used to continue
-  -m, --in-memory
-    	Use memory (only) as scan storage
-  -ih, --interaction-host string
-    	(Deprecated) If specified, the interaction host is injected into {IH}, {BH} and {BC} labels
   -bh, --blind-host string
-    	If specified, the interaction host is injected into {IH}, {BH} and {BC} labels
+    	If specified, the blind host will be injected into {BH} labels
   -email, --email-address string
-    	If specified, the email address is injected into {EMAIL} labels
+    	If specified, the email address will be injected into {EMAIL} labels
   --proxy-address string
     	If specified, requests are proxied to the given address
-	To specify host and port use host:port
+	To specify host and port use 'host:port'
   --proxy-auth string
     	If specified, proxied requests will include authentication details
+  -m, --in-memory
+    	Use memory (only) as storage for intermediate scan results.
+	Otherwise, it will use the filesystem (default)
+  -sos, --save-on-stop
+    	Save the scan's status, when manually interrupted
+	The scan's identifier will be printed, to be used in combination with --from
+  -f, --from string
+    	Scan's identifier to be used to continue from
 
 OUTPUT OPTIONS:
   -o, --output string
-    	Determines the path where the output file will be stored to
+    	Determine the path where the output file will be stored to
 	By default, the output file is formatted as plain text
   -j, --json
     	If specified, the output file will be JSON-formatted
@@ -191,7 +199,7 @@ OUTPUT OPTIONS:
 	As it causes a noisy output, must be used in combination with -o/--output flag
   -ares, --all-responses
     	If specified, results will include all responses
-	By default, only those requests that caused a match are included in results
+	By default, only those requests that caused a match, and no response, are included in results
 	As it causes a noisy output, must be used in combination with -o/--output flag
   -se, --show-errors
     	If specified, failed requests are included in results
@@ -213,6 +221,7 @@ DEBUG OPTIONS:
     	If specified, the internal logger will write debug, info, warning and error log messages
   -vout, --verbose-output string
     	If specified, the internal logger will write the log messages to a file
+	By default, those are printed to stdout
 
 EXAMPLES:
 gbounty -u https://example.org -X POST -d "param1=value1&param2=value2" -t XSS -r 20 -a -o /tmp/results.json --json

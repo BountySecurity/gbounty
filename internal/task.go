@@ -100,7 +100,7 @@ func (t *Task) payloadDecoded() string {
 func (t *Task) run(
 	ctx context.Context,
 	tpl Template,
-	fn RequesterBuilder,
+	reqBuilder RequesterBuilder,
 	bhPoller BlindHostPoller,
 	onRequestsScheduled, onRequestsSkipped func(int),
 	onMatchFn onMatchFunc,
@@ -135,11 +135,16 @@ func (t *Task) run(
 	}
 
 	// Otherwise, we run the corresponding step.
-	req, res, isMatch, occ, err := t.runStep(ctx, tpl, fn, bhPoller, baseModifiers, onMatchFn, onUpdate, passiveReqProfiles, passiveResProfiles, customTokens)
+	req, res, isMatch, occ, err := t.runStep(ctx, tpl, reqBuilder, bhPoller, baseModifiers, onMatchFn, onUpdate, passiveReqProfiles, passiveResProfiles, customTokens)
 	if err != nil {
 		// If the step failed, we log the error.
 		// However, we log it as .Warn because a failed step is not necessarily an execution error.
-		logger.For(ctx).Warnf(
+		// If the step failed because of a manual interruption, we log it as .Debug.
+		log := logger.For(ctx).Warnf
+		if errors.Is(err, ErrManuallyInterrupted) {
+			log = logger.For(ctx).Debugf
+		}
+		log(
 			"Step failed: step %d out of %d, method=%s, host=%s, path=%s, err=%s",
 			t.StepIdx, len(t.Profile.Steps), req.Method, req.URL, req.Path, err,
 		)
@@ -279,7 +284,7 @@ func (t *Task) runBase(
 func (t *Task) runStep(
 	ctx context.Context,
 	tpl Template,
-	fn RequesterBuilder,
+	reqBuilder RequesterBuilder,
 	bhPoller BlindHostPoller,
 	baseModifiers []Modifier,
 	onMatchFn onMatchFunc,
@@ -351,7 +356,7 @@ func (t *Task) runStep(
 		}
 
 		var requester Requester
-		if requester, err = fn(); err != nil {
+		if requester, err = reqBuilder(&req); err != nil {
 			return
 		}
 

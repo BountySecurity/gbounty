@@ -10,7 +10,6 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"time"
 
@@ -25,7 +24,6 @@ import (
 	"github.com/bountysecurity/gbounty/internal/modifier"
 	"github.com/bountysecurity/gbounty/internal/platform/cli"
 	"github.com/bountysecurity/gbounty/internal/platform/filesystem"
-	"github.com/bountysecurity/gbounty/internal/platform/http/client"
 	"github.com/bountysecurity/gbounty/internal/platform/writer"
 	"github.com/bountysecurity/gbounty/internal/profile"
 	"github.com/bountysecurity/gbounty/internal/request"
@@ -240,27 +238,6 @@ func runScan(
 			return err
 		}
 
-		var opts []client.Opt
-
-		if len(cfg.ProxyAddress) > 0 {
-			opts = append(opts, client.WithProxyAddr(cfg.ProxyAddress))
-			logger.For(ctx).Debugf("The HTTP client is using a proxy address: %s", cfg.ProxyAddress)
-		}
-
-		if len(cfg.ProxyAuth) > 0 {
-			opts = append(opts, client.WithProxyAuth(cfg.ProxyAuth))
-			logger.For(ctx).Debugf("The HTTP client is using a proxy auth: %s", cfg.ProxyAuth)
-		}
-
-		maxConcurrentRequests := 1_000
-		if stringVal, defined := os.LookupEnv("GBOUNTY_MAX_CONCURRENT_REQUESTS"); defined {
-			if n, err := strconv.ParseInt(stringVal, 10, 32); err == nil {
-				maxConcurrentRequests = int(n)
-			}
-		}
-		getClient := client.NewPool(ctx, uint32(maxConcurrentRequests), opts...)
-		newClientFn := func() (scan.Requester, error) { return getClient() }
-
 		// Initialize scan configuration from CLI arguments.
 		scanCfg := configFromArgs(cfg)
 
@@ -298,7 +275,7 @@ func runScan(
 			WithActiveProfiles(actives).
 			WithPassiveReqProfiles(passiveReqs).
 			WithPassiveResProfiles(passiveRes).
-			WithRequesterBuilder(newClientFn).
+			WithRequesterBuilder(setupScanRequester(ctx, cfg)).
 			WithOnUpdated(func(stats *scan.Stats) { updatesChan <- stats }).
 			WithOnFinished(finalizeScan(ctx, updatesChan, scanCfg, fs, id)).
 			WithSaveAllRequests(cfg.ShowAll || cfg.ShowAllRequests).
@@ -421,7 +398,7 @@ func gracefulContext(ctx context.Context) context.Context {
 	go func() {
 		sign := <-done
 		logger.For(ctx).Infof("Scan interrupted manually, signal: %s", sign.String())
-		cancel(fmt.Errorf("scan interrupted manually, signal: %s", sign.String())) //nolint:goerr113
+		cancel(fmt.Errorf("%w, signal: %s", scan.ErrManuallyInterrupted, sign.String())) //nolint:goerr113
 	}()
 
 	return ctx

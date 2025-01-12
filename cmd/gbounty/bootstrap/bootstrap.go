@@ -31,6 +31,7 @@ import (
 	"github.com/bountysecurity/gbounty/kit/blindhost"
 	"github.com/bountysecurity/gbounty/kit/logger"
 	"github.com/bountysecurity/gbounty/kit/panics"
+	"github.com/bountysecurity/gbounty/kit/progressbar"
 	"github.com/bountysecurity/gbounty/kit/strings/occurrence"
 	"github.com/bountysecurity/gbounty/kit/ulid"
 )
@@ -81,11 +82,28 @@ func Run() error {
 
 	updatesChan := make(chan *scan.Stats)
 
+	pbPrinter := progressbar.NewPrinter()
+
+	initBar := func() error {
+		var err error
+		pbPrinter.ProgressbarPrinter, err = pterm.DefaultProgressbar.
+			WithBarStyle(pterm.NewStyle(pterm.FgLightCyan)).
+			WithTitleStyle(pterm.NewStyle(pterm.FgLightMagenta)).
+			WithRemoveWhenDone(true).
+			Start()
+
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}
+
 	// We set everything up,
 	// ready for the scan to start.
 	g, gCtx := errgroup.WithContext(ctx)
-	g.Go(printUpdates(gCtx, updatesChan))
-	g.Go(runScan(gCtx, cfg, profilesProvider, updatesChan))
+	g.Go(printUpdates(gCtx, updatesChan, pbPrinter, initBar))
+	g.Go(runScan(gCtx, cfg, profilesProvider, updatesChan, pbPrinter))
 	debugSrv := initDebugServer(ctx)
 
 	// Wait for the scan to happen,
@@ -148,23 +166,14 @@ func parseCLIArgs() (cli.Config, error) {
 	return cliConfig, nil
 }
 
-func printUpdates(ctx context.Context, updatesChan chan *scan.Stats) func() error {
+func printUpdates(
+	ctx context.Context,
+	updatesChan chan *scan.Stats,
+	pbPrinter *progressbar.Printer,
+	initBar func() error,
+) func() error {
 	return func() error {
 		defer panics.Log(ctx)
-
-		var p *pterm.ProgressbarPrinter
-
-		initBar := func() error {
-			var err error
-
-			p, err = pterm.DefaultProgressbar.
-				WithBarStyle(pterm.NewStyle(pterm.FgLightCyan)).
-				WithTitleStyle(pterm.NewStyle(pterm.FgLightMagenta)).
-				WithRemoveWhenDone(true).
-				Start()
-
-			return err
-		}
 
 		for {
 			select {
@@ -175,7 +184,7 @@ func printUpdates(ctx context.Context, updatesChan chan *scan.Stats) func() erro
 				}
 
 				// Bar not initialized yet (first update)
-				if p == nil {
+				if !pbPrinter.IsActive {
 					if err := initBar(); err != nil {
 						return err
 					}
@@ -187,11 +196,11 @@ func printUpdates(ctx context.Context, updatesChan chan *scan.Stats) func() erro
 					total = stats.NumOfPerformedRequests
 				}
 
-				p.Title = fmt.Sprintf("Scanning... [%d / %d]", stats.NumOfPerformedRequests, total)
-				p.Total = total
-				p.ShowCount = false
-				p.Current = stats.NumOfPerformedRequests
-				p.Add(0) // force print
+				pbPrinter.Title = fmt.Sprintf("Scanning... [%d / %d]", stats.NumOfPerformedRequests, total)
+				pbPrinter.Total = total
+				pbPrinter.ShowCount = false
+				pbPrinter.Current = stats.NumOfPerformedRequests
+				pbPrinter.Add(0) // force print
 
 			case <-ctx.Done():
 				return nil
@@ -206,6 +215,7 @@ func runScan(
 	cfg cli.Config,
 	profilesProvider profile.Provider,
 	updatesChan chan *scan.Stats,
+	pbPrinter *progressbar.Printer,
 ) func() error {
 	return func() error {
 		defer panics.Log(ctx)
@@ -277,7 +287,7 @@ func runScan(
 			WithPassiveResProfiles(passiveRes).
 			WithRequesterBuilder(setupScanRequester(ctx, cfg)).
 			WithOnUpdated(func(stats *scan.Stats) { updatesChan <- stats }).
-			WithOnFinished(finalizeScan(ctx, updatesChan, scanCfg, fs, id)).
+			WithOnFinished(finalizeScan(ctx, updatesChan, pbPrinter, scanCfg, fs, id)).
 			WithSaveAllRequests(cfg.ShowAll || cfg.ShowAllRequests).
 			WithSaveResponses(cfg.ShowResponses).
 			WithSaveAllResponses(cfg.ShowAll || cfg.ShowAllResponses).
@@ -529,7 +539,13 @@ func shouldBeIncluded[P profile.Profile](prof P, tags []string) bool {
 	return false
 }
 
-func finalizeScan(ctx context.Context, updatesChan chan *scan.Stats, cfg scan.Config, fs scan.FileSystem, id string) func(*scan.Stats, error) {
+func finalizeScan(
+	ctx context.Context,
+	updatesChan chan *scan.Stats,
+	pbPrinter *progressbar.Printer,
+	cfg scan.Config,
+	fs scan.FileSystem,
+	id string) func(*scan.Stats, error) {
 	return func(stats *scan.Stats, err error) {
 		logger.For(ctx).Info("Finalizing scan...")
 
@@ -551,6 +567,12 @@ func finalizeScan(ctx context.Context, updatesChan chan *scan.Stats, cfg scan.Co
 
 		close(updatesChan)
 		time.Sleep(time.Millisecond)
+
+		// Before we actually start the finalization, we first stop
+		// the progress bar printer, if it's not nil, to clean up screen.
+		if pbPrinter != nil {
+			_, _ = pbPrinter.Stop()
+		}
 
 		if errors.Is(err, context.Canceled) && cfg.SaveOnStop {
 			logger.For(ctx).Info("Scan stopped and 'save on stop' is enabled, saving data...")

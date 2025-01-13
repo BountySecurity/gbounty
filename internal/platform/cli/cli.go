@@ -54,6 +54,8 @@ func Parse(args []string) (Config, error) {
 	fs.Alias("pm", "params-method")
 	fs.StringVar(target, &config.ParamsEncoding, "params-encoding", defaultParamsEncode, "Determines the encoding the params (-pf/--params-file) will be included into (default: \"url\")\n\tSupported encodings are: \"url\" (application/x-www-form-urlencoded) and \"json\" (application/json)\n\tOnly used when --params-method/-pm is set to \"POST\"")
 	fs.Alias("pe", "params-encoding")
+	fs.BoolVar(target, &config.ForceHTTP2, "http2", false, "Forces HTTP/2. If enabled, the request's proto, if present, will be ignored")
+	fs.Alias("h2", "http2")
 
 	// targetOpts
 	fs.InitGroup(targetOpts, "Options for --url (-u) and --urls-file:")

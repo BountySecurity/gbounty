@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	scan "github.com/bountysecurity/gbounty/internal"
@@ -46,7 +47,7 @@ func PrepareTemplates(ctx context.Context, fs scan.FileSystem, cfg Config) error
 			logger.For(ctx).Errorf("Error while reading params file: %s", err.Error())
 		}
 	}
-	return createTemplates(ctx, fs, cfg, pCfg)
+	return createTemplates(ctx, fs, cfg, pCfg, cfg.ForceHTTP2)
 }
 
 func readParamsFile(ctx context.Context, pathToFile string) ([]string, error) {
@@ -66,17 +67,17 @@ func readParamsFile(ctx context.Context, pathToFile string) ([]string, error) {
 	return params, nil
 }
 
-func createTemplates(ctx context.Context, fs scan.FileSystem, cfg Config, pCfg scan.ParamsCfg) error {
-	logger.For(ctx).Info("Preparing templates for scan")
+func createTemplates(ctx context.Context, fs scan.FileSystem, cfg Config, pCfg scan.ParamsCfg, http2 bool) error {
+	logger.For(ctx).Infof("Preparing templates for scan, force http/2: %s", strconv.FormatBool(http2))
 
 	if len(cfg.RequestsFile) > 0 {
 		logger.For(ctx).Infof("Scan templates from requests file: %s", cfg.RequestsFile)
-		return createFromRequestsFile(ctx, fs, cfg.RequestsFile, pCfg)
+		return createFromRequestsFile(ctx, fs, cfg.RequestsFile, pCfg, http2)
 	}
 
 	if len(cfg.RawRequests) > 0 {
 		logger.For(ctx).Infof("Scan templates from raw requests: %s", cfg.RawRequests)
-		return createFromRawRequestFiles(ctx, fs, cfg.RawRequests, pCfg)
+		return createFromRawRequestFiles(ctx, fs, cfg.RawRequests, pCfg, http2)
 	}
 
 	if len(cfg.UrlsFile) > 0 {
@@ -90,16 +91,20 @@ func createTemplates(ctx context.Context, fs scan.FileSystem, cfg Config, pCfg s
 	}
 
 	logger.For(ctx).Infof("Scan templates from config")
-	return createFromConfig(ctx, fs, cfg, pCfg)
+	return createFromConfig(ctx, fs, cfg, pCfg, http2)
 }
 
-func createFromRequestsFile(ctx context.Context, fs scan.FileSystem, path string, pCfg scan.ParamsCfg) error {
+func createFromRequestsFile(ctx context.Context, fs scan.FileSystem, path string, pCfg scan.ParamsCfg, http2 bool) error {
 	file, err := os.ReadFile(path)
 	if err != nil {
 		return fmt.Errorf("%w(%s): %s", ErrProcessRequestFile, path, err.Error())
 	}
 
-	templates, err := scan.TemplatesFromZipBytes(ctx, pCfg, file)
+	var opts []request.Option
+	if http2 {
+		opts = append(opts, request.WithProto("HTTP/2.0"))
+	}
+	templates, err := scan.TemplatesFromZipBytes(ctx, pCfg, file, opts...)
 	if err != nil {
 		return fmt.Errorf("%w(%s): %s", ErrProcessRequestFile, path, err.Error())
 	}
@@ -114,7 +119,7 @@ func createFromRequestsFile(ctx context.Context, fs scan.FileSystem, path string
 	return nil
 }
 
-func createFromRawRequestFiles(ctx context.Context, fs scan.FileSystem, paths MultiValue, pCfg scan.ParamsCfg) error {
+func createFromRawRequestFiles(ctx context.Context, fs scan.FileSystem, paths MultiValue, pCfg scan.ParamsCfg, http2 bool) error {
 	var tplIdx int
 	for _, path := range paths {
 		bytes, err := os.ReadFile(path)
@@ -122,7 +127,11 @@ func createFromRawRequestFiles(ctx context.Context, fs scan.FileSystem, paths Mu
 			return fmt.Errorf("%w(%s): %s", ErrProcessRequestFile, path, err.Error())
 		}
 
-		templates, err := scan.TemplateFromRawBytes(ctx, tplIdx, pCfg, bytes)
+		var opts []request.Option
+		if http2 {
+			opts = append(opts, request.WithProto("HTTP/2.0"))
+		}
+		templates, err := scan.TemplateFromRawBytes(ctx, tplIdx, pCfg, bytes, opts...)
 		if err != nil {
 			return fmt.Errorf("%w(%s): %s", ErrProcessRequestFile, path, err.Error())
 		}
@@ -139,7 +148,7 @@ func createFromRawRequestFiles(ctx context.Context, fs scan.FileSystem, paths Mu
 	return nil
 }
 
-func createFromConfig(ctx context.Context, fs scan.FileSystem, cfg Config, pCfg scan.ParamsCfg) error {
+func createFromConfig(ctx context.Context, fs scan.FileSystem, cfg Config, pCfg scan.ParamsCfg, http2 bool) error {
 	var options []request.Option
 
 	if len(cfg.Method) > 0 {
@@ -167,6 +176,10 @@ func createFromConfig(ctx context.Context, fs scan.FileSystem, cfg Config, pCfg 
 			value = strings.TrimSpace(value)
 			options = append(options, request.WithHeader(key, value))
 		}
+	}
+
+	if http2 {
+		options = append(options, request.WithProto("HTTP/2.0"))
 	}
 
 	var tplIdx int

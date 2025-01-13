@@ -72,6 +72,9 @@ func (r *reader) readResponse() (string, int, string, map[string][]string, io.Re
 		if err != nil {
 			return "", 0, "", nil, nil, ErrInvalidGZIP
 		}
+
+		const maxResponseReadSizeDecompress = 10 * 1024 * 1024
+		body = io.LimitReader(body, maxResponseReadSizeDecompress)
 	}
 
 	return proto, code, msg, headers, body, err

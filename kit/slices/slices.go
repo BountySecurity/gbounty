@@ -41,8 +41,6 @@ func NoneIn[T comparable](s []T, ee []T) bool {
 
 // ValForKey returns the value for a key in a slice.
 // It assumes that the slice is a key-value pair.
-//
-//nolint:ireturn
 func ValForKey[T comparable](s []T, e T) (T, bool) {
 	var (
 		found bool

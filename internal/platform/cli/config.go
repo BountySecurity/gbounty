@@ -372,7 +372,7 @@ func (cfg Config) checkInteractionHostIsValid() error {
 
 func (cfg Config) checkIfVerboseAndPocNotTogether() error {
 	if cfg.Verbosity.Level() != logger.LevelDisabled && cfg.OnlyProofOfConcept {
-		return errors.New("you cannot use verbose (-v/-vv/-vvv) and proof-of-concept (--only-poc/-poc) modes together")
+		return errors.New("you cannot use verbose (-v/-vv/-vvv) and proof-of-concept (--only-poc/-poc) modes together") //nolint:err113
 	}
 	return nil
 }

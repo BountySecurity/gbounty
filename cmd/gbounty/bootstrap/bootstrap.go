@@ -568,7 +568,7 @@ func finalizeScan(ctx context.Context, updatesChan chan *scan.Stats, cfg scan.Co
 
 		// We declare the console writer that
 		// will (most likely) be used below later.
-		consoleWriter := writer.NewConsole(os.Stdout)
+		consoleWriter := writer.NewConsole(os.Stdout, writer.WithProofOfConceptEnabled(cfg.OnlyProofOfConcept))
 
 		// We write the results to the specified output.
 		if len(cfg.OutPath) > 0 {

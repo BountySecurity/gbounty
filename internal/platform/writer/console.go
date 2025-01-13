@@ -15,6 +15,12 @@ import (
 	"github.com/bountysecurity/gbounty/kit/strings/occurrence"
 )
 
+const (
+	clearLine       = "\033[2K"
+	moveToBeginning = "\033[1G"
+	resetLine       = clearLine + moveToBeginning
+)
+
 // Console must implement the [scan.Writer] interface.
 var _ scan.Writer = Console{}
 
@@ -38,20 +44,19 @@ func WithProofOfConceptEnabled(enabled bool) func(*Console) {
 
 // NewConsole creates a new instance of [Console] with the given [io.Writer].
 func NewConsole(writer io.Writer, opts ...ConsoleOption) Console {
-	c := Console{
-		writer:     writer,
-		pocEnabled: false, // default value
-	}
-
+	c := Console{writer: writer}
 	for _, opt := range opts {
 		opt(&c)
 	}
-
 	return c
 }
 
 // WriteConfig writes the [scan.Config] to the console.
 func (c Console) WriteConfig(_ context.Context, cfg scan.Config) error {
+	if c.pocEnabled {
+		return nil
+	}
+
 	cyan := color.Cyan()
 	lightCyan := color.LightCyan()
 	infoPrinter := printer.Info()
@@ -184,6 +189,10 @@ func (c Console) WriteMatchesSummary(ctx context.Context, fs scan.FileSystem) er
 
 // WriteError writes the [scan.Error] to the console.
 func (c Console) WriteError(_ context.Context, scanError scan.Error) error {
+	if c.pocEnabled {
+		return nil
+	}
+
 	builder := strings.Builder{}
 	builder.WriteString("\n")
 	builder.WriteString(urlPrinter().Sprintln(scanError.URL))
@@ -215,6 +224,10 @@ func (c Console) WriteError(_ context.Context, scanError scan.Error) error {
 
 // WriteErrors writes the [scan.Error] instances to the console.
 func (c Console) WriteErrors(ctx context.Context, fs scan.FileSystem) error {
+	if c.pocEnabled {
+		return nil
+	}
+
 	_, err := fmt.Fprint(c.writer, defaultSection().Sprintln("## Errors"))
 	if err != nil {
 		return err
@@ -272,10 +285,13 @@ func (c Console) WriteMatch(_ context.Context, m scan.Match, includeResponse boo
 		builder.WriteString(confidencePrinter(m.IssueConfidence).Sprintln(m.IssueConfidence))
 		builder.WriteString(typePrinter().Sprintln(m.ProfileType))
 		builder.WriteString(urlPrinter().Sprintln(m.URL))
-	}
-
-	if len(m.IssueParam) > 0 {
-		builder.WriteString(paramPrinter().Sprintln(m.IssueParam))
+		if len(m.IssueParam) > 0 {
+			builder.WriteString(paramPrinter().Sprintln(m.IssueParam))
+		}
+	} else {
+		builder.WriteString("\n")
+		styledURL := pterm.NewStyle(pterm.FgLightCyan).Sprintln(m.URL)
+		builder.WriteString(styledURL)
 	}
 
 	if m.Requests != nil {
@@ -285,14 +301,15 @@ func (c Console) WriteMatch(_ context.Context, m scan.Match, includeResponse boo
 			}
 			if !c.pocEnabled {
 				builder.WriteString(requestPrinter().Sprintln(string(r.Bytes())))
+				builder.WriteString("\n")
 			} else {
-				styledText := pterm.NewStyle(pterm.FgLightCyan).Sprint(string(r.Bytes()))
+				styledText := pterm.NewStyle(pterm.FgLightCyan).Sprintln(string(r.Bytes()))
 				builder.WriteString(styledText)
 			}
 		}
 	}
 
-	if m.Responses != nil && includeResponse {
+	if m.Responses != nil && !c.pocEnabled && includeResponse {
 		for i, r := range m.Responses {
 			if r == nil {
 				continue
@@ -304,7 +321,7 @@ func (c Console) WriteMatch(_ context.Context, m scan.Match, includeResponse boo
 		}
 	}
 
-	_, err := fmt.Fprint(c.writer, "\033[2K"+builder.String())
+	_, err := fmt.Fprint(c.writer, resetLine+builder.String())
 
 	return err
 }
@@ -389,6 +406,10 @@ func (c Console) WriteMatches(ctx context.Context, fs scan.FileSystem, includeRe
 
 // WriteTasks writes the [scan.TaskSummary] instances to the console.
 func (c Console) WriteTasks(ctx context.Context, fs scan.FileSystem, allRequests, allResponses bool) error {
+	if c.pocEnabled {
+		return nil
+	}
+
 	_, err := fmt.Fprint(c.writer, defaultSection().Sprintln("## Requests / Responses"))
 	if err != nil {
 		return err

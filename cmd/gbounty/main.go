@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/pterm/pterm"
@@ -15,6 +16,8 @@ func main() {
 	showAppName := slices.NoneIn(os.Args, []string{"-poc", "--only-poc"})
 	if showAppName {
 		bootstrap.PrintAppName()
+	} else {
+		fmt.Println() //nolint:forbidigo
 	}
 
 	bootstrap.CheckForUpdates()

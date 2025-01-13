@@ -28,10 +28,9 @@ type Console struct {
 
 type ConsoleOption func(*Console)
 
-// WithPOCEnabled is a [ConsoleOption] that enables the Proof of Concept (PoC) mode.
-// When enabled, the console will print the matches in a more readable format.
-// This is useful when the user wants to copy the PoC to a file or another tool.
-func WithPOCEnabled(enabled bool) func(*Console) {
+// WithProofOfConceptEnabled is a [ConsoleOption] that enables the proof-of-concept mode.
+// When enabled, the console will print the matches in a copy & paste friendlier format.
+func WithProofOfConceptEnabled(enabled bool) func(*Console) {
 	return func(c *Console) {
 		c.pocEnabled = enabled
 	}

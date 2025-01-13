@@ -24,19 +24,18 @@ type Config struct {
 	CustomTokens    map[string]string
 	PayloadStrategy PayloadStrategy
 
-	Silent           bool
-	StreamErrors     bool
-	StreamMatches    bool
-	ShowResponses    bool
-	ShowErrors       bool
-	ShowAll          bool
-	ShowAllRequests  bool
-	ShowAllResponses bool
+	Silent             bool
+	StreamErrors       bool
+	StreamMatches      bool
+	ShowResponses      bool
+	ShowErrors         bool
+	ShowAll            bool
+	ShowAllRequests    bool
+	ShowAllResponses   bool
+	OnlyProofOfConcept bool
 
 	OutPath   string
 	OutFormat string
-
-	Poc bool
 }
 
 // Clone returns a deep copy of the [Config] instance.

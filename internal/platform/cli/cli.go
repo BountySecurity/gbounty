@@ -34,7 +34,7 @@ func Parse(args []string) (Config, error) {
 	fs.BoolVar("", &config.UpdateApp, "update-app", false, "Update app")
 	fs.BoolVar("", &config.UpdateProfiles, "update-profiles", false, "Update profiles")
 	fs.BoolVar("", &config.ForceUpdateProfiles, "force-update-profiles", false, "Update profiles forcefully")
-	fs.BoolVar("", &config.CheckUpdates, "check-updates", false, "Invalidates behavior of checking updates once per day")
+	fs.BoolVar("", &config.CheckUpdates, "check-updates", false, "Check for available updates forcefully\n\tBy default, available updates are checked only once a day")
 
 	// target
 	fs.InitGroup(target, "TARGET INPUT:")
@@ -54,6 +54,8 @@ func Parse(args []string) (Config, error) {
 	fs.Alias("pm", "params-method")
 	fs.StringVar(target, &config.ParamsEncoding, "params-encoding", defaultParamsEncode, "Determines the encoding the params (-pf/--params-file) will be included into (default: \"url\")\n\tSupported encodings are: \"url\" (application/x-www-form-urlencoded) and \"json\" (application/json)\n\tOnly used when --params-method/-pm is set to \"POST\"")
 	fs.Alias("pe", "params-encoding")
+	fs.BoolVar(target, &config.ForceHTTP2, "http2", false, "Forces HTTP/2. If enabled, the request's proto, if present, will be ignored")
+	fs.Alias("h2", "http2")
 
 	// targetOpts
 	fs.InitGroup(targetOpts, "Options for --url (-u) and --urls-file:")
@@ -128,7 +130,7 @@ func Parse(args []string) (Config, error) {
 	fs.Alias("ste", "stream-errors")
 	fs.BoolVar(output, &config.StreamMatches, "stream-matches", true, "If specified, those requests that caused a match are printed to stdout during the scan (live)\n\tEnabled by default, can be disabled with --stream-matches=false or -stm=false")
 	fs.Alias("stm", "stream-matches")
-	fs.BoolVar(profile, &config.UsePocMode, "only-poc", false, "Print only URLs")
+	fs.BoolVar(profile, &config.OnlyProofOfConcept, "only-poc", false, "If specified, only matched requests will be printed, nothing else.")
 	fs.Alias("poc", "only-poc")
 
 	// debug

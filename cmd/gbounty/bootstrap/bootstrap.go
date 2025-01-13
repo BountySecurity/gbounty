@@ -10,7 +10,6 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"time"
 
@@ -25,7 +24,6 @@ import (
 	"github.com/bountysecurity/gbounty/internal/modifier"
 	"github.com/bountysecurity/gbounty/internal/platform/cli"
 	"github.com/bountysecurity/gbounty/internal/platform/filesystem"
-	"github.com/bountysecurity/gbounty/internal/platform/http/client"
 	"github.com/bountysecurity/gbounty/internal/platform/writer"
 	"github.com/bountysecurity/gbounty/internal/profile"
 	"github.com/bountysecurity/gbounty/internal/request"
@@ -240,27 +238,6 @@ func runScan(
 			return err
 		}
 
-		var opts []client.Opt
-
-		if len(cfg.ProxyAddress) > 0 {
-			opts = append(opts, client.WithProxyAddr(cfg.ProxyAddress))
-			logger.For(ctx).Debugf("The HTTP client is using a proxy address: %s", cfg.ProxyAddress)
-		}
-
-		if len(cfg.ProxyAuth) > 0 {
-			opts = append(opts, client.WithProxyAuth(cfg.ProxyAuth))
-			logger.For(ctx).Debugf("The HTTP client is using a proxy auth: %s", cfg.ProxyAuth)
-		}
-
-		maxConcurrentRequests := 1_000
-		if stringVal, defined := os.LookupEnv("GBOUNTY_MAX_CONCURRENT_REQUESTS"); defined {
-			if n, err := strconv.ParseInt(stringVal, 10, 32); err == nil {
-				maxConcurrentRequests = int(n)
-			}
-		}
-		getClient := client.NewPool(ctx, uint32(maxConcurrentRequests), opts...)
-		newClientFn := func() (scan.Requester, error) { return getClient() }
-
 		// Initialize scan configuration from CLI arguments.
 		scanCfg := configFromArgs(cfg)
 
@@ -298,7 +275,7 @@ func runScan(
 			WithActiveProfiles(actives).
 			WithPassiveReqProfiles(passiveReqs).
 			WithPassiveResProfiles(passiveRes).
-			WithRequesterBuilder(newClientFn).
+			WithRequesterBuilder(setupScanRequester(ctx, cfg)).
 			WithOnUpdated(func(stats *scan.Stats) { updatesChan <- stats }).
 			WithOnFinished(finalizeScan(ctx, updatesChan, scanCfg, fs, id)).
 			WithSaveAllRequests(cfg.ShowAll || cfg.ShowAllRequests).
@@ -306,7 +283,7 @@ func runScan(
 			WithSaveAllResponses(cfg.ShowAll || cfg.ShowAllResponses).
 			WithFileSystem(fs)
 
-		w := writer.NewConsole(os.Stdout, writer.WithPOCEnabled(cfg.UsePocMode))
+		w := writer.NewConsole(os.Stdout, writer.WithProofOfConceptEnabled(cfg.OnlyProofOfConcept))
 
 		if cfg.StreamErrors && !cfg.Silent {
 			logger.For(ctx).Info("Errors streaming enabled")
@@ -421,7 +398,7 @@ func gracefulContext(ctx context.Context) context.Context {
 	go func() {
 		sign := <-done
 		logger.For(ctx).Infof("Scan interrupted manually, signal: %s", sign.String())
-		cancel(fmt.Errorf("scan interrupted manually, signal: %s", sign.String())) //nolint:goerr113
+		cancel(fmt.Errorf("%w, signal: %s", scan.ErrManuallyInterrupted, sign.String())) //nolint:goerr113
 	}()
 
 	return ctx
@@ -436,17 +413,17 @@ func configFromArgs(cfg cli.Config) scan.Config {
 		InMemory:     cfg.InMemory,
 		EmailAddress: len(cfg.EmailAddress) > 0,
 
-		Silent:           cfg.Silent,
-		StreamErrors:     cfg.StreamErrors,
-		StreamMatches:    cfg.StreamMatches,
-		ShowResponses:    cfg.ShowResponses,
-		ShowErrors:       cfg.ShowErrors,
-		ShowAll:          cfg.ShowAll,
-		ShowAllRequests:  cfg.ShowAllRequests,
-		ShowAllResponses: cfg.ShowAllResponses,
-		OutPath:          cfg.OutPath,
-		OutFormat:        cfg.OutFormat,
-		Poc:              cfg.UsePocMode,
+		Silent:             cfg.Silent,
+		StreamErrors:       cfg.StreamErrors,
+		StreamMatches:      cfg.StreamMatches,
+		ShowResponses:      cfg.ShowResponses,
+		ShowErrors:         cfg.ShowErrors,
+		ShowAll:            cfg.ShowAll,
+		ShowAllRequests:    cfg.ShowAllRequests,
+		ShowAllResponses:   cfg.ShowAllResponses,
+		OutPath:            cfg.OutPath,
+		OutFormat:          cfg.OutFormat,
+		OnlyProofOfConcept: cfg.OnlyProofOfConcept,
 	}
 }
 
@@ -478,18 +455,18 @@ func loadProfiles(
 	logger.For(ctx).Infof("Loaded %d enabled passive response profile(s) successfully", len(passiveRes))
 
 	loadingFrom := provider.From()
-	if len(loadingFrom) == 1 {
-		if !cfg.Poc {
+	if !cfg.OnlyProofOfConcept {
+		if len(loadingFrom) == 1 {
 			pterm.Info.Printf("Loading profiles from: %s\n", loadingFrom[0])
-		}
-	} else {
-		pterm.Info.Printf(
-			`Loading profiles from... 
+		} else {
+			pterm.Info.Printf(
+				`Loading profiles from... 
 	- %s
 `, strings.Join(provider.From(), "\n\t- "))
+		}
 	}
 
-	if !cfg.Poc {
+	if !cfg.OnlyProofOfConcept {
 		pterm.Success.Printf(
 			"Profiles loaded successfully... active(s): %d, passive request(s): %d, passive response(s): %d\n",
 			len(actives), len(passiveReqs), len(passiveRes),
@@ -507,10 +484,12 @@ func loadProfiles(
 		logger.For(ctx).Infof("Passive request profile(s) remaining after filtering by tag: %d", len(passiveReqs))
 		logger.For(ctx).Infof("Passive response profile(s) remaining after filtering by tag: %d", len(passiveRes))
 
-		pterm.Success.Printf(
-			"Profiles filtered (%s) successfully, remaining... active(s): %d, passive request(s): %d, passive response(s): %d\n",
-			cfg.FilterTags.String(), len(actives), len(passiveReqs), len(passiveRes),
-		)
+		if !cfg.OnlyProofOfConcept {
+			pterm.Success.Printf(
+				"Profiles filtered (%s) successfully, remaining... active(s): %d, passive request(s): %d, passive response(s): %d\n",
+				cfg.FilterTags.String(), len(actives), len(passiveReqs), len(passiveRes),
+			)
+		}
 	}
 
 	return actives, passiveReqs, passiveRes
@@ -597,7 +576,7 @@ func finalizeScan(ctx context.Context, updatesChan chan *scan.Stats, cfg scan.Co
 			storeOutput(ctx, cfg, fs)
 
 			// If no silent, we print the summary as well.
-			if !cfg.Silent || !cfg.Poc {
+			if !cfg.Silent || !cfg.OnlyProofOfConcept {
 				if err := consoleWriter.WriteStats(ctx, fs); err != nil {
 					pterm.Error.WithShowLineNumber(false).Printf(`Error while printing scan stats: %s`, err)
 					logger.For(ctx).Errorf("Error while printing scan stats: %s", err)
@@ -675,9 +654,7 @@ func writeScanFromFs(ctx context.Context, w scan.Writer, cfg scan.Config, fs sca
 		}
 	}
 
-	var err error
-
-	err = w.WriteStats(ctx, fs)
+	err := w.WriteStats(ctx, fs)
 	if err != nil {
 		return err
 	}
@@ -712,10 +689,11 @@ func writeScanFromFs(ctx context.Context, w scan.Writer, cfg scan.Config, fs sca
 }
 
 func writeConfig(ctx context.Context, writer scan.Writer, cfg scan.Config) error {
-	if cfg.Poc {
-		logger.For(ctx).Debug("POC mode enabled: scan configuration not displayed in the output")
+	if cfg.OnlyProofOfConcept {
+		logger.For(ctx).Debug("OnlyProofOfConcept mode enabled: scan configuration not displayed in the output")
 		return nil
 	}
+
 	if cfg.Silent {
 		logger.For(ctx).Debug("Silent mode enabled: scan configuration not displayed in the output")
 		return nil

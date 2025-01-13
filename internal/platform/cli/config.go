@@ -48,6 +48,8 @@ type Config struct {
 	SaveOnStop bool
 	// Continue contains the scan's identifier to be used to continue.
 	Continue string
+	// ForceHTTP2 determines whether the scan will use HTTP/2.
+	ForceHTTP2 bool
 	// URLS specifies the list of URLs used to define the scan.
 	URLS MultiValue
 	// UrlsFile specifies the path to the URLs file to define the scan.
@@ -136,11 +138,11 @@ type Config struct {
 	UpdateProfiles bool
 	// ForceUpdateProfiles determines whether profiles will be updated forcefully.
 	ForceUpdateProfiles bool
-	// UsePocMode determines whether the proof-of-concept mode is enabled or not.
-	// When enabled, only those requests that produce a match (issue) will be printed to the standard output. Nothing else.
-	UsePocMode bool
-	// CheckUpdates Invalidates behavior of checking updates once per day
+	// CheckUpdates checks for updates forcefully. By default, only once per day.
 	CheckUpdates bool
+	// OnlyProofOfConcept determines whether the proof-of-concept mode is enabled or not.
+	// When enabled, only matched requests will be printed, nothing else.
+	OnlyProofOfConcept bool
 }
 
 // ScanAllProfiles returns true if [Config] is set to return a subset of any specific
@@ -369,8 +371,8 @@ func (cfg Config) checkInteractionHostIsValid() error {
 }
 
 func (cfg Config) checkIfVerboseAndPocNotTogether() error {
-	if cfg.Verbosity.Level() != logger.LevelDisabled && cfg.UsePocMode {
-		return errors.New("you cannot use -v/-vv/-vv and -poc together")
+	if cfg.Verbosity.Level() != logger.LevelDisabled && cfg.OnlyProofOfConcept {
+		return errors.New("you cannot use verbose (-v/-vv/-vvv) and proof-of-concept (--only-poc/-poc) modes together")
 	}
 	return nil
 }

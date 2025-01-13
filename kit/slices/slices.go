@@ -22,6 +22,23 @@ func In[T comparable](s []T, e T) bool {
 	return false
 }
 
+// NoneIn returns true if none element is in a slice.
+// Otherwise, it returns false.
+func NoneIn[T comparable](s []T, ee []T) bool {
+	m := make(map[T]struct{}, len(s))
+	for _, e := range ee {
+		m[e] = struct{}{}
+	}
+
+	for _, v := range s {
+		if _, exists := m[v]; exists {
+			return false
+		}
+	}
+
+	return true
+}
+
 // ValForKey returns the value for a key in a slice.
 // It assumes that the slice is a key-value pair.
 //

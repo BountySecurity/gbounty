@@ -138,6 +138,8 @@ type Config struct {
 	UpdateProfiles bool
 	// ForceUpdateProfiles determines whether profiles will be updated forcefully.
 	ForceUpdateProfiles bool
+	// CheckUpdates Invalidates behavior of checking updates once per day
+	CheckUpdates bool
 }
 
 // ScanAllProfiles returns true if [Config] is set to return a subset of any specific

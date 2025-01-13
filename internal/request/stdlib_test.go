@@ -11,6 +11,8 @@ import (
 )
 
 func TestToStdlib_Basic(t *testing.T) {
+	t.Parallel()
+
 	baseReqBody := []byte("test body")
 
 	baseReq := request.Request{
@@ -32,6 +34,8 @@ func TestToStdlib_Basic(t *testing.T) {
 }
 
 func TestToStdlib_CustomPath(t *testing.T) {
+	t.Parallel()
+
 	const baseReqPath = "/custom-path"
 
 	baseReq := request.Request{
@@ -47,6 +51,8 @@ func TestToStdlib_CustomPath(t *testing.T) {
 }
 
 func TestToStdlib_CustomProtocolVersion(t *testing.T) {
+	t.Parallel()
+
 	baseReq := request.Request{
 		Method: "GET",
 		URL:    "https://example.com",
@@ -62,6 +68,8 @@ func TestToStdlib_CustomProtocolVersion(t *testing.T) {
 }
 
 func TestToStdlib_Headers(t *testing.T) {
+	t.Parallel()
+
 	baseReq := request.Request{
 		Method: "POST",
 		URL:    "https://example.com",
@@ -79,6 +87,8 @@ func TestToStdlib_Headers(t *testing.T) {
 }
 
 func TestToStdlib_InvalidURL(t *testing.T) {
+	t.Parallel()
+
 	baseReq := request.Request{
 		Method: "GET",
 		URL:    "://invalid-url",

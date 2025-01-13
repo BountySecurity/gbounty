@@ -37,10 +37,10 @@ func (r *Request) ToStdlibWithContext(ctx context.Context) (*http.Request, error
 
 	if r.Proto != "" {
 		protoParts := strings.Split(r.Proto, "/")
-		if len(protoParts) == 2 {
+		if len(protoParts) == 2 { //nolint:mnd
 			httpReq.Proto = r.Proto
 			httpReq.ProtoMajor = int(protoParts[1][0] - '0')
-			if len(protoParts[1]) == 3 {
+			if len(protoParts[1]) == 3 { //nolint:mnd
 				httpReq.ProtoMinor = int(protoParts[1][2] - '0')
 			}
 		}

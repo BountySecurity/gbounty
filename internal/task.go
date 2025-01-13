@@ -140,7 +140,7 @@ func (t *Task) run(
 		// If the step failed, we log the error.
 		// However, we log it as .Warn because a failed step is not necessarily an execution error.
 		// If the step failed because of a manual interruption, we log it as .Debug.
-		var log = logger.For(ctx).Warnf
+		log := logger.For(ctx).Warnf
 		if errors.Is(err, ErrManuallyInterrupted) {
 			log = logger.For(ctx).Debugf
 		}

@@ -9,12 +9,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bountysecurity/gbounty/kit/logger"
 	"golang.org/x/net/http2"
 
 	"github.com/bountysecurity/gbounty/internal/platform/metrics"
 	"github.com/bountysecurity/gbounty/internal/request"
 	"github.com/bountysecurity/gbounty/internal/response"
+	"github.com/bountysecurity/gbounty/kit/logger"
 )
 
 // Client is a custom implementation of an HTTP client that
@@ -38,6 +38,8 @@ func New(opts ...Opt) *Client {
 // Do perform an HTTP request with the given [request.Request]
 // and returns a [response.Response] and an error, if any.
 func (c *Client) Do(ctx context.Context, req *request.Request) (response.Response, error) {
+	const idleTimeout = 5 * time.Second
+
 	// First, we want to account all the ongoing HTTP requests.
 	// So, we measure the ones performed by the [http.Client] as well.
 	metrics.OngoingRequests.Inc()
@@ -63,14 +65,14 @@ func (c *Client) Do(ctx context.Context, req *request.Request) (response.Respons
 			// In case the proxy is enabled, with return an error directly.
 			// Because, we (the stdlib) don't have support to proxy non-TLS HTTP/2 requests.
 			if c.proxyAddr != "" {
-				return response.Response{}, errors.New("non-TLS HTTP/2 requests cannot be proxy-ed")
+				return response.Response{}, errors.New("non-TLS HTTP/2 requests cannot be proxy-ed") //nolint:err113
 			}
 			c.c.Transport = &http2.Transport{
 				AllowHTTP: true, // Allows HTTP/2 without TLS.
 				DialTLSContext: func(_ context.Context, network, addr string, _ *tls.Config) (net.Conn, error) {
 					return net.Dial(network, addr) // Skip TLS handshake for plaintext.
 				},
-				IdleConnTimeout: 5 * time.Second,
+				IdleConnTimeout: idleTimeout,
 			}
 			defer func() {
 				c.c.Transport = defaultTransport
@@ -120,21 +122,33 @@ func (c *Client) Do(ctx context.Context, req *request.Request) (response.Respons
 	return resp, errors.Join(httpErr, err)
 }
 
-var DefaultTransport = &http.Transport{
-	Proxy: http.ProxyFromEnvironment,
-	DialContext: defaultTransportDialContext(&net.Dialer{
-		Timeout:   30 * time.Second,
-		KeepAlive: 5 * time.Second,
-	}),
-	ForceAttemptHTTP2:     true,
-	MaxIdleConns:          1,
-	DisableKeepAlives:     true,
-	IdleConnTimeout:       5 * time.Second,
-	TLSHandshakeTimeout:   10 * time.Second,
-	ExpectContinueTimeout: 1 * time.Second,
-	TLSClientConfig: &tls.Config{
-		InsecureSkipVerify: true,
-	},
+func DefaultTransport() *http.Transport {
+	const (
+		timeout   = 30 * time.Second
+		keepAlive = 5 * time.Second
+
+		maxIdleConns          = 1
+		idleConnTimeout       = 5 * time.Second
+		TLSHandshakeTimeout   = 10 * time.Second
+		ExpectContinueTimeout = 1 * time.Second
+	)
+
+	return &http.Transport{
+		Proxy: http.ProxyFromEnvironment,
+		DialContext: defaultTransportDialContext(&net.Dialer{
+			Timeout:   timeout,
+			KeepAlive: keepAlive,
+		}),
+		ForceAttemptHTTP2:     true,
+		MaxIdleConns:          maxIdleConns,
+		DisableKeepAlives:     true,
+		IdleConnTimeout:       idleConnTimeout,
+		TLSHandshakeTimeout:   TLSHandshakeTimeout,
+		ExpectContinueTimeout: ExpectContinueTimeout,
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: true, //nolint:gosec
+		},
+	}
 }
 
 func defaultTransportDialContext(dialer *net.Dialer) func(context.Context, string, string) (net.Conn, error) {

@@ -28,7 +28,7 @@ func WithProxyAddr(addr string) Opt {
 		// In the future, we might explore other ways to handle this error.
 		proxyURL, _ := url.Parse(addr)
 
-		transport := DefaultTransport.Clone()
+		transport := DefaultTransport().Clone()
 		transport.Proxy = http.ProxyURL(proxyURL)
 		c.c.Transport = transport
 		c.proxyAddr = addr

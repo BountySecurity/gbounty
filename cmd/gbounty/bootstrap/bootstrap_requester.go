@@ -18,13 +18,15 @@ import (
 )
 
 func setupScanRequester(ctx context.Context, cfg cli.Config) func(*request.Request) (scan.Requester, error) {
+	const timeout = 20 * time.Second
+
 	var (
 		baseOpts []client.Opt
 		stdOpts  = []stdclient.Opt{
 			stdclient.WithClient(
 				&http.Client{
-					Timeout:   20 * time.Second,
-					Transport: stdclient.DefaultTransport.Clone(),
+					Timeout:   timeout,
+					Transport: stdclient.DefaultTransport().Clone(),
 				},
 			),
 		}
@@ -75,7 +77,6 @@ func setupScanRequester(ctx context.Context, cfg cli.Config) func(*request.Reque
 			}
 			// Otherwise, we use our own client.
 			return basePool(r)
-
 		},
 		uint32(maxConcurrentRequests),
 	)

@@ -13,10 +13,12 @@ import (
 )
 
 func TestFromStdlib_Basic(t *testing.T) {
+	t.Parallel()
+
 	httpRes := &http.Response{
 		Proto:      "HTTP/1.1",
 		Status:     "200 OK",
-		StatusCode: 200,
+		StatusCode: http.StatusOK,
 		Header:     http.Header{"Content-Type": []string{"application/json"}},
 		Body:       io.NopCloser(bytes.NewBufferString(`{"key": "value"}`)),
 	}
@@ -32,29 +34,33 @@ func TestFromStdlib_Basic(t *testing.T) {
 }
 
 func TestFromStdlib_NilBody(t *testing.T) {
+	t.Parallel()
+
 	httpRes := &http.Response{
 		Proto:      "HTTP/1.1",
 		Status:     "204 No Content",
-		StatusCode: 204,
+		StatusCode: http.StatusNoContent,
 		Header:     http.Header{},
 		Body:       nil,
 	}
 
 	resp, err := response.FromStdlib(httpRes)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	assert.Equal(t, "HTTP/1.1", resp.Proto)
-	assert.Equal(t, 204, resp.Code)
+	assert.Equal(t, http.StatusNoContent, resp.Code)
 	assert.Equal(t, "No Content", resp.Status)
 	assert.Equal(t, headerAsMap(httpRes.Header), resp.Headers)
 	assert.Empty(t, resp.Body)
 }
 
 func TestFromStdlib_BodyError(t *testing.T) {
+	t.Parallel()
+
 	httpRes := &http.Response{
 		Proto:      "HTTP/1.1",
 		Status:     "200 OK",
-		StatusCode: 200,
+		StatusCode: http.StatusOK,
 		Header:     http.Header{},
 		Body:       io.NopCloser(&errorReader{}), // Simulate a read error
 	}

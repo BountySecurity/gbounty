@@ -21,8 +21,11 @@ const (
 	resetLine       = clearLine + moveToBeginning
 )
 
-// Console must implement the [scan.Writer] interface.
-var _ scan.Writer = Console{}
+// Console must implement the [scan.Writer] and [WithProofOfConcept] interfaces.
+var (
+	_ scan.Writer        = &Console{}
+	_ WithProofOfConcept = &Console{}
+)
 
 // Console is a [scan.Writer] implementation that writes the output
 // to the given [io.Writer], following console/terminal standards
@@ -32,27 +35,21 @@ type Console struct {
 	pocEnabled bool
 }
 
-type ConsoleOption func(*Console)
-
-// WithProofOfConceptEnabled is a [ConsoleOption] that enables the proof-of-concept mode.
-// When enabled, the console will print the matches in a copy & paste friendlier format.
-func WithProofOfConceptEnabled(enabled bool) func(*Console) {
-	return func(c *Console) {
-		c.pocEnabled = enabled
-	}
-}
-
 // NewConsole creates a new instance of [Console] with the given [io.Writer].
-func NewConsole(writer io.Writer, opts ...ConsoleOption) Console {
-	c := Console{writer: writer}
+func NewConsole(writer io.Writer, opts ...Option) *Console {
+	c := &Console{writer: writer}
 	for _, opt := range opts {
-		opt(&c)
+		opt(c)
 	}
 	return c
 }
 
+func (c *Console) SetProofOfConcept(enabled bool) {
+	c.pocEnabled = enabled
+}
+
 // WriteConfig writes the [scan.Config] to the console.
-func (c Console) WriteConfig(_ context.Context, cfg scan.Config) error {
+func (c *Console) WriteConfig(_ context.Context, cfg scan.Config) error {
 	if c.pocEnabled {
 		return nil
 	}
@@ -80,10 +77,11 @@ func (c Console) WriteConfig(_ context.Context, cfg scan.Config) error {
 }
 
 // WriteStats writes the [scan.Stats] to the console.
-func (c Console) WriteStats(ctx context.Context, fs scan.FileSystem) error {
+func (c *Console) WriteStats(ctx context.Context, fs scan.FileSystem) error {
 	if c.pocEnabled {
 		return nil
 	}
+
 	stats, err := fs.LoadStats(ctx)
 	if err != nil {
 		return err
@@ -114,10 +112,11 @@ func (c Console) WriteStats(ctx context.Context, fs scan.FileSystem) error {
 }
 
 // WriteMatchesSummary writes a summary of the [scan.Match] instances found during the scan, to the console.
-func (c Console) WriteMatchesSummary(ctx context.Context, fs scan.FileSystem) error {
+func (c *Console) WriteMatchesSummary(ctx context.Context, fs scan.FileSystem) error {
 	if c.pocEnabled {
 		return nil
 	}
+
 	_, err := fmt.Fprint(c.writer, defaultSection().Sprintln("# Summary"))
 	if err != nil {
 		return err
@@ -188,7 +187,7 @@ func (c Console) WriteMatchesSummary(ctx context.Context, fs scan.FileSystem) er
 }
 
 // WriteError writes the [scan.Error] to the console.
-func (c Console) WriteError(_ context.Context, scanError scan.Error) error {
+func (c *Console) WriteError(_ context.Context, scanError scan.Error) error {
 	if c.pocEnabled {
 		return nil
 	}
@@ -228,7 +227,7 @@ func (c Console) WriteError(_ context.Context, scanError scan.Error) error {
 }
 
 // WriteErrors writes the [scan.Error] instances to the console.
-func (c Console) WriteErrors(ctx context.Context, fs scan.FileSystem) error {
+func (c *Console) WriteErrors(ctx context.Context, fs scan.FileSystem) error {
 	if c.pocEnabled {
 		return nil
 	}
@@ -286,7 +285,7 @@ func (c Console) WriteErrors(ctx context.Context, fs scan.FileSystem) error {
 }
 
 // WriteMatch writes the [scan.Match] to the console.
-func (c Console) WriteMatch(_ context.Context, m scan.Match, includeResponse bool) error {
+func (c *Console) WriteMatch(_ context.Context, m scan.Match, includeResponse bool) error {
 	builder := strings.Builder{}
 	if !c.pocEnabled {
 		builder.WriteString("\n")
@@ -300,7 +299,7 @@ func (c Console) WriteMatch(_ context.Context, m scan.Match, includeResponse boo
 		}
 	} else {
 		builder.WriteString("\n")
-		styledURL := pterm.NewStyle(pterm.FgLightCyan).Sprintln(m.URL)
+		styledURL := pterm.NewStyle(pterm.FgLightCyan).Sprintln(m.Domain())
 		builder.WriteString(styledURL)
 	}
 
@@ -362,7 +361,7 @@ func formatResponseWithHighlights(resAsString string, resIdx int, m scan.Match) 
 }
 
 // WriteMatches writes the [scan.Match] instances found during the scan, to the console.
-func (c Console) WriteMatches(ctx context.Context, fs scan.FileSystem, includeResponses bool) error {
+func (c *Console) WriteMatches(ctx context.Context, fs scan.FileSystem, includeResponses bool) error {
 	_, err := fmt.Fprint(c.writer, defaultSection().Sprintln("## Matches"))
 	if err != nil {
 		return err
@@ -425,7 +424,7 @@ func (c Console) WriteMatches(ctx context.Context, fs scan.FileSystem, includeRe
 }
 
 // WriteTasks writes the [scan.TaskSummary] instances to the console.
-func (c Console) WriteTasks(ctx context.Context, fs scan.FileSystem, allRequests, allResponses bool) error {
+func (c *Console) WriteTasks(ctx context.Context, fs scan.FileSystem, allRequests, allResponses bool) error {
 	if c.pocEnabled {
 		return nil
 	}

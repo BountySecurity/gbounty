@@ -13,23 +13,39 @@ import (
 	"github.com/bountysecurity/gbounty/kit/console/printer"
 )
 
-// Plain must implement the [scan.Writer] interface.
-var _ scan.Writer = Plain{}
+// Plain must implement the [scan.Writer] and [WithProofOfConcept] interfaces.
+var (
+	_ scan.Writer        = &Plain{}
+	_ WithProofOfConcept = &Plain{}
+)
 
 // Plain is a [scan.Writer] implementation that writes the output
 // to the given [io.Writer], as plain text.
 // The format is quite similar to [Console] but without colors.
 type Plain struct {
-	writer io.Writer
+	writer     io.Writer
+	pocEnabled bool
 }
 
 // NewPlain creates a new instance of [Plain] with the given [io.Writer].
-func NewPlain(writer io.Writer) Plain {
-	return Plain{writer: writer}
+func NewPlain(writer io.Writer, opts ...Option) *Plain {
+	p := &Plain{writer: writer}
+	for _, opt := range opts {
+		opt(p)
+	}
+	return p
+}
+
+func (p *Plain) SetProofOfConcept(enabled bool) {
+	p.pocEnabled = enabled
 }
 
 // WriteConfig writes the [scan.Config] to the [io.Writer] as plain text.
-func (p Plain) WriteConfig(_ context.Context, cfg scan.Config) error {
+func (p *Plain) WriteConfig(_ context.Context, cfg scan.Config) error {
+	if p.pocEnabled {
+		return nil
+	}
+
 	builder := strings.Builder{}
 	builder.WriteString(pterm.DefaultSection.WithTopPadding(0).WithStyle(nil).Sprintln("Configuration"))
 	builder.WriteString(fmt.Sprintf("        Version: %s\n", cfg.Version))
@@ -50,7 +66,11 @@ func (p Plain) WriteConfig(_ context.Context, cfg scan.Config) error {
 }
 
 // WriteStats writes the [scan.Stats] to the [io.Writer] as plain text.
-func (p Plain) WriteStats(ctx context.Context, fs scan.FileSystem) error {
+func (p *Plain) WriteStats(ctx context.Context, fs scan.FileSystem) error {
+	if p.pocEnabled {
+		return nil
+	}
+
 	stats, err := fs.LoadStats(ctx)
 	if err != nil {
 		return err
@@ -78,7 +98,11 @@ func (p Plain) WriteStats(ctx context.Context, fs scan.FileSystem) error {
 
 // WriteMatchesSummary writes a summary of the [scan.Match] instances found during the [scan],
 // to the [io.Writer] as plain text.
-func (p Plain) WriteMatchesSummary(ctx context.Context, fs scan.FileSystem) error {
+func (p *Plain) WriteMatchesSummary(ctx context.Context, fs scan.FileSystem) error {
+	if p.pocEnabled {
+		return nil
+	}
+
 	_, err := fmt.Fprint(p.writer, pterm.DefaultSection.WithTopPadding(0).WithStyle(nil).Sprintln("Summary"))
 	if err != nil {
 		return err
@@ -147,7 +171,11 @@ func (p Plain) WriteMatchesSummary(ctx context.Context, fs scan.FileSystem) erro
 }
 
 // WriteError writes a [scan.Error] to the [io.Writer] as plain text.
-func (p Plain) WriteError(_ context.Context, scanError scan.Error) error {
+func (p *Plain) WriteError(_ context.Context, scanError scan.Error) error {
+	if p.pocEnabled {
+		return nil
+	}
+
 	builder := strings.Builder{}
 	builder.WriteString("\n")
 	builder.WriteString(printer.Plain(domainPrinter()).Sprintln(scanError.Domain()))
@@ -183,7 +211,11 @@ func (p Plain) WriteError(_ context.Context, scanError scan.Error) error {
 }
 
 // WriteErrors writes the [scan.Error] instances to the [io.Writer] as plain text.
-func (p Plain) WriteErrors(ctx context.Context, fs scan.FileSystem) error {
+func (p *Plain) WriteErrors(ctx context.Context, fs scan.FileSystem) error {
+	if p.pocEnabled {
+		return nil
+	}
+
 	_, err := fmt.Fprint(p.writer, pterm.DefaultSection.WithLevel(2).WithStyle(nil).Sprintln("Errors"))
 	if err != nil {
 		return err
@@ -237,16 +269,22 @@ func (p Plain) WriteErrors(ctx context.Context, fs scan.FileSystem) error {
 }
 
 // WriteMatch writes a [scan.Match] to the [io.Writer] as plain text.
-func (p Plain) WriteMatch(_ context.Context, m scan.Match, includeResponse bool) error {
+func (p *Plain) WriteMatch(_ context.Context, m scan.Match, includeResponse bool) error {
 	builder := strings.Builder{}
-	builder.WriteString(printer.Plain(issuePrinter()).Sprintln(m.IssueName))
-	builder.WriteString(printer.Plain(severityPrinter(m.IssueSeverity)).Sprintln(m.IssueSeverity))
-	builder.WriteString(printer.Plain(confidencePrinter(m.IssueConfidence)).Sprintln(m.IssueConfidence))
-	builder.WriteString(printer.Plain(typePrinter()).Sprintln(m.ProfileType))
-	builder.WriteString(printer.Plain(domainPrinter()).Sprintln(m.Domain()))
-
-	if len(m.IssueParam) > 0 {
-		builder.WriteString(printer.Plain(paramPrinter()).Sprintln(m.IssueParam))
+	if !p.pocEnabled {
+		builder.WriteString("\n")
+		builder.WriteString(printer.Plain(issuePrinter()).Sprintln(m.IssueName))
+		builder.WriteString(printer.Plain(severityPrinter(m.IssueSeverity)).Sprintln(m.IssueSeverity))
+		builder.WriteString(printer.Plain(confidencePrinter(m.IssueConfidence)).Sprintln(m.IssueConfidence))
+		builder.WriteString(printer.Plain(typePrinter()).Sprintln(m.ProfileType))
+		builder.WriteString(printer.Plain(domainPrinter()).Sprintln(m.Domain()))
+		if len(m.IssueParam) > 0 {
+			builder.WriteString(printer.Plain(paramPrinter()).Sprintln(m.IssueParam))
+		}
+	} else {
+		builder.WriteString("\n")
+		builder.WriteString(m.Domain())
+		builder.WriteString("\n")
 	}
 
 	if m.Requests != nil {
@@ -254,20 +292,27 @@ func (p Plain) WriteMatch(_ context.Context, m scan.Match, includeResponse bool)
 			if r == nil {
 				continue
 			}
-			if len(m.Requests) > 1 {
-				builder.WriteString(printer.Plain(requestNPrinter(idx + 1)).Sprintln())
+			if !p.pocEnabled {
+				if len(m.Requests) > 1 {
+					builder.WriteString(printer.Plain(requestNPrinter(idx + 1)).Sprintln())
+				} else {
+					builder.WriteString(printer.Plain(requestPrinter()).Sprintln())
+				}
+				builder.Write(r.Bytes())
+				builder.WriteString("\n")
 			} else {
-				builder.WriteString(printer.Plain(requestPrinter()).Sprintln())
+				builder.Write(r.Bytes())
+				builder.WriteString("\n")
 			}
-			builder.Write(r.Bytes())
 		}
 	}
 
-	if m.Responses != nil && includeResponse {
+	if m.Responses != nil && !p.pocEnabled && includeResponse {
 		for _, r := range m.Responses {
 			if r == nil {
 				continue
 			}
+
 			builder.WriteString(printer.Plain(responsePrinter()).Sprintln(string(r.Bytes())))
 			builder.WriteString(printer.Plain(durationPrinter()).Sprintf("%.2fs\n\n", r.Time.Seconds()))
 		}
@@ -280,7 +325,7 @@ func (p Plain) WriteMatch(_ context.Context, m scan.Match, includeResponse bool)
 
 // WriteMatches writes the [scan.Match] instances found during the [scan],
 // as plain text.
-func (p Plain) WriteMatches(ctx context.Context, fs scan.FileSystem, includeResponses bool) error {
+func (p *Plain) WriteMatches(ctx context.Context, fs scan.FileSystem, includeResponses bool) error {
 	_, err := fmt.Fprint(p.writer, pterm.DefaultSection.WithLevel(2).WithStyle(nil).Sprintln("Matches"))
 	if err != nil {
 		return err
@@ -341,7 +386,11 @@ func (p Plain) WriteMatches(ctx context.Context, fs scan.FileSystem, includeResp
 }
 
 // WriteTasks writes the [scan.TaskSummary] instances to the [io.Writer] as plain text.
-func (p Plain) WriteTasks(ctx context.Context, fs scan.FileSystem, allRequests, allResponses bool) error {
+func (p *Plain) WriteTasks(ctx context.Context, fs scan.FileSystem, allRequests, allResponses bool) error {
+	if p.pocEnabled {
+		return nil
+	}
+
 	_, err := fmt.Fprint(p.writer, pterm.DefaultSection.WithLevel(2).WithStyle(nil).Sprintln("Requests / Responses"))
 	if err != nil {
 		return err

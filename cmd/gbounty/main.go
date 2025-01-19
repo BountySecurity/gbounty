@@ -13,14 +13,13 @@ import (
 
 func main() {
 	// The application's logo is printed only when the --only-poc/-poc flag is not set.
-	showAppName := slices.NoneIn(os.Args, []string{"-poc", "--only-poc"})
-	if showAppName {
+	notPoc := slices.NoneIn(os.Args, []string{"-poc", "--only-poc"})
+	if notPoc {
 		bootstrap.PrintAppName()
+		bootstrap.CheckForUpdates()
 	} else {
 		fmt.Println() //nolint:forbidigo
 	}
-
-	bootstrap.CheckForUpdates()
 
 	if err := bootstrap.Run(); err != nil {
 		pterm.Error.WithShowLineNumber(false).Printf("%s\n", capitalize.First(err.Error()))

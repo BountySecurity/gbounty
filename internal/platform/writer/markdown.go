@@ -242,7 +242,7 @@ func (md Markdown) WriteErrors(ctx context.Context, fs scan.FileSystem) error {
 // WriteMatch writes a [scan.Match] to the [io.Writer] in the Markdown format.
 func (md Markdown) WriteMatch(_ context.Context, m scan.Match, includeResponse bool) error {
 	builder := strings.Builder{}
-	builder.WriteString(fmt.Sprintf("**%s**\n\n", m.URL))
+	builder.WriteString(fmt.Sprintf("**%s**\n\n", m.Domain()))
 	builder.WriteString(fmt.Sprintf("**Issue name:** %s\n\n**Issue severity:** %s\n\n**Issue confidence:** %s\n\n",
 		m.IssueName,
 		m.IssueSeverity,
@@ -255,30 +255,29 @@ func (md Markdown) WriteMatch(_ context.Context, m scan.Match, includeResponse b
 
 	builder.WriteString(fmt.Sprintf("**Type:** %s\n\n", m.ProfileType))
 
-	if m.Requests != nil {
-		builder.WriteString("**Requests:**\n\n")
-		for idx, r := range m.Requests {
-			if r == nil {
-				continue
+	to := max(len(m.Requests), len(m.Responses))
+	for i := 0; i < to; i++ {
+		if m.Requests != nil && i < len(m.Requests) && m.Requests[i] != nil {
+			if len(m.Requests) > 1 {
+				builder.WriteString(fmt.Sprintf("**Request no. %d:**\n\n", i+1))
+			} else {
+				builder.WriteString("**Request:**\n\n")
 			}
-			builder.WriteString(fmt.Sprintf("Request no. %d:\n\n", idx+1))
 			builder.WriteString("```\n")
-			builder.Write(r.Bytes())
+			builder.Write(m.Requests[i].Bytes())
 			builder.WriteString("\n```\n\n")
 		}
-	}
 
-	if m.Responses != nil && includeResponse {
-		builder.WriteString("**Responses:**\n\n")
-		for idx, r := range m.Responses {
-			if r == nil {
-				continue
+		if m.Responses != nil && i < len(m.Responses) && m.Responses[i] != nil && includeResponse {
+			if len(m.Responses) > 1 {
+				builder.WriteString(fmt.Sprintf("**Response no. %d:**\n\n", i+1))
+			} else {
+				builder.WriteString("**Response:**\n\n")
 			}
-			builder.WriteString(fmt.Sprintf("Response no. %d:\n\n", idx+1))
 			builder.WriteString("```\n")
-			builder.Write(r.Bytes())
+			builder.Write(m.Responses[i].Bytes())
 			builder.WriteString("\n```\n\n")
-			builder.WriteString(fmt.Sprintf("Duration: %.2fs\n\n", r.Time.Seconds()))
+			builder.WriteString(fmt.Sprintf("**Duration:** %.2fs\n\n", m.Responses[i].Time.Seconds()))
 		}
 	}
 
@@ -302,7 +301,7 @@ func (md Markdown) WriteMatches(ctx context.Context, fs scan.FileSystem, include
 
 	for m := range ch {
 		builder := strings.Builder{}
-		builder.WriteString(fmt.Sprintf("**%s**\n\n", m.URL))
+		builder.WriteString(fmt.Sprintf("**%s**\n\n", m.Domain()))
 		builder.WriteString(fmt.Sprintf("**Issue name:** %s\n\n**Issue severity:** %s\n\n**Issue confidence:** %s\n\n",
 			m.IssueName,
 			m.IssueSeverity,
@@ -315,30 +314,29 @@ func (md Markdown) WriteMatches(ctx context.Context, fs scan.FileSystem, include
 
 		builder.WriteString(fmt.Sprintf("**Type:** %s\n\n", m.ProfileType))
 
-		if m.Requests != nil {
-			builder.WriteString("**Requests:**\n\n")
-			for idx, r := range m.Requests {
-				if r == nil {
-					continue
+		to := max(len(m.Requests), len(m.Responses))
+		for i := 0; i < to; i++ {
+			if m.Requests != nil && i < len(m.Requests) && m.Requests[i] != nil {
+				if len(m.Requests) > 1 {
+					builder.WriteString(fmt.Sprintf("**Request no. %d:**\n\n", i+1))
+				} else {
+					builder.WriteString("**Request:**\n\n")
 				}
-				builder.WriteString(fmt.Sprintf("Request no. %d:\n\n", idx+1))
 				builder.WriteString("```\n")
-				builder.Write(r.Bytes())
+				builder.Write(m.Requests[i].Bytes())
 				builder.WriteString("\n```\n\n")
 			}
-		}
 
-		if m.Responses != nil && includeResponses {
-			builder.WriteString("**Responses:**\n\n")
-			for idx, r := range m.Responses {
-				if r == nil {
-					continue
+			if m.Responses != nil && i < len(m.Responses) && m.Responses[i] != nil && includeResponses {
+				if len(m.Responses) > 1 {
+					builder.WriteString(fmt.Sprintf("**Response no. %d:**\n\n", i+1))
+				} else {
+					builder.WriteString("**Response:**\n\n")
 				}
-				builder.WriteString(fmt.Sprintf("Response no. %d:\n\n", idx+1))
 				builder.WriteString("```\n")
-				builder.Write(r.Bytes())
+				builder.Write(m.Responses[i].Bytes())
 				builder.WriteString("\n```\n\n")
-				builder.WriteString(fmt.Sprintf("Duration: %.2fs\n\n", r.Time.Seconds()))
+				builder.WriteString(fmt.Sprintf("**Duration:** %.2fs\n\n", m.Responses[i].Time.Seconds()))
 			}
 		}
 

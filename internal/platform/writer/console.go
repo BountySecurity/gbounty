@@ -303,35 +303,34 @@ func (c *Console) WriteMatch(_ context.Context, m scan.Match, includeResponse bo
 		builder.WriteString(styledURL)
 	}
 
-	if m.Requests != nil {
-		for idx, r := range m.Requests {
-			if r == nil {
-				continue
-			}
+	to := max(len(m.Requests), len(m.Responses))
+	for i := 0; i < to; i++ {
+		if m.Requests != nil && i < len(m.Requests) && m.Requests[i] != nil {
 			if !c.pocEnabled {
 				if len(m.Requests) > 1 {
-					builder.WriteString(requestNPrinter(idx + 1).Sprintln())
+					builder.WriteString(requestNPrinter(i + 1).Sprintln())
 				} else {
 					builder.WriteString(requestPrinter().Sprintln())
 				}
-				builder.Write(r.Bytes())
+				builder.Write(m.Requests[i].Bytes())
 				builder.WriteString("\n")
 			} else {
-				styledText := pterm.NewStyle(pterm.FgLightCyan).Sprintln(string(r.Bytes()))
+				styledText := pterm.NewStyle(pterm.FgLightCyan).Sprintln(string(m.Requests[i].Bytes()))
 				builder.WriteString(styledText)
 			}
 		}
-	}
 
-	if m.Responses != nil && !c.pocEnabled && includeResponse {
-		for i, r := range m.Responses {
-			if r == nil {
-				continue
+		if m.Responses != nil && i < len(m.Responses) && m.Responses[i] != nil && !c.pocEnabled {
+			result := formatResponseWithHighlights(string(m.Responses[i].Bytes()), i, m)
+			if len(m.Responses) > 1 {
+				builder.WriteString(responseNPrinter(i + 1).Sprintln())
+			} else {
+				builder.WriteString(responsePrinter().Sprintln())
 			}
-
-			result := formatResponseWithHighlights(string(r.Bytes()), i, m)
-			builder.WriteString(responsePrinter().Sprintln(result))
-			builder.WriteString(durationPrinter().Sprintf("%.2fs\n\n", r.Time.Seconds()))
+			builder.WriteString(result)
+			builder.WriteString("\n")
+			builder.WriteString(durationPrinter().Sprintf("%.2fs\n\n", m.Responses[i].Time.Seconds()))
+			builder.WriteString("\n")
 		}
 	}
 
@@ -384,29 +383,29 @@ func (c *Console) WriteMatches(ctx context.Context, fs scan.FileSystem, includeR
 			builder.WriteString(paramPrinter().Sprintln(m.IssueParam))
 		}
 
-		if m.Requests != nil {
-			for idx, r := range m.Requests {
-				if r == nil {
-					continue
-				}
+		to := max(len(m.Requests), len(m.Responses))
+		for i := 0; i < to; i++ {
+			if m.Requests != nil && i < len(m.Requests) && m.Requests[i] != nil {
 				if len(m.Requests) > 1 {
-					builder.WriteString(requestNPrinter(idx + 1).Sprintln())
+					builder.WriteString(requestNPrinter(i + 1).Sprintln())
 				} else {
 					builder.WriteString(requestPrinter().Sprintln())
 				}
-				builder.Write(r.Bytes())
+				builder.Write(m.Requests[i].Bytes())
+				builder.WriteString("\n")
 			}
-		}
 
-		if m.Responses != nil && includeResponses {
-			for i, r := range m.Responses {
-				if r == nil {
-					continue
+			if m.Responses != nil && i < len(m.Responses) && m.Responses[i] != nil && !c.pocEnabled {
+				result := formatResponseWithHighlights(string(m.Responses[i].Bytes()), i, m)
+				if len(m.Responses) > 1 {
+					builder.WriteString(responseNPrinter(i + 1).Sprintln())
+				} else {
+					builder.WriteString(responsePrinter().Sprintln())
 				}
-
-				result := formatResponseWithHighlights(string(r.Bytes()), i, m)
-				builder.WriteString(responsePrinter().Sprintln(result))
-				builder.WriteString(durationPrinter().Sprintf("%.2fs\n\n", r.Time.Seconds()))
+				builder.WriteString(result)
+				builder.WriteString("\n")
+				builder.WriteString(durationPrinter().Sprintf("%.2fs\n\n", m.Responses[i].Time.Seconds()))
+				builder.WriteString("\n")
 			}
 		}
 

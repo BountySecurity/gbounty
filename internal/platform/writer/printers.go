@@ -117,6 +117,13 @@ func responsePrinter() pterm.PrefixPrinter {
 	}
 }
 
+func responseNPrinter(idx int) pterm.PrefixPrinter {
+	return pterm.PrefixPrinter{
+		MessageStyle: color.LightCyan(),
+		Prefix:       pterm.Prefix{Style: color.BoldYellow(), Text: "RESPONSE " + strconv.Itoa(idx)},
+	}
+}
+
 func durationPrinter() pterm.PrefixPrinter {
 	return pterm.PrefixPrinter{
 		MessageStyle: color.Cyan(),

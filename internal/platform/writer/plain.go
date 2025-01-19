@@ -287,34 +287,32 @@ func (p *Plain) WriteMatch(_ context.Context, m scan.Match, includeResponse bool
 		builder.WriteString("\n")
 	}
 
-	if m.Requests != nil {
-		for idx, r := range m.Requests {
-			if r == nil {
-				continue
-			}
+	to := max(len(m.Requests), len(m.Responses))
+	for i := 0; i < to; i++ {
+		if m.Requests != nil && i < len(m.Requests) && m.Requests[i] != nil {
 			if !p.pocEnabled {
 				if len(m.Requests) > 1 {
-					builder.WriteString(printer.Plain(requestNPrinter(idx + 1)).Sprintln())
+					builder.WriteString(printer.Plain(requestNPrinter(i + 1)).Sprintln())
 				} else {
 					builder.WriteString(printer.Plain(requestPrinter()).Sprintln())
 				}
-				builder.Write(r.Bytes())
+				builder.Write(m.Requests[i].Bytes())
 				builder.WriteString("\n")
 			} else {
-				builder.Write(r.Bytes())
-				builder.WriteString("\n")
+				builder.Write(m.Requests[i].Bytes())
 			}
 		}
-	}
 
-	if m.Responses != nil && !p.pocEnabled && includeResponse {
-		for _, r := range m.Responses {
-			if r == nil {
-				continue
+		if m.Responses != nil && i < len(m.Responses) && m.Responses[i] != nil && !p.pocEnabled {
+			if len(m.Responses) > 1 {
+				builder.WriteString(printer.Plain(responseNPrinter(i + 1)).Sprintln())
+			} else {
+				builder.WriteString(printer.Plain(responsePrinter()).Sprintln())
 			}
-
-			builder.WriteString(printer.Plain(responsePrinter()).Sprintln(string(r.Bytes())))
-			builder.WriteString(printer.Plain(durationPrinter()).Sprintf("%.2fs\n\n", r.Time.Seconds()))
+			builder.Write(m.Responses[i].Bytes())
+			builder.WriteString("\n")
+			builder.WriteString(printer.Plain(durationPrinter()).Sprintf("%.2fs\n\n", m.Responses[i].Time.Seconds()))
+			builder.WriteString("\n")
 		}
 	}
 
@@ -348,27 +346,28 @@ func (p *Plain) WriteMatches(ctx context.Context, fs scan.FileSystem, includeRes
 			builder.WriteString(printer.Plain(paramPrinter()).Sprintln(m.IssueParam))
 		}
 
-		if m.Requests != nil {
-			for idx, r := range m.Requests {
-				if r == nil {
-					continue
-				}
+		to := max(len(m.Requests), len(m.Responses))
+		for i := 0; i < to; i++ {
+			if m.Requests != nil && i < len(m.Requests) && m.Requests[i] != nil {
 				if len(m.Requests) > 1 {
-					builder.WriteString(printer.Plain(requestNPrinter(idx + 1)).Sprintln())
+					builder.WriteString(printer.Plain(requestNPrinter(i + 1)).Sprintln())
 				} else {
 					builder.WriteString(printer.Plain(requestPrinter()).Sprintln())
 				}
-				builder.Write(r.Bytes())
+				builder.Write(m.Requests[i].Bytes())
+				builder.WriteString("\n")
 			}
-		}
 
-		if m.Responses != nil && includeResponses {
-			for _, r := range m.Responses {
-				if r == nil {
-					continue
+			if m.Responses != nil && i < len(m.Responses) && m.Responses[i] != nil && !p.pocEnabled {
+				if len(m.Responses) > 1 {
+					builder.WriteString(printer.Plain(responseNPrinter(i + 1)).Sprintln())
+				} else {
+					builder.WriteString(printer.Plain(responsePrinter()).Sprintln())
 				}
-				builder.WriteString(printer.Plain(responsePrinter()).Sprintln(string(r.Bytes())))
-				builder.WriteString(printer.Plain(durationPrinter()).Sprintf("%.2fs\n\n", r.Time.Seconds()))
+				builder.Write(m.Responses[i].Bytes())
+				builder.WriteString("\n")
+				builder.WriteString(printer.Plain(durationPrinter()).Sprintf("%.2fs\n\n", m.Responses[i].Time.Seconds()))
+				builder.WriteString("\n")
 			}
 		}
 

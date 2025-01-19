@@ -213,10 +213,13 @@ func matchStatusCode(g profile.Grep, res *response.Response) (bool, []occurrence
 	return false, []occurrence.Occurrence{}
 }
 
+// matchTimeDelay checks if the response time, minus the connection time, cast to an integer,
+// is equals to the time specified in the profile, with a margin of up to two seconds.
 func matchTimeDelay(g profile.Grep, res *response.Response) (bool, []occurrence.Occurrence) {
-	delay := g.Value.AsTimeDelaySeconds() // as seconds
-	margin := 2                           // +/- 2s
-	return delay-margin <= int(res.Time.Seconds()) && int(res.Time.Seconds()) <= delay+margin, []occurrence.Occurrence{}
+	const margin = 2
+	delay := g.Value.AsTimeDelaySeconds()
+	responseTime := res.Time - res.ConnTime
+	return delay <= int(responseTime.Seconds()) && int(responseTime.Seconds()) <= delay+margin, []occurrence.Occurrence{}
 }
 
 func matchContentType(g profile.Grep, res *response.Response) (bool, []occurrence.Occurrence) {

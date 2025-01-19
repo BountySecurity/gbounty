@@ -27,12 +27,13 @@ var (
 // Response is a representation of an HTTP response, similar
 // to the equivalent [request.Request] and used here and there for scans.
 type Response struct {
-	Proto   string
-	Code    int
-	Status  string
-	Headers map[string][]string
-	Body    []byte
-	Time    time.Duration
+	Proto    string
+	Code     int
+	Status   string
+	Headers  map[string][]string
+	Body     []byte
+	Time     time.Duration
+	ConnTime time.Duration
 }
 
 // Location returns the Location header value.

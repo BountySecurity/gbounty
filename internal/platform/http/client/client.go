@@ -144,7 +144,6 @@ func (c *Client) do(
 	}
 
 	startTime := time.Now()
-
 	defer func() {
 		res.Time = time.Since(startTime)
 	}()
@@ -153,6 +152,7 @@ func (c *Client) do(
 	if err != nil {
 		return
 	}
+	res.ConnTime = time.Since(startTime)
 
 	if timeout > 0 {
 		err = conn.SetDeadline(time.Now().Add(timeout))

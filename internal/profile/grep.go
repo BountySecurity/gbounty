@@ -197,7 +197,7 @@ const (
 	GrepTypeRegex             GrepType = "Regex"
 	GrepTypeBlindHost         GrepType = "Blind Host"
 	GrepTypeStatusCode        GrepType = "Status Code"
-	GrepTypeTimeDelay         GrepType = "Time Delay"
+	GrepTypeTimeDelay         GrepType = "Time Delay" // It doesn't take "connection_time" into consideration.
 	GrepTypeContentType       GrepType = "Content Type"
 	GrepTypeContentLength     GrepType = "Content Length"
 	GrepTypeContentLengthDiff GrepType = "Content Length Diff"

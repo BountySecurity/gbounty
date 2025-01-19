@@ -2,6 +2,7 @@ package occurrence
 
 import (
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -60,4 +61,21 @@ func FindRegexp(s, regex string) []Occurrence {
 	}
 
 	return positions
+}
+
+// FindStatusCode is like Find, but it uses the given code to find.
+func FindStatusCode(s string, code int) []Occurrence {
+	if len(s) == 0 || code < 100 || code > 599 {
+		return []Occurrence{}
+	}
+
+	codeStr := strconv.Itoa(code)
+	regex := regexp.MustCompile(codeStr + ` [A-Za-z ]+`)
+
+	match := regex.FindStringIndex(s)
+	if len(match) != 2 {
+		return []Occurrence{}
+	}
+
+	return []Occurrence{{match[0], match[1]}}
 }

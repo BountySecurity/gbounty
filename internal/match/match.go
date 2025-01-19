@@ -207,7 +207,7 @@ func matchRegex(g profile.Grep, req *request.Request, res *response.Response) (b
 func matchStatusCode(g profile.Grep, res *response.Response) (bool, []occurrence.Occurrence) {
 	for _, code := range g.Value.AsStatusCodes() {
 		if res.Code == code {
-			return true, []occurrence.Occurrence{}
+			return true, occurrence.FindStatusCode(string(res.Bytes()), res.Code)
 		}
 	}
 	return false, []occurrence.Occurrence{}

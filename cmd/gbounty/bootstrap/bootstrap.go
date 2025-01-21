@@ -87,11 +87,17 @@ func Run() error {
 	initBar := func() error {
 		var err error
 
-		pbPrinter.ProgressbarPrinter, err = pterm.DefaultProgressbar.
+		pbPrinter.ProgressbarPrinter = pterm.DefaultProgressbar.
 			WithBarStyle(pterm.NewStyle(pterm.FgLightCyan)).
 			WithTitleStyle(pterm.NewStyle(pterm.FgLightMagenta)).
-			WithRemoveWhenDone(true).
-			Start()
+			WithRemoveWhenDone(true)
+
+		if cfg.OnlyProofOfConcept {
+			pbPrinter.ProgressbarPrinter = pbPrinter.WithWriter(io.Discard)
+		} else {
+			pbPrinter.ProgressbarPrinter, err = pbPrinter.
+				Start()
+		}
 
 		return err
 	}
@@ -290,7 +296,12 @@ func runScan(
 			WithSaveAllResponses(cfg.ShowAll || cfg.ShowAllResponses).
 			WithFileSystem(fs)
 
-		w := writer.NewConsole(os.Stdout, writer.WithProofOfConceptEnabled(cfg.OnlyProofOfConcept))
+		var w scan.Writer
+		if cfg.OnlyProofOfConcept {
+			w = writer.NewPlain(os.Stdout, writer.WithProofOfConceptEnabled(cfg.OnlyProofOfConcept))
+		} else {
+			w = writer.NewConsole(os.Stdout)
+		}
 
 		if cfg.StreamErrors && !cfg.Silent {
 			logger.For(ctx).Info("Errors streaming enabled")
@@ -559,7 +570,9 @@ func finalizeScan(
 			err := fs.Cleanup(ctx)
 			if err != nil {
 				logger.For(ctx).Errorf("Error while cleaning up scan temporary files: %s", err.Error())
-				pterm.Error.WithShowLineNumber(false).Printf(`Error while cleaning up temporary files: %s`, err)
+				if !cfg.OnlyProofOfConcept {
+					pterm.Error.WithShowLineNumber(false).Printf(`Error while cleaning up temporary files: %s`, err)
+				}
 			}
 		}()
 
@@ -577,12 +590,16 @@ func finalizeScan(
 			err2 := fs.StoreStats(ctx, stats)
 			if err2 != nil {
 				logger.For(ctx).Errorf("Error while saving scan data: %s", err.Error())
-				pterm.Error.WithShowLineNumber(false).Printf(`Error while stopping scan: %s`, err)
+				if !cfg.OnlyProofOfConcept {
+					pterm.Error.WithShowLineNumber(false).Printf(`Error while stopping scan: %s`, err)
+				}
 			}
 
 			stopped = true
 
-			pterm.Success.Printf("Scan paused successfully, to continue use: %s\n", id)
+			if !cfg.OnlyProofOfConcept {
+				pterm.Success.Printf("Scan paused successfully, to continue use: %s\n", id)
+			}
 
 			return
 		}
@@ -594,7 +611,12 @@ func finalizeScan(
 
 		// We declare the console writer that
 		// will (most likely) be used below later.
-		consoleWriter := writer.NewConsole(os.Stdout, writer.WithProofOfConceptEnabled(cfg.OnlyProofOfConcept))
+		var consoleWriter scan.Writer
+		if cfg.OnlyProofOfConcept {
+			consoleWriter = writer.NewPlain(os.Stdout, writer.WithProofOfConceptEnabled(cfg.OnlyProofOfConcept))
+		} else {
+			consoleWriter = writer.NewConsole(os.Stdout)
+		}
 
 		// We write the results to the specified output.
 		if len(cfg.OutPath) > 0 {
@@ -672,7 +694,12 @@ func storeJSONOutput(ctx context.Context, cfg scan.Config, fs scan.FileSystem, t
 }
 
 func writeScanFromFs(ctx context.Context, w scan.Writer, cfg scan.Config, fs scan.FileSystem) error {
-	_, isConsole := w.(writer.Console)
+	_, isConsole := w.(*writer.Console)
+	if !isConsole {
+		_, isPlain := w.(*writer.Plain)
+		isConsole = isPlain && len(cfg.OutPath) == 0
+	}
+
 	if !isConsole {
 		err := writeConfig(ctx, w, cfg)
 		if err != nil {

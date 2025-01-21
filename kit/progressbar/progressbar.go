@@ -1,6 +1,10 @@
 package progressbar
 
-import "github.com/pterm/pterm"
+import (
+	"io"
+
+	"github.com/pterm/pterm"
+)
 
 // Printer is a wrapper around [*pterm.ProgressbarPrinter],
 // which is a struct that shows a progress animation in the terminal.
@@ -21,4 +25,23 @@ type Printer struct {
 // concretely to the reference of the [pterm.DefaultProgressbar] variable.
 func NewPrinter() *Printer {
 	return &Printer{&pterm.DefaultProgressbar}
+}
+
+func (p *Printer) Add(count int) *pterm.ProgressbarPrinter {
+	if p.Writer == io.Discard {
+		return p.ProgressbarPrinter
+	}
+
+	return p.ProgressbarPrinter.Add(count)
+}
+
+// Stop wraps the call to the inner [*pterm.ProgressbarPrinter.Stop()] and returns the result.
+func (p *Printer) Stop() (*pterm.ProgressbarPrinter, error) {
+	if p.Writer == io.Discard {
+		return nil, nil
+	}
+
+	var err error
+	p.ProgressbarPrinter, err = p.ProgressbarPrinter.Stop()
+	return p.ProgressbarPrinter, err
 }

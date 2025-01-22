@@ -8,7 +8,7 @@
 <h4 align="center">Fast, reliable, and highly customizable website vulnerability scanner.</h4>
 
 <p align="center">
-<a href="https://twitter.com/GBountySecurity"><img src="https://img.shields.io/twitter/follow/GBountySecurity.svg?logo=twitter"></a>
+<a href="https://x.com/BountySecurity"><img src="https://img.shields.io/twitter/follow/BountySecurity.svg?logo=twitter"></a>
 </p>
 
 <p align="center">
@@ -77,9 +77,10 @@ This will display help for the tool.
  INFO  GBounty profiles can be found at: https://github.com/BountySecurity/gbounty-profiles
 
 
+
 Usage:
   gbounty [flags]
-
+​
 Flags:
   -h, --help
     	Show help
@@ -91,7 +92,10 @@ Flags:
     	Update profiles to the latest version
   --force-update-profiles
     	Re-download the latest version of profiles
-
+  --check-updates
+    	Check for available updates forcefully
+	By default, available updates are checked only once a day
+​
 TARGET INPUT:
   -u, --url value
     	If specified, it will be used as a target url
@@ -118,9 +122,9 @@ TARGET INPUT:
     	Determines the encoding the params (-pf/--params-file) will be included into (default: "url")
 	Supported encodings are: "url" (application/x-www-form-urlencoded) and "json" (application/json)
 	Only used when --params-method/-pm is set to "POST"
-   -h2, --http2
+  -h2, --http2
     	Forces HTTP/2. If enabled, the proto from the request template, if present, will be ignored
-
+​
 Options for --url (-u) and --urls-file:
   -X, --method string
     	If specified, it will be used as the HTTP method for request templates
@@ -129,7 +133,7 @@ Options for --url (-u) and --urls-file:
 	Can be used more than once: -H "Accept: application/json" -H "Content-Type: application/json"
   -d, --data value
     	If specified, it will be used as the HTTP body data for request templates
-
+​
 PROFILE OPTIONS:
   -p, --profiles value
     	Determines the path where profile file(s) will be read from (default: "./profiles/")
@@ -149,7 +153,9 @@ PROFILE OPTIONS:
   -tags, --print-tags
     	Print available profile tags
 	Used in combination with --tag
-
+  -poc, --only-poc
+    	If specified, only matched requests will be printed, nothing else.
+​
 RUNTIME OPTIONS:
   -c, --concurrency int
     	Determines how many target URL(s) will be scanned concurrently (default: 10)
@@ -178,7 +184,7 @@ RUNTIME OPTIONS:
 	The scan's identifier will be printed, to be used in combination with --from
   -f, --from string
     	Scan's identifier to be used to continue from
-
+​
 OUTPUT OPTIONS:
   -o, --output string
     	Determine the path where the output file will be stored to
@@ -211,7 +217,7 @@ OUTPUT OPTIONS:
   -stm, --stream-matches
     	If specified, those requests that caused a match are printed to stdout during the scan (live)
 	Enabled by default, can be disabled with --stream-matches=false or -stm=false
-
+​
 DEBUG OPTIONS:
   -v, --verbose
     	If specified, the internal logger will write warning and error log messages
@@ -222,11 +228,11 @@ DEBUG OPTIONS:
   -vout, --verbose-output string
     	If specified, the internal logger will write the log messages to a file
 	By default, those are printed to stdout
-
+​
 EXAMPLES:
 gbounty -u https://example.org -X POST -d "param1=value1&param2=value2" -t XSS -r 20 -a -o /tmp/results.json --json
-gbounty --urls-file urls.txt -c 200 -r 10 -p /tmp/gbounty-profiles --silent --markdown -o /tmp/results.md
-gbounty --raw-request raw_1.txt --raw-request raw_2.txt --blind-host yourblindhost.net
+gbounty --urls-file domains.txt -c 200 -r 10 -p /tmp/gbounty-profiles --silent --markdown -o /tmp/results.md
+gbounty --raw-request 1.txt --raw-request 2.txt --blind-host yourblindhost.net
 gbounty --requests-file requests.zip -r 150 --proxy-address=127.0.0.1:8080 -o /tmp/results.txt --all
 ```
 

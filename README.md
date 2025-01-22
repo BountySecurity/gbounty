@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-  <a href="https://gbounty.bountysecurity.ai/">
+  <a href="https://gbounty.bountysecurity.ai/" target="_blank">
         <img src="static/logo.png" width="800px" alt="GBounty">
   </a>
 </h1>
@@ -8,7 +8,7 @@
 <h4 align="center">Fast, reliable, and highly customizable website vulnerability scanner.</h4>
 
 <p align="center">
-<a href="https://x.com/BountySecurity"><img src="https://img.shields.io/twitter/follow/BountySecurity.svg?logo=twitter"></a>
+<a href="https://x.com/BountySecurity" target="_blank"><img src="https://img.shields.io/twitter/follow/BountySecurity.svg?logo=twitter"></a>
 </p>
 
 <p align="center">

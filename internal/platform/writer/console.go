@@ -22,8 +22,10 @@ const (
 )
 
 // Console must implement the [scan.Writer] and [WithProofOfConcept] interfaces.
-var _ scan.Writer = &Console{}
-var _ WithProofOfConcept = &Console{}
+var (
+	_ scan.Writer        = &Console{}
+	_ WithProofOfConcept = &Console{}
+)
 
 // Console is a [scan.Writer] implementation that writes the output
 // to the given [io.Writer], following console/terminal standards

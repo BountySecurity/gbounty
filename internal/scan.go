@@ -177,7 +177,6 @@ func (low *LineOfWork) executeTasks(
 	customTokens CustomTokens,
 	payloadStrategy PayloadStrategy,
 ) {
-
 	// We set the throttle to the desired rate of requests per second.
 	// It is important to prevent flooding the endpoint.
 	throttle := time.NewTicker(time.Duration(1e6/(rps)) * time.Microsecond) //nolint:mnd

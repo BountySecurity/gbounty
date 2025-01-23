@@ -9,7 +9,7 @@ type WithOptions interface {
 // WithProofOfConcept is an interface that defines the expected behavior for [scan.Writer] implementations on this
 // package that can be configured with [WithProofOfConceptEnabled].
 type WithProofOfConcept interface {
-	SetProofOfConcept(bool)
+	SetProofOfConcept(enabled bool)
 }
 
 // Option is a function that can be used to configure a [WithOptions] implementation.

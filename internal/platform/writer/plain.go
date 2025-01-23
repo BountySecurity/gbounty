@@ -14,8 +14,10 @@ import (
 )
 
 // Plain must implement the [scan.Writer] and [WithProofOfConcept] interfaces.
-var _ scan.Writer = &Plain{}
-var _ WithProofOfConcept = &Plain{}
+var (
+	_ scan.Writer        = &Plain{}
+	_ WithProofOfConcept = &Plain{}
+)
 
 // Plain is a [scan.Writer] implementation that writes the output
 // to the given [io.Writer], as plain text.
@@ -299,7 +301,7 @@ func (p *Plain) WriteMatch(_ context.Context, m scan.Match, includeResponse bool
 				builder.Write(r.Bytes())
 				builder.WriteString("\n")
 			} else {
-				builder.WriteString(string(r.Bytes()))
+				builder.Write(r.Bytes())
 				builder.WriteString("\n")
 			}
 		}

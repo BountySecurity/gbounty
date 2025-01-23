@@ -73,7 +73,7 @@ func FindStatusCode(s string, code int) []Occurrence {
 	regex := regexp.MustCompile(codeStr + ` [A-Za-z ]+`)
 
 	match := regex.FindStringIndex(s)
-	if len(match) != 2 {
+	if len(match) != 2 { //nolint:mnd
 		return []Occurrence{}
 	}
 

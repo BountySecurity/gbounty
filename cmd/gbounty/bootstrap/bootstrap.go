@@ -19,21 +19,20 @@ import (
 	"golang.org/x/sync/errgroup"
 
 	"github.com/bountysecurity/gbounty"
-	scan "github.com/bountysecurity/gbounty/internal"
-	"github.com/bountysecurity/gbounty/internal/entrypoint"
-	"github.com/bountysecurity/gbounty/internal/modifier"
+	"github.com/bountysecurity/gbounty/entrypoint"
 	"github.com/bountysecurity/gbounty/internal/platform/cli"
-	"github.com/bountysecurity/gbounty/internal/platform/filesystem"
 	"github.com/bountysecurity/gbounty/internal/platform/writer"
-	"github.com/bountysecurity/gbounty/internal/profile"
-	"github.com/bountysecurity/gbounty/internal/request"
-	"github.com/bountysecurity/gbounty/internal/response"
 	"github.com/bountysecurity/gbounty/kit/blindhost"
 	"github.com/bountysecurity/gbounty/kit/logger"
 	"github.com/bountysecurity/gbounty/kit/panics"
 	"github.com/bountysecurity/gbounty/kit/progressbar"
 	"github.com/bountysecurity/gbounty/kit/strings/occurrence"
 	"github.com/bountysecurity/gbounty/kit/ulid"
+	"github.com/bountysecurity/gbounty/modifier"
+	"github.com/bountysecurity/gbounty/platform/filesystem"
+	"github.com/bountysecurity/gbounty/profile"
+	"github.com/bountysecurity/gbounty/request"
+	"github.com/bountysecurity/gbounty/response"
 )
 
 const (
@@ -80,7 +79,7 @@ func Run() error {
 		return nil
 	}
 
-	updatesChan := make(chan *scan.Stats)
+	updatesChan := make(chan *gbounty.Stats)
 
 	pbPrinter := progressbar.NewPrinter()
 
@@ -171,7 +170,7 @@ func parseCLIArgs() (cli.Config, error) {
 
 func printUpdates(
 	ctx context.Context,
-	updatesChan chan *scan.Stats,
+	updatesChan chan *gbounty.Stats,
 	pbPrinter *progressbar.Printer,
 	initBar func() error,
 ) func() error {
@@ -217,7 +216,7 @@ func runScan(
 	ctx context.Context,
 	cfg cli.Config,
 	profilesProvider profile.Provider,
-	updatesChan chan *scan.Stats,
+	updatesChan chan *gbounty.Stats,
 	pbPrinter *progressbar.Printer,
 ) func() error {
 	return func() error {
@@ -256,8 +255,8 @@ func runScan(
 
 		// Set up modifiers (including blind host interactions).
 		var (
-			bhPoller  scan.BlindHostPoller
-			modifiers = make([]scan.Modifier, 0)
+			bhPoller  gbounty.BlindHostPoller
+			modifiers = make([]gbounty.Modifier, 0)
 		)
 		if len(cfg.BlindHost) > 0 {
 			hid := blindhost.RandomHostIdentifier()
@@ -279,7 +278,7 @@ func runScan(
 		modifiers = modifiersFromConfig(ctx, cfg, modifiers)
 		// End of modifiers section
 
-		runnerOpts := new(scan.RunnerOpts).
+		runnerOpts := new(gbounty.RunnerOpts).
 			WithContext(ctx).
 			WithConfiguration(scanCfg).
 			WithEntrypointFinders(entrypoint.Finders()).
@@ -289,14 +288,14 @@ func runScan(
 			WithPassiveReqProfiles(passiveReqs).
 			WithPassiveResProfiles(passiveRes).
 			WithRequesterBuilder(setupScanRequester(ctx, cfg)).
-			WithOnUpdated(func(stats *scan.Stats) { updatesChan <- stats }).
+			WithOnUpdated(func(stats *gbounty.Stats) { updatesChan <- stats }).
 			WithOnFinished(finalizeScan(ctx, updatesChan, pbPrinter, scanCfg, fs, id)).
 			WithSaveAllRequests(cfg.ShowAll || cfg.ShowAllRequests).
 			WithSaveResponses(cfg.ShowResponses).
 			WithSaveAllResponses(cfg.ShowAll || cfg.ShowAllResponses).
 			WithFileSystem(fs)
 
-		var w scan.Writer
+		var w gbounty.Writer
 		if cfg.OnlyProofOfConcept {
 			w = writer.NewPlain(os.Stdout, writer.WithProofOfConceptEnabled(cfg.OnlyProofOfConcept))
 		} else {
@@ -309,7 +308,7 @@ func runScan(
 			runnerOpts.WithOnError(func(ctx context.Context, url string, reqs []*request.Request, res []*response.Response, err error) {
 				if writeErr := w.WriteError(
 					ctx,
-					scan.Error{
+					gbounty.Error{
 						URL:       url,
 						Requests:  reqs,
 						Responses: res,
@@ -344,7 +343,7 @@ func runScan(
 
 				if err = w.WriteMatch(
 					ctx,
-					scan.Match{
+					gbounty.Match{
 						URL:                   url,
 						Requests:              reqs,
 						Responses:             res,
@@ -385,11 +384,11 @@ func runScan(
 			return err
 		}
 
-		return scan.NewRunner(runnerOpts).Start()
+		return gbounty.NewRunner(runnerOpts).Start()
 	}
 }
 
-func modifiersFromConfig(ctx context.Context, cfg cli.Config, given []scan.Modifier) []scan.Modifier {
+func modifiersFromConfig(ctx context.Context, cfg cli.Config, given []gbounty.Modifier) []gbounty.Modifier {
 	modifiers := modifier.Modifiers()
 	modifiers = append(modifiers, given...)
 
@@ -416,19 +415,19 @@ func gracefulContext(ctx context.Context) context.Context {
 	go func() {
 		sign := <-done
 		logger.For(ctx).Infof("Scan interrupted manually, signal: %s", sign.String())
-		cancel(fmt.Errorf("%w, signal: %s", scan.ErrManuallyInterrupted, sign.String())) //nolint:goerr113
+		cancel(fmt.Errorf("%w, signal: %s", gbounty.ErrManuallyInterrupted, sign.String())) //nolint:goerr113
 	}()
 
 	return ctx
 }
 
-func configFromArgs(cfg cli.Config) scan.Config {
-	payloadStrategy := scan.PayloadStrategyOnlyOnce
+func configFromArgs(cfg cli.Config) gbounty.Config {
+	payloadStrategy := gbounty.PayloadStrategyOnlyOnce
 	if !cfg.StopAtFirstMatch {
-		payloadStrategy = scan.PayloadStrategyAll
+		payloadStrategy = gbounty.PayloadStrategyAll
 	}
 
-	return scan.Config{
+	return gbounty.Config{
 		RPS:             cfg.Rps,
 		Concurrency:     cfg.Concurrency,
 		Version:         gbounty.Version,
@@ -549,13 +548,13 @@ func shouldBeIncluded[P profile.Profile](prof P, tags []string) bool {
 
 func finalizeScan(
 	ctx context.Context,
-	updatesChan chan *scan.Stats,
+	updatesChan chan *gbounty.Stats,
 	pbPrinter *progressbar.Printer,
-	cfg scan.Config,
-	fs scan.FileSystem,
+	cfg gbounty.Config,
+	fs gbounty.FileSystem,
 	id string,
-) func(*scan.Stats, error) {
-	return func(stats *scan.Stats, err error) {
+) func(*gbounty.Stats, error) {
+	return func(stats *gbounty.Stats, err error) {
 		logger.For(ctx).Info("Finalizing scan...")
 
 		var stopped bool
@@ -611,7 +610,7 @@ func finalizeScan(
 
 		// We declare the console writer that
 		// will (most likely) be used below later.
-		var consoleWriter scan.Writer
+		var consoleWriter gbounty.Writer
 		if cfg.OnlyProofOfConcept {
 			consoleWriter = writer.NewPlain(os.Stdout, writer.WithProofOfConceptEnabled(cfg.OnlyProofOfConcept))
 		} else {
@@ -647,7 +646,7 @@ func finalizeScan(
 	}
 }
 
-func storeOutput(ctx context.Context, cfg scan.Config, fs scan.FileSystem) {
+func storeOutput(ctx context.Context, cfg gbounty.Config, fs gbounty.FileSystem) {
 	logger.For(ctx).Debugf("Creating file to save scan output: %s", cfg.OutPath)
 	file, err := os.Create(cfg.OutPath)
 	if err != nil {
@@ -676,7 +675,7 @@ func storeOutput(ctx context.Context, cfg scan.Config, fs scan.FileSystem) {
 	}
 }
 
-func storeJSONOutput(ctx context.Context, cfg scan.Config, fs scan.FileSystem, to io.Writer) error {
+func storeJSONOutput(ctx context.Context, cfg gbounty.Config, fs gbounty.FileSystem, to io.Writer) error {
 	_, err := fmt.Fprintf(to, "{")
 	if err != nil {
 		return err
@@ -693,7 +692,7 @@ func storeJSONOutput(ctx context.Context, cfg scan.Config, fs scan.FileSystem, t
 	return err
 }
 
-func writeScanFromFs(ctx context.Context, w scan.Writer, cfg scan.Config, fs scan.FileSystem) error {
+func writeScanFromFs(ctx context.Context, w gbounty.Writer, cfg gbounty.Config, fs gbounty.FileSystem) error {
 	_, isConsole := w.(*writer.Console)
 	if !isConsole {
 		_, isPlain := w.(*writer.Plain)
@@ -741,7 +740,7 @@ func writeScanFromFs(ctx context.Context, w scan.Writer, cfg scan.Config, fs sca
 	return nil
 }
 
-func writeConfig(ctx context.Context, writer scan.Writer, cfg scan.Config) error {
+func writeConfig(ctx context.Context, writer gbounty.Writer, cfg gbounty.Config) error {
 	if cfg.OnlyProofOfConcept {
 		logger.For(ctx).Debug("OnlyProofOfConcept mode enabled: scan configuration not displayed in the output")
 		return nil
@@ -756,7 +755,7 @@ func writeConfig(ctx context.Context, writer scan.Writer, cfg scan.Config) error
 	return writer.WriteConfig(ctx, cfg)
 }
 
-func handleStoreOutputErr(cfg scan.Config, err error) {
+func handleStoreOutputErr(cfg gbounty.Config, err error) {
 	var pathErr *os.PathError
 
 	if errors.As(err, &pathErr) {

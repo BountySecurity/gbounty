@@ -7,13 +7,13 @@ import (
 	"io"
 	"time"
 
-	scan "github.com/bountysecurity/gbounty/internal"
+	"github.com/bountysecurity/gbounty"
 )
 
-// JSON must implement the [scan.Writer] interface.
-var _ scan.Writer = JSON{}
+// JSON must implement the [gbounty.Writer] interface.
+var _ gbounty.Writer = JSON{}
 
-// JSON is a [scan.Writer] implementation that writes the output
+// JSON is a [gbounty.Writer] implementation that writes the output
 // to the given [io.Writer], in a machine-readable format (JSON).
 type JSON struct {
 	writer io.Writer
@@ -24,8 +24,8 @@ func NewJSON(writer io.Writer) JSON {
 	return JSON{writer: writer}
 }
 
-// WriteConfig writes the [scan.Config] to the [io.Writer] as a JSON object.
-func (j JSON) WriteConfig(_ context.Context, cfg scan.Config) error {
+// WriteConfig writes the [gbounty.Config] to the [io.Writer] as a JSON object.
+func (j JSON) WriteConfig(_ context.Context, cfg gbounty.Config) error {
 	_, err := fmt.Fprintf(j.writer, `
 	"config": {
 		"version": "%s",
@@ -40,8 +40,8 @@ func (j JSON) WriteConfig(_ context.Context, cfg scan.Config) error {
 	return err
 }
 
-// WriteStats writes the [scan.Stats] to the [io.Writer] as a JSON object.
-func (j JSON) WriteStats(ctx context.Context, fs scan.FileSystem) error {
+// WriteStats writes the [gbounty.Stats] to the [io.Writer] as a JSON object.
+func (j JSON) WriteStats(ctx context.Context, fs gbounty.FileSystem) error {
 	stats, err := fs.LoadStats(ctx)
 	if err != nil {
 		return err
@@ -70,9 +70,9 @@ func (j JSON) WriteStats(ctx context.Context, fs scan.FileSystem) error {
 	return err
 }
 
-// WriteMatchesSummary writes a summary of the [scan.Match] instances found during the [scan],
+// WriteMatchesSummary writes a summary of the [gbounty.Match] instances found during the [scan],
 // to the [io.Writer] as a JSON array of JSON objects.
-func (j JSON) WriteMatchesSummary(ctx context.Context, fs scan.FileSystem) error {
+func (j JSON) WriteMatchesSummary(ctx context.Context, fs gbounty.FileSystem) error {
 	_, err := fmt.Fprint(j.writer, `,
 	"summary": [`)
 	if err != nil {
@@ -150,8 +150,8 @@ func (j JSON) WriteMatchesSummary(ctx context.Context, fs scan.FileSystem) error
 	return err
 }
 
-// WriteError writes a [scan.Error] to the [io.Writer] as a JSON object.
-func (j JSON) WriteError(_ context.Context, scanError scan.Error) error {
+// WriteError writes a [gbounty.Error] to the [io.Writer] as a JSON object.
+func (j JSON) WriteError(_ context.Context, scanError gbounty.Error) error {
 	_, err := fmt.Fprintf(j.writer, `{
 	"domain": %s,
 	"error": %s`, jsonMarshaled(scanError.Domain()), jsonMarshaled(scanError.Err))
@@ -238,8 +238,8 @@ func (j JSON) WriteError(_ context.Context, scanError scan.Error) error {
 	return err
 }
 
-// WriteErrors writes the [scan.Error] instances to the [io.Writer] as a JSON array of JSON objects.
-func (j JSON) WriteErrors(ctx context.Context, fs scan.FileSystem) error {
+// WriteErrors writes the [gbounty.Error] instances to the [io.Writer] as a JSON array of JSON objects.
+func (j JSON) WriteErrors(ctx context.Context, fs gbounty.FileSystem) error {
 	_, err := fmt.Fprint(j.writer, `,
 	"errors": [`)
 	if err != nil {
@@ -359,8 +359,8 @@ func (j JSON) WriteErrors(ctx context.Context, fs scan.FileSystem) error {
 	return err
 }
 
-// WriteMatch writes a [scan.Match] to the [io.Writer] as a JSON object.
-func (j JSON) WriteMatch(_ context.Context, m scan.Match, includeResponse bool) error {
+// WriteMatch writes a [gbounty.Match] to the [io.Writer] as a JSON object.
+func (j JSON) WriteMatch(_ context.Context, m gbounty.Match, includeResponse bool) error {
 	_, err := fmt.Fprintf(j.writer, `{
 	"domain": %s,
 	"issue": {
@@ -453,9 +453,9 @@ func (j JSON) WriteMatch(_ context.Context, m scan.Match, includeResponse bool) 
 	return err
 }
 
-// WriteMatches writes the [scan.Match] instances found during the [scan],
+// WriteMatches writes the [gbounty.Match] instances found during the [scan],
 // as a JSON array of JSON objects.
-func (j JSON) WriteMatches(ctx context.Context, fs scan.FileSystem, includeResponses bool) error {
+func (j JSON) WriteMatches(ctx context.Context, fs gbounty.FileSystem, includeResponses bool) error {
 	_, err := fmt.Fprint(j.writer, `,
 	"matches": [`)
 	if err != nil {
@@ -581,8 +581,8 @@ func (j JSON) WriteMatches(ctx context.Context, fs scan.FileSystem, includeRespo
 	return err
 }
 
-// WriteTasks writes the [scan.TaskSummary] instances to the [io.Writer] as a JSON array of JSON objects.
-func (j JSON) WriteTasks(ctx context.Context, fs scan.FileSystem, allRequests, allResponses bool) error {
+// WriteTasks writes the [gbounty.TaskSummary] instances to the [io.Writer] as a JSON array of JSON objects.
+func (j JSON) WriteTasks(ctx context.Context, fs gbounty.FileSystem, allRequests, allResponses bool) error {
 	_, err := fmt.Fprint(j.writer, `,
 	"tasks": [`)
 	if err != nil {

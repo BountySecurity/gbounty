@@ -1,9 +1,9 @@
 package modifier
 
 import (
-	"github.com/BountySecurity/gbounty"
 	"strings"
 
+	"github.com/BountySecurity/gbounty"
 	"github.com/BountySecurity/gbounty/kit/ulid"
 	"github.com/BountySecurity/gbounty/profile"
 	"github.com/BountySecurity/gbounty/request"

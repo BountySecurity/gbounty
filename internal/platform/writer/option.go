@@ -1,12 +1,12 @@
 package writer
 
-// WithOptions is an interface that defines the expected behavior for [scan.Writer] implementations on this
+// WithOptions is an interface that defines the expected behavior for [gbounty.Writer] implementations on this
 // package that can be configured with [Option]. It's mostly a composition of all the concrete interfaces.
 type WithOptions interface {
 	WithProofOfConcept
 }
 
-// WithProofOfConcept is an interface that defines the expected behavior for [scan.Writer] implementations on this
+// WithProofOfConcept is an interface that defines the expected behavior for [gbounty.Writer] implementations on this
 // package that can be configured with [WithProofOfConceptEnabled].
 type WithProofOfConcept interface {
 	SetProofOfConcept(enabled bool)

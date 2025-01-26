@@ -9,17 +9,17 @@ import (
 
 	"github.com/pterm/pterm"
 
-	scan "github.com/BountySecurity/gbounty"
+	"github.com/BountySecurity/gbounty"
 	"github.com/BountySecurity/gbounty/kit/console/printer"
 )
 
-// Plain must implement the [scan.Writer] and [WithProofOfConcept] interfaces.
+// Plain must implement the [gbounty.Writer] and [WithProofOfConcept] interfaces.
 var (
-	_ scan.Writer        = &Plain{}
+	_ gbounty.Writer     = &Plain{}
 	_ WithProofOfConcept = &Plain{}
 )
 
-// Plain is a [scan.Writer] implementation that writes the output
+// Plain is a [gbounty.Writer] implementation that writes the output
 // to the given [io.Writer], as plain text.
 // The format is quite similar to [Console] but without colors.
 type Plain struct {
@@ -40,8 +40,8 @@ func (p *Plain) SetProofOfConcept(enabled bool) {
 	p.pocEnabled = enabled
 }
 
-// WriteConfig writes the [scan.Config] to the [io.Writer] as plain text.
-func (p *Plain) WriteConfig(_ context.Context, cfg scan.Config) error {
+// WriteConfig writes the [gbounty.Config] to the [io.Writer] as plain text.
+func (p *Plain) WriteConfig(_ context.Context, cfg gbounty.Config) error {
 	if p.pocEnabled {
 		return nil
 	}
@@ -65,8 +65,8 @@ func (p *Plain) WriteConfig(_ context.Context, cfg scan.Config) error {
 	return err
 }
 
-// WriteStats writes the [scan.Stats] to the [io.Writer] as plain text.
-func (p *Plain) WriteStats(ctx context.Context, fs scan.FileSystem) error {
+// WriteStats writes the [gbounty.Stats] to the [io.Writer] as plain text.
+func (p *Plain) WriteStats(ctx context.Context, fs gbounty.FileSystem) error {
 	if p.pocEnabled {
 		return nil
 	}
@@ -96,9 +96,9 @@ func (p *Plain) WriteStats(ctx context.Context, fs scan.FileSystem) error {
 	return err
 }
 
-// WriteMatchesSummary writes a summary of the [scan.Match] instances found during the [scan],
+// WriteMatchesSummary writes a summary of the [gbounty.Match] instances found during the [scan],
 // to the [io.Writer] as plain text.
-func (p *Plain) WriteMatchesSummary(ctx context.Context, fs scan.FileSystem) error {
+func (p *Plain) WriteMatchesSummary(ctx context.Context, fs gbounty.FileSystem) error {
 	if p.pocEnabled {
 		return nil
 	}
@@ -170,8 +170,8 @@ func (p *Plain) WriteMatchesSummary(ctx context.Context, fs scan.FileSystem) err
 	return nil
 }
 
-// WriteError writes a [scan.Error] to the [io.Writer] as plain text.
-func (p *Plain) WriteError(_ context.Context, scanError scan.Error) error {
+// WriteError writes a [gbounty.Error] to the [io.Writer] as plain text.
+func (p *Plain) WriteError(_ context.Context, scanError gbounty.Error) error {
 	if p.pocEnabled {
 		return nil
 	}
@@ -210,8 +210,8 @@ func (p *Plain) WriteError(_ context.Context, scanError scan.Error) error {
 	return err
 }
 
-// WriteErrors writes the [scan.Error] instances to the [io.Writer] as plain text.
-func (p *Plain) WriteErrors(ctx context.Context, fs scan.FileSystem) error {
+// WriteErrors writes the [gbounty.Error] instances to the [io.Writer] as plain text.
+func (p *Plain) WriteErrors(ctx context.Context, fs gbounty.FileSystem) error {
 	if p.pocEnabled {
 		return nil
 	}
@@ -268,8 +268,8 @@ func (p *Plain) WriteErrors(ctx context.Context, fs scan.FileSystem) error {
 	return nil
 }
 
-// WriteMatch writes a [scan.Match] to the [io.Writer] as plain text.
-func (p *Plain) WriteMatch(_ context.Context, m scan.Match, includeResponse bool) error {
+// WriteMatch writes a [gbounty.Match] to the [io.Writer] as plain text.
+func (p *Plain) WriteMatch(_ context.Context, m gbounty.Match, includeResponse bool) error {
 	builder := strings.Builder{}
 	if !p.pocEnabled {
 		builder.WriteString("\n")
@@ -321,9 +321,9 @@ func (p *Plain) WriteMatch(_ context.Context, m scan.Match, includeResponse bool
 	return err
 }
 
-// WriteMatches writes the [scan.Match] instances found during the [scan],
+// WriteMatches writes the [gbounty.Match] instances found during the [scan],
 // as plain text.
-func (p *Plain) WriteMatches(ctx context.Context, fs scan.FileSystem, includeResponses bool) error {
+func (p *Plain) WriteMatches(ctx context.Context, fs gbounty.FileSystem, includeResponses bool) error {
 	_, err := fmt.Fprint(p.writer, pterm.DefaultSection.WithLevel(2).WithStyle(nil).Sprintln("Matches"))
 	if err != nil {
 		return err
@@ -384,8 +384,8 @@ func (p *Plain) WriteMatches(ctx context.Context, fs scan.FileSystem, includeRes
 	return nil
 }
 
-// WriteTasks writes the [scan.TaskSummary] instances to the [io.Writer] as plain text.
-func (p *Plain) WriteTasks(ctx context.Context, fs scan.FileSystem, allRequests, allResponses bool) error {
+// WriteTasks writes the [gbounty.TaskSummary] instances to the [io.Writer] as plain text.
+func (p *Plain) WriteTasks(ctx context.Context, fs gbounty.FileSystem, allRequests, allResponses bool) error {
 	if p.pocEnabled {
 		return nil
 	}

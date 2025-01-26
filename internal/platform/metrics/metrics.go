@@ -20,7 +20,7 @@ var ConcurrentTemplates = promauto.NewGauge(prometheus.GaugeOpts{
 })
 
 // OngoingTasks is a gauge metric that represents the total amount of ongoing tasks.
-// See [scan.Task] for more details about what a task is.
+// See [gbounty.Task] for more details about what a task is.
 var OngoingTasks = promauto.NewGauge(prometheus.GaugeOpts{
 	Name: "scan_tasks_ongoing",
 	Help: "Total amount of ongoing tasks",

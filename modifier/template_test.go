@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	scan "github.com/BountySecurity/gbounty"
+	"github.com/BountySecurity/gbounty"
 	"github.com/BountySecurity/gbounty/modifier"
 	"github.com/BountySecurity/gbounty/request"
 )
@@ -20,7 +20,7 @@ func TestTemplate_Modify(t *testing.T) {
 	t.Run("{CURRENT_INDEX}", func(t *testing.T) {
 		t.Parallel()
 
-		tpl := scan.Template{Idx: 99}
+		tpl := gbounty.Template{Idx: 99}
 		req := request.Request{Path: "/{CURRENT_INDEX}"}
 
 		modified := m.Modify(nil, tpl, req)
@@ -37,7 +37,7 @@ func TestTemplate_Modify(t *testing.T) {
 		t.Run("full url", func(t *testing.T) {
 			t.Parallel()
 
-			tpl := scan.Template{
+			tpl := gbounty.Template{
 				Idx: 99,
 				Request: request.Request{
 					URL: "http://testphp.vulnweb.com:80/search.php?test=query",
@@ -51,7 +51,7 @@ func TestTemplate_Modify(t *testing.T) {
 		t.Run("url + path", func(t *testing.T) {
 			t.Parallel()
 
-			tpl := scan.Template{
+			tpl := gbounty.Template{
 				Idx: 99,
 				Request: request.Request{
 					URL:  "http://testphp.vulnweb.com:80",
@@ -66,7 +66,7 @@ func TestTemplate_Modify(t *testing.T) {
 		t.Run("url + path (no port)", func(t *testing.T) {
 			t.Parallel()
 
-			tpl := scan.Template{
+			tpl := gbounty.Template{
 				Idx: 99,
 				Request: request.Request{
 					URL:  "https://testphp.vulnweb.com",
@@ -81,7 +81,7 @@ func TestTemplate_Modify(t *testing.T) {
 		t.Run("url + path (no query)", func(t *testing.T) {
 			t.Parallel()
 
-			tpl := scan.Template{
+			tpl := gbounty.Template{
 				Idx: 99,
 				Request: request.Request{
 					URL:  "http://testphp.vulnweb.com:80",
@@ -96,7 +96,7 @@ func TestTemplate_Modify(t *testing.T) {
 		t.Run("url + path (no path)", func(t *testing.T) {
 			t.Parallel()
 
-			tpl := scan.Template{
+			tpl := gbounty.Template{
 				Idx: 99,
 				Request: request.Request{
 					URL: "http://testphp.vulnweb.com:80",
@@ -111,7 +111,7 @@ func TestTemplate_Modify(t *testing.T) {
 	t.Run("{CURRENT_PORT}", func(t *testing.T) {
 		t.Parallel()
 
-		tpl := scan.Template{
+		tpl := gbounty.Template{
 			Idx: 99,
 			Request: request.Request{
 				URL: "http://testphp.vulnweb.com:3000/search.php?test=query",
@@ -127,7 +127,7 @@ func TestTemplate_Modify(t *testing.T) {
 	t.Run("{CURRENT_PATH}", func(t *testing.T) {
 		t.Parallel()
 
-		tpl := scan.Template{
+		tpl := gbounty.Template{
 			Idx: 99,
 			Request: request.Request{
 				URL: "http://testphp.vulnweb.com:3000/dir1/dir2/search.php?test=query",
@@ -143,7 +143,7 @@ func TestTemplate_Modify(t *testing.T) {
 	t.Run("{CURRENT_HOST}", func(t *testing.T) {
 		t.Parallel()
 
-		tpl := scan.Template{
+		tpl := gbounty.Template{
 			Idx: 99,
 			Request: request.Request{
 				URL: "http://testphp.vulnweb.com:3000/dir1/dir2/search.php?test=query",
@@ -159,7 +159,7 @@ func TestTemplate_Modify(t *testing.T) {
 	t.Run("{CURRENT_METHOD}", func(t *testing.T) {
 		t.Parallel()
 
-		tpl := scan.Template{
+		tpl := gbounty.Template{
 			Idx: 99,
 			Request: request.Request{
 				Method: http.MethodDelete,
@@ -176,7 +176,7 @@ func TestTemplate_Modify(t *testing.T) {
 	t.Run("{CURRENT_QUERY}", func(t *testing.T) {
 		t.Parallel()
 
-		tpl := scan.Template{
+		tpl := gbounty.Template{
 			Idx: 99,
 			Request: request.Request{
 				Method: http.MethodDelete,
@@ -193,7 +193,7 @@ func TestTemplate_Modify(t *testing.T) {
 	t.Run("{CURRENT_FILE}", func(t *testing.T) {
 		t.Parallel()
 
-		tpl := scan.Template{
+		tpl := gbounty.Template{
 			Idx: 99,
 			Request: request.Request{
 				Method: http.MethodDelete,
@@ -210,7 +210,7 @@ func TestTemplate_Modify(t *testing.T) {
 	t.Run("{CURRENT_PROTOCOL}", func(t *testing.T) {
 		t.Parallel()
 
-		tpl := scan.Template{
+		tpl := gbounty.Template{
 			Idx: 99,
 			Request: request.Request{
 				Method: http.MethodDelete,
@@ -227,7 +227,7 @@ func TestTemplate_Modify(t *testing.T) {
 	t.Run("{CURRENT_USER_AGENT}", func(t *testing.T) {
 		t.Parallel()
 
-		tpl := scan.Template{
+		tpl := gbounty.Template{
 			Idx: 99,
 			Request: request.Request{
 				Headers: map[string][]string{
@@ -245,7 +245,7 @@ func TestTemplate_Modify(t *testing.T) {
 	t.Run("{CURRENT_REFERER}", func(t *testing.T) {
 		t.Parallel()
 
-		tpl := scan.Template{
+		tpl := gbounty.Template{
 			Idx: 99,
 			Request: request.Request{
 				Headers: map[string][]string{
@@ -263,7 +263,7 @@ func TestTemplate_Modify(t *testing.T) {
 	t.Run("{CURRENT_ORIGIN}", func(t *testing.T) {
 		t.Parallel()
 
-		tpl := scan.Template{
+		tpl := gbounty.Template{
 			Idx: 99,
 			Request: request.Request{
 				Headers: map[string][]string{
@@ -281,7 +281,7 @@ func TestTemplate_Modify(t *testing.T) {
 	t.Run("{CURRENT_CONTENT_TYPE}", func(t *testing.T) {
 		t.Parallel()
 
-		tpl := scan.Template{
+		tpl := gbounty.Template{
 			Idx: 99,
 			Request: request.Request{
 				Headers: map[string][]string{
@@ -299,7 +299,7 @@ func TestTemplate_Modify(t *testing.T) {
 	t.Run("{CURRENT_ACCEPT}", func(t *testing.T) {
 		t.Parallel()
 
-		tpl := scan.Template{
+		tpl := gbounty.Template{
 			Idx: 99,
 			Request: request.Request{
 				Headers: map[string][]string{
@@ -317,7 +317,7 @@ func TestTemplate_Modify(t *testing.T) {
 	t.Run("{CURRENT_ACCEPT_LANGUAGE}", func(t *testing.T) {
 		t.Parallel()
 
-		tpl := scan.Template{
+		tpl := gbounty.Template{
 			Idx: 99,
 			Request: request.Request{
 				Headers: map[string][]string{
@@ -335,7 +335,7 @@ func TestTemplate_Modify(t *testing.T) {
 	t.Run("{CURRENT_ACCEPT_ENCODING}", func(t *testing.T) {
 		t.Parallel()
 
-		tpl := scan.Template{
+		tpl := gbounty.Template{
 			Idx: 99,
 			Request: request.Request{
 				Headers: map[string][]string{
@@ -353,7 +353,7 @@ func TestTemplate_Modify(t *testing.T) {
 	t.Run("{CURRENT_CONTENT_LENGTH}", func(t *testing.T) {
 		t.Parallel()
 
-		tpl := scan.Template{
+		tpl := gbounty.Template{
 			Idx: 99,
 			Request: request.Request{
 				Headers: map[string][]string{

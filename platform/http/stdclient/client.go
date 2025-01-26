@@ -11,10 +11,10 @@ import (
 
 	"golang.org/x/net/http2"
 
-	"github.com/bountysecurity/gbounty/internal/platform/metrics"
-	"github.com/bountysecurity/gbounty/kit/logger"
-	"github.com/bountysecurity/gbounty/request"
-	"github.com/bountysecurity/gbounty/response"
+	"github.com/BountySecurity/gbounty/internal/platform/metrics"
+	"github.com/BountySecurity/gbounty/kit/logger"
+	"github.com/BountySecurity/gbounty/request"
+	"github.com/BountySecurity/gbounty/response"
 )
 
 // Client is a custom implementation of an HTTP client that

@@ -6,7 +6,7 @@ import (
 	"github.com/pterm/pterm"
 	"github.com/pterm/pterm/putils"
 
-	"github.com/bountysecurity/gbounty"
+	"github.com/BountySecurity/gbounty"
 )
 
 func PrintAppName() {

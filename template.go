@@ -8,9 +8,9 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/bountysecurity/gbounty/kit/logger"
-	"github.com/bountysecurity/gbounty/request"
-	"github.com/bountysecurity/gbounty/response"
+	"github.com/BountySecurity/gbounty/kit/logger"
+	"github.com/BountySecurity/gbounty/request"
+	"github.com/BountySecurity/gbounty/response"
 )
 
 // Template is an abstraction that represents a request and response pair

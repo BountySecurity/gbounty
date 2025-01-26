@@ -7,9 +7,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/bountysecurity/gbounty/kit/blindhost"
-	"github.com/bountysecurity/gbounty/kit/logger"
-	"github.com/bountysecurity/gbounty/kit/url"
+	"github.com/BountySecurity/gbounty/kit/blindhost"
+	"github.com/BountySecurity/gbounty/kit/logger"
+	"github.com/BountySecurity/gbounty/kit/url"
 )
 
 const (

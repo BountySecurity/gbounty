@@ -6,9 +6,9 @@ import (
 
 	"github.com/pterm/pterm"
 
-	"github.com/bountysecurity/gbounty/cmd/gbounty/bootstrap"
-	"github.com/bountysecurity/gbounty/kit/slices"
-	"github.com/bountysecurity/gbounty/kit/strings/capitalize"
+	"github.com/BountySecurity/gbounty/cmd/gbounty/bootstrap"
+	"github.com/BountySecurity/gbounty/kit/slices"
+	"github.com/BountySecurity/gbounty/kit/strings/capitalize"
 )
 
 func main() {

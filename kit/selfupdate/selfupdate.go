@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/bountysecurity/gbounty/kit/semver"
+	"github.com/BountySecurity/gbounty/kit/semver"
 )
 
 var (

@@ -5,10 +5,10 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/bountysecurity/gbounty/internal/platform/metrics"
-	"github.com/bountysecurity/gbounty/kit/logger"
-	"github.com/bountysecurity/gbounty/kit/panics"
-	"github.com/bountysecurity/gbounty/kit/pool"
+	"github.com/BountySecurity/gbounty/internal/platform/metrics"
+	"github.com/BountySecurity/gbounty/kit/logger"
+	"github.com/BountySecurity/gbounty/kit/panics"
+	"github.com/BountySecurity/gbounty/kit/pool"
 )
 
 // Runner is the main component responsible for orchestrating `scan` executions.

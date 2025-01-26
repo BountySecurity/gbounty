@@ -1,6 +1,6 @@
 package modifier
 
-import "github.com/bountysecurity/gbounty"
+import "github.com/BountySecurity/gbounty"
 
 // Modifiers returns a list of all available modifiers
 // within the `modifier` package.

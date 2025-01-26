@@ -9,8 +9,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/bountysecurity/gbounty/kit/logger"
-	"github.com/bountysecurity/gbounty/kit/panics"
+	"github.com/BountySecurity/gbounty/kit/logger"
+	"github.com/BountySecurity/gbounty/kit/panics"
 )
 
 func TestLog(t *testing.T) {
@@ -31,7 +31,7 @@ func TestLog(t *testing.T) {
 		time.Sleep(100 * time.Millisecond)
 		assert.Contains(t, buff.String(), `level=error msg="Fatal error (panic): error" test=test`)
 		assert.Contains(t, buff.String(), `level=error msg="Stack trace:`)
-		assert.Contains(t, buff.String(), `github.com/bountysecurity/gbounty/kit/panics.Log`)
+		assert.Contains(t, buff.String(), `github.com/BountySecurity/gbounty/kit/panics.Log`)
 	}()
 
 	defer panics.Log(ctx)

@@ -1,4 +1,4 @@
-module github.com/bountysecurity/gbounty
+module github.com/BountySecurity/gbounty
 
 go 1.21
 

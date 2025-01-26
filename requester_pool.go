@@ -3,8 +3,8 @@ package gbounty
 import (
 	"context"
 
-	"github.com/bountysecurity/gbounty/request"
-	"github.com/bountysecurity/gbounty/response"
+	"github.com/BountySecurity/gbounty/request"
+	"github.com/BountySecurity/gbounty/response"
 )
 
 // NewReqBuilderPool instantiates a pooled (limited) [RequesterBuilder],

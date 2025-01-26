@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/bountysecurity/gbounty/profile/encode"
+	"github.com/BountySecurity/gbounty/profile/encode"
 )
 
 // Step must implement the IssueInformation interface.

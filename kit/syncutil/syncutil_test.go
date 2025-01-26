@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/bountysecurity/gbounty/kit/syncutil"
+	"github.com/BountySecurity/gbounty/kit/syncutil"
 )
 
 func TestWaitOrForget(t *testing.T) {

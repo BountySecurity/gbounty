@@ -8,7 +8,7 @@ import (
 	"github.com/google/go-github/v64/github"
 	"golang.org/x/oauth2"
 
-	"github.com/bountysecurity/gbounty/kit/gitconfig"
+	"github.com/BountySecurity/gbounty/kit/gitconfig"
 )
 
 func githubClient(ctx context.Context) *github.Client {

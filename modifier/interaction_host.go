@@ -6,10 +6,10 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/bountysecurity/gbounty"
-	"github.com/bountysecurity/gbounty/kit/blindhost"
-	"github.com/bountysecurity/gbounty/profile"
-	"github.com/bountysecurity/gbounty/request"
+	"github.com/BountySecurity/gbounty"
+	"github.com/BountySecurity/gbounty/kit/blindhost"
+	"github.com/BountySecurity/gbounty/profile"
+	"github.com/BountySecurity/gbounty/request"
 )
 
 // InteractionHost must implement the [scan.Modifier] interface.

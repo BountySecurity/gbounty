@@ -1,12 +1,12 @@
 package modifier
 
 import (
-	"github.com/bountysecurity/gbounty"
+	"github.com/BountySecurity/gbounty"
 	"strings"
 
-	"github.com/bountysecurity/gbounty/kit/ulid"
-	"github.com/bountysecurity/gbounty/profile"
-	"github.com/bountysecurity/gbounty/request"
+	"github.com/BountySecurity/gbounty/kit/ulid"
+	"github.com/BountySecurity/gbounty/profile"
+	"github.com/BountySecurity/gbounty/request"
 )
 
 // Random must implement the [gbounty.Modifier] interface.

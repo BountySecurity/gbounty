@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/bountysecurity/gbounty/kit/logger"
+	"github.com/BountySecurity/gbounty/kit/logger"
 )
 
 func Test_Logger_Annotate(t *testing.T) {

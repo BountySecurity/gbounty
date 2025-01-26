@@ -8,14 +8,14 @@ import (
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/require"
 
-	"github.com/bountysecurity/gbounty"
-	"github.com/bountysecurity/gbounty/entrypoint"
-	"github.com/bountysecurity/gbounty/kit/ulid"
-	"github.com/bountysecurity/gbounty/platform/filesystem"
-	"github.com/bountysecurity/gbounty/profile"
-	"github.com/bountysecurity/gbounty/profile/profilefakes"
-	"github.com/bountysecurity/gbounty/request"
-	"github.com/bountysecurity/gbounty/response"
+	"github.com/BountySecurity/gbounty"
+	"github.com/BountySecurity/gbounty/entrypoint"
+	"github.com/BountySecurity/gbounty/kit/ulid"
+	"github.com/BountySecurity/gbounty/platform/filesystem"
+	"github.com/BountySecurity/gbounty/profile"
+	"github.com/BountySecurity/gbounty/profile/profilefakes"
+	"github.com/BountySecurity/gbounty/request"
+	"github.com/BountySecurity/gbounty/response"
 )
 
 func TestRunner(t *testing.T) {

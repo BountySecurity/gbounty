@@ -8,14 +8,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/bountysecurity/gbounty/entrypoint"
-	"github.com/bountysecurity/gbounty/kit/logger"
-	"github.com/bountysecurity/gbounty/kit/panics"
-	"github.com/bountysecurity/gbounty/kit/strings/occurrence"
-	"github.com/bountysecurity/gbounty/match"
-	"github.com/bountysecurity/gbounty/profile"
-	"github.com/bountysecurity/gbounty/request"
-	"github.com/bountysecurity/gbounty/response"
+	"github.com/BountySecurity/gbounty/entrypoint"
+	"github.com/BountySecurity/gbounty/kit/logger"
+	"github.com/BountySecurity/gbounty/kit/panics"
+	"github.com/BountySecurity/gbounty/kit/strings/occurrence"
+	"github.com/BountySecurity/gbounty/match"
+	"github.com/BountySecurity/gbounty/profile"
+	"github.com/BountySecurity/gbounty/request"
+	"github.com/BountySecurity/gbounty/response"
 )
 
 // Task is an atomic unit of work within a `scan`, which is what composes a [Template].

@@ -11,8 +11,8 @@ import (
 
 	"github.com/spf13/afero"
 
-	"github.com/bountysecurity/gbounty"
-	"github.com/bountysecurity/gbounty/kit/logger"
+	"github.com/BountySecurity/gbounty"
+	"github.com/BountySecurity/gbounty/kit/logger"
 )
 
 const (

@@ -1,8 +1,8 @@
 package entrypoint
 
 import (
-	"github.com/bountysecurity/gbounty/profile"
-	"github.com/bountysecurity/gbounty/request"
+	"github.com/BountySecurity/gbounty/profile"
+	"github.com/BountySecurity/gbounty/request"
 )
 
 // Entrypoint defines the behavior of a request's entrypoint,

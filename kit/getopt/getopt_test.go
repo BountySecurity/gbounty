@@ -8,7 +8,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/bountysecurity/gbounty/kit/getopt"
+	"github.com/BountySecurity/gbounty/kit/getopt"
 )
 
 func Test_NewFlagSet(t *testing.T) {

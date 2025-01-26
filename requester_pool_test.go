@@ -8,11 +8,11 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/bountysecurity/gbounty"
-	internalhttp "github.com/bountysecurity/gbounty/platform/http"
-	"github.com/bountysecurity/gbounty/platform/http/client"
-	"github.com/bountysecurity/gbounty/platform/http/stdclient"
-	"github.com/bountysecurity/gbounty/request"
+	"github.com/BountySecurity/gbounty"
+	internalhttp "github.com/BountySecurity/gbounty/platform/http"
+	"github.com/BountySecurity/gbounty/platform/http/client"
+	"github.com/BountySecurity/gbounty/platform/http/stdclient"
+	"github.com/BountySecurity/gbounty/request"
 )
 
 func TestPool(t *testing.T) {

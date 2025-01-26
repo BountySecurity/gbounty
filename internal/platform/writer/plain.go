@@ -9,8 +9,8 @@ import (
 
 	"github.com/pterm/pterm"
 
-	scan "github.com/bountysecurity/gbounty"
-	"github.com/bountysecurity/gbounty/kit/console/printer"
+	scan "github.com/BountySecurity/gbounty"
+	"github.com/BountySecurity/gbounty/kit/console/printer"
 )
 
 // Plain must implement the [scan.Writer] and [WithProofOfConcept] interfaces.

@@ -3,7 +3,7 @@ package entrypoint
 import (
 	"strings"
 
-	"github.com/bountysecurity/gbounty/request"
+	"github.com/BountySecurity/gbounty/request"
 )
 
 // QueryFinder must implement the Finder interface.

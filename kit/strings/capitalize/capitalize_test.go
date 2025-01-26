@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/bountysecurity/gbounty/kit/strings/capitalize"
+	"github.com/BountySecurity/gbounty/kit/strings/capitalize"
 )
 
 func Test_First(t *testing.T) {

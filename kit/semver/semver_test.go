@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/bountysecurity/gbounty/kit/semver"
+	"github.com/BountySecurity/gbounty/kit/semver"
 )
 
 func Test_Parse(t *testing.T) {

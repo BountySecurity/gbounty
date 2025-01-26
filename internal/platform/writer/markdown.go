@@ -9,7 +9,7 @@ import (
 
 	"github.com/pterm/pterm"
 
-	"github.com/bountysecurity/gbounty"
+	"github.com/BountySecurity/gbounty"
 )
 
 // Markdown must implement the [gbounty.Writer] interface.

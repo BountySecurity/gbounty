@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/bountysecurity/gbounty/response"
+	"github.com/BountySecurity/gbounty/response"
 )
 
 func TestResponse_JSON(t *testing.T) {

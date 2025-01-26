@@ -1,7 +1,7 @@
 package entrypoint
 
 import (
-	"github.com/bountysecurity/gbounty/request"
+	"github.com/BountySecurity/gbounty/request"
 )
 
 // MultipartFinder must implement the Finder interface.

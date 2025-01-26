@@ -5,7 +5,7 @@ import (
 
 	"github.com/pterm/pterm"
 
-	"github.com/bountysecurity/gbounty/kit/console/color"
+	"github.com/BountySecurity/gbounty/kit/console/color"
 )
 
 func domainPrinter() pterm.PrefixPrinter {

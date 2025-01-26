@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/bountysecurity/gbounty/kit/jsonmap"
+	"github.com/BountySecurity/gbounty/kit/jsonmap"
 )
 
 func TestBlankMarshalJSON(t *testing.T) {

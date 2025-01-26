@@ -1,14 +1,14 @@
 package modifier_test
 
 import (
-	"github.com/bountysecurity/gbounty"
+	"github.com/BountySecurity/gbounty"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/bountysecurity/gbounty/modifier"
-	"github.com/bountysecurity/gbounty/request"
+	"github.com/BountySecurity/gbounty/modifier"
+	"github.com/BountySecurity/gbounty/request"
 )
 
 const randomLabel = "{RANDOM}"

@@ -1,15 +1,15 @@
 package modifier_test
 
 import (
-	"github.com/bountysecurity/gbounty"
+	"github.com/BountySecurity/gbounty"
 	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/bountysecurity/gbounty/modifier"
-	"github.com/bountysecurity/gbounty/profile"
-	"github.com/bountysecurity/gbounty/request"
+	"github.com/BountySecurity/gbounty/modifier"
+	"github.com/BountySecurity/gbounty/profile"
+	"github.com/BountySecurity/gbounty/request"
 )
 
 func TestHTTPMethod_Modify(t *testing.T) {

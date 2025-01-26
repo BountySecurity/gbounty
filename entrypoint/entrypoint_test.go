@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/bountysecurity/gbounty/profile"
+	"github.com/BountySecurity/gbounty/profile"
 )
 
 func TestFrom(t *testing.T) {

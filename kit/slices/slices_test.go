@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/bountysecurity/gbounty/kit/slices"
+	"github.com/BountySecurity/gbounty/kit/slices"
 )
 
 func TestOccurrences(t *testing.T) {

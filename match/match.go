@@ -6,12 +6,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bountysecurity/gbounty/kit/logger"
-	"github.com/bountysecurity/gbounty/kit/strings/occurrence"
-	"github.com/bountysecurity/gbounty/platform/http/client"
-	"github.com/bountysecurity/gbounty/profile"
-	"github.com/bountysecurity/gbounty/request"
-	"github.com/bountysecurity/gbounty/response"
+	"github.com/BountySecurity/gbounty/kit/logger"
+	"github.com/BountySecurity/gbounty/kit/strings/occurrence"
+	"github.com/BountySecurity/gbounty/platform/http/client"
+	"github.com/BountySecurity/gbounty/profile"
+	"github.com/BountySecurity/gbounty/request"
+	"github.com/BountySecurity/gbounty/response"
 )
 
 // Data is a data transfer object (DTO) used as the

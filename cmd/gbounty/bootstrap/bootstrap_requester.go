@@ -8,16 +8,16 @@ import (
 	"strings"
 	"time"
 
-	scan "github.com/bountysecurity/gbounty/internal"
+	"github.com/bountysecurity/gbounty"
 	"github.com/bountysecurity/gbounty/internal/platform/cli"
-	internalhttp "github.com/bountysecurity/gbounty/internal/platform/http"
-	"github.com/bountysecurity/gbounty/internal/platform/http/client"
-	"github.com/bountysecurity/gbounty/internal/platform/http/stdclient"
-	"github.com/bountysecurity/gbounty/internal/request"
 	"github.com/bountysecurity/gbounty/kit/logger"
+	internalhttp "github.com/bountysecurity/gbounty/platform/http"
+	"github.com/bountysecurity/gbounty/platform/http/client"
+	"github.com/bountysecurity/gbounty/platform/http/stdclient"
+	"github.com/bountysecurity/gbounty/request"
 )
 
-func setupScanRequester(ctx context.Context, cfg cli.Config) func(*request.Request) (scan.Requester, error) {
+func setupScanRequester(ctx context.Context, cfg cli.Config) func(*request.Request) (gbounty.Requester, error) {
 	const timeout = 20 * time.Second
 
 	var (
@@ -54,7 +54,7 @@ func setupScanRequester(ctx context.Context, cfg cli.Config) func(*request.Reque
 
 	basePool := internalhttp.NewClientPool(
 		ctx,
-		func() scan.Requester {
+		func() gbounty.Requester {
 			return client.New(baseOpts...)
 		},
 		uint32(maxConcurrentRequests), // Technically, we can have up to [maxConcurrentRequests] clients.
@@ -62,15 +62,15 @@ func setupScanRequester(ctx context.Context, cfg cli.Config) func(*request.Reque
 
 	stdPool := internalhttp.NewClientPool(
 		ctx,
-		func() scan.Requester {
+		func() gbounty.Requester {
 			return stdclient.New(stdOpts...)
 		},
 		uint32(maxConcurrentRequests), // Technically, we can have up to [maxConcurrentRequests] clients.
 	)
 
-	return scan.NewReqBuilderPool(
+	return gbounty.NewReqBuilderPool(
 		ctx,
-		func(r *request.Request) (scan.Requester, error) {
+		func(r *request.Request) (gbounty.Requester, error) {
 			// If it looks like an HTTP/2 request:
 			if strings.Contains(r.Proto, "HTTP/2") {
 				return stdPool(r)

@@ -9,7 +9,7 @@ import (
 
 	"github.com/pterm/pterm"
 
-	scan "github.com/bountysecurity/gbounty/internal"
+	scan "github.com/bountysecurity/gbounty"
 	"github.com/bountysecurity/gbounty/kit/console/printer"
 )
 

@@ -9,13 +9,13 @@ import (
 
 	"github.com/pterm/pterm"
 
-	scan "github.com/bountysecurity/gbounty/internal"
+	"github.com/bountysecurity/gbounty"
 )
 
-// Markdown must implement the [scan.Writer] interface.
-var _ scan.Writer = Markdown{}
+// Markdown must implement the [gbounty.Writer] interface.
+var _ gbounty.Writer = Markdown{}
 
-// Markdown is a [scan.Writer] implementation that writes the output
+// Markdown is a [gbounty.Writer] implementation that writes the output
 // to the given [io.Writer], in a styled human-readable format (Markdown).
 type Markdown struct {
 	writer io.Writer
@@ -26,8 +26,8 @@ func NewMarkdown(writer io.Writer) Markdown {
 	return Markdown{writer: writer}
 }
 
-// WriteConfig writes the [scan.Config] to the [io.Writer] in the Markdown format.
-func (md Markdown) WriteConfig(_ context.Context, cfg scan.Config) error {
+// WriteConfig writes the [gbounty.Config] to the [io.Writer] in the Markdown format.
+func (md Markdown) WriteConfig(_ context.Context, cfg gbounty.Config) error {
 	builder := strings.Builder{}
 	builder.WriteString(pterm.DefaultSection.WithTopPadding(0).WithStyle(nil).Sprintln("Configuration"))
 	builder.WriteString(fmt.Sprintf("**Version:** %s\n\n", cfg.Version))
@@ -46,8 +46,8 @@ func (md Markdown) WriteConfig(_ context.Context, cfg scan.Config) error {
 	return err
 }
 
-// WriteStats writes the [scan.Stats] to the [io.Writer] in the Markdown format.
-func (md Markdown) WriteStats(ctx context.Context, fs scan.FileSystem) error {
+// WriteStats writes the [gbounty.Stats] to the [io.Writer] in the Markdown format.
+func (md Markdown) WriteStats(ctx context.Context, fs gbounty.FileSystem) error {
 	stats, err := fs.LoadStats(ctx)
 	if err != nil {
 		return err
@@ -73,9 +73,9 @@ func (md Markdown) WriteStats(ctx context.Context, fs scan.FileSystem) error {
 	return err
 }
 
-// WriteMatchesSummary writes a summary of the [scan.Match] instances found during the [scan],
+// WriteMatchesSummary writes a summary of the [gbounty.Match] instances found during the [scan],
 // to the [io.Writer] in the Markdown format.
-func (md Markdown) WriteMatchesSummary(ctx context.Context, fs scan.FileSystem) error {
+func (md Markdown) WriteMatchesSummary(ctx context.Context, fs gbounty.FileSystem) error {
 	_, err := fmt.Fprint(md.writer, pterm.DefaultSection.WithStyle(nil).Sprintln("Summary"))
 	if err != nil {
 		return err
@@ -144,8 +144,8 @@ func (md Markdown) WriteMatchesSummary(ctx context.Context, fs scan.FileSystem) 
 	return nil
 }
 
-// WriteError writes a [scan.Error] to the [io.Writer] in the Markdown format.
-func (md Markdown) WriteError(_ context.Context, scanError scan.Error) error {
+// WriteError writes a [gbounty.Error] to the [io.Writer] in the Markdown format.
+func (md Markdown) WriteError(_ context.Context, scanError gbounty.Error) error {
 	builder := strings.Builder{}
 	builder.WriteString(fmt.Sprintf("**%s**\n\n", scanError.URL))
 	builder.WriteString(fmt.Sprintf("**Error:** %s\n\n", scanError.Err))
@@ -182,8 +182,8 @@ func (md Markdown) WriteError(_ context.Context, scanError scan.Error) error {
 	return err
 }
 
-// WriteErrors writes the [scan.Error] instances to the [io.Writer] in the Markdown format.
-func (md Markdown) WriteErrors(ctx context.Context, fs scan.FileSystem) error {
+// WriteErrors writes the [gbounty.Error] instances to the [io.Writer] in the Markdown format.
+func (md Markdown) WriteErrors(ctx context.Context, fs gbounty.FileSystem) error {
 	_, err := fmt.Fprint(md.writer, pterm.DefaultSection.WithLevel(2).WithStyle(nil).Sprintln("Errors"))
 	if err != nil {
 		return err
@@ -239,8 +239,8 @@ func (md Markdown) WriteErrors(ctx context.Context, fs scan.FileSystem) error {
 	return nil
 }
 
-// WriteMatch writes a [scan.Match] to the [io.Writer] in the Markdown format.
-func (md Markdown) WriteMatch(_ context.Context, m scan.Match, includeResponse bool) error {
+// WriteMatch writes a [gbounty.Match] to the [io.Writer] in the Markdown format.
+func (md Markdown) WriteMatch(_ context.Context, m gbounty.Match, includeResponse bool) error {
 	builder := strings.Builder{}
 	builder.WriteString(fmt.Sprintf("**%s**\n\n", m.Domain()))
 	builder.WriteString(fmt.Sprintf("**Issue name:** %s\n\n**Issue severity:** %s\n\n**Issue confidence:** %s\n\n",
@@ -286,9 +286,9 @@ func (md Markdown) WriteMatch(_ context.Context, m scan.Match, includeResponse b
 	return err
 }
 
-// WriteMatches writes the [scan.Match] instances found during the [scan],
+// WriteMatches writes the [gbounty.Match] instances found during the [scan],
 // in the Markdown format.
-func (md Markdown) WriteMatches(ctx context.Context, fs scan.FileSystem, includeResponses bool) error {
+func (md Markdown) WriteMatches(ctx context.Context, fs gbounty.FileSystem, includeResponses bool) error {
 	_, err := fmt.Fprint(md.writer, pterm.DefaultSection.WithLevel(2).WithStyle(nil).Sprintln("Matches"))
 	if err != nil {
 		return err
@@ -353,8 +353,8 @@ func (md Markdown) WriteMatches(ctx context.Context, fs scan.FileSystem, include
 	return nil
 }
 
-// WriteTasks writes the [scan.TaskSummary] instances to the [io.Writer] in the Markdown format.
-func (md Markdown) WriteTasks(ctx context.Context, fs scan.FileSystem, allRequests, allResponses bool) error {
+// WriteTasks writes the [gbounty.TaskSummary] instances to the [io.Writer] in the Markdown format.
+func (md Markdown) WriteTasks(ctx context.Context, fs gbounty.FileSystem, allRequests, allResponses bool) error {
 	_, err := fmt.Fprint(md.writer, pterm.DefaultSection.WithLevel(2).WithStyle(nil).Sprintln("Requests / Responses"))
 	if err != nil {
 		return err

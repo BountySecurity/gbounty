@@ -10,10 +10,10 @@ import (
 	"strconv"
 	"strings"
 
-	scan "github.com/bountysecurity/gbounty/internal"
-	"github.com/bountysecurity/gbounty/internal/request"
+	"github.com/bountysecurity/gbounty"
 	"github.com/bountysecurity/gbounty/kit/logger"
 	"github.com/bountysecurity/gbounty/kit/url"
+	"github.com/bountysecurity/gbounty/request"
 )
 
 var (
@@ -30,11 +30,11 @@ var (
 	ErrInvalidHeader = errors.New("invalid header")
 )
 
-// PrepareTemplates takes a [Config] and a [scan.FileSystem], and uses the first one to
+// PrepareTemplates takes a [Config] and a [gbounty.FileSystem], and uses the first one to
 // initialize the [Template] instances that compound the scan defined by that configuration,
 // and stores them into the given file system, so it is ready for the scan to start.
-func PrepareTemplates(ctx context.Context, fs scan.FileSystem, cfg Config) error {
-	pCfg := scan.ParamsCfg{}
+func PrepareTemplates(ctx context.Context, fs gbounty.FileSystem, cfg Config) error {
+	pCfg := gbounty.ParamsCfg{}
 	if len(cfg.ParamsFile) > 0 {
 		params, err := readParamsFile(ctx, cfg.ParamsFile)
 		switch err {
@@ -67,7 +67,7 @@ func readParamsFile(ctx context.Context, pathToFile string) ([]string, error) {
 	return params, nil
 }
 
-func createTemplates(ctx context.Context, fs scan.FileSystem, cfg Config, pCfg scan.ParamsCfg, http2 bool) error {
+func createTemplates(ctx context.Context, fs gbounty.FileSystem, cfg Config, pCfg gbounty.ParamsCfg, http2 bool) error {
 	logger.For(ctx).Infof("Preparing templates for scan, force http/2: %s", strconv.FormatBool(http2))
 
 	if len(cfg.RequestsFile) > 0 {
@@ -94,7 +94,7 @@ func createTemplates(ctx context.Context, fs scan.FileSystem, cfg Config, pCfg s
 	return createFromConfig(ctx, fs, cfg, pCfg, http2)
 }
 
-func createFromRequestsFile(ctx context.Context, fs scan.FileSystem, path string, pCfg scan.ParamsCfg, http2 bool) error {
+func createFromRequestsFile(ctx context.Context, fs gbounty.FileSystem, path string, pCfg gbounty.ParamsCfg, http2 bool) error {
 	file, err := os.ReadFile(path)
 	if err != nil {
 		return fmt.Errorf("%w(%s): %s", ErrProcessRequestFile, path, err.Error())
@@ -104,7 +104,7 @@ func createFromRequestsFile(ctx context.Context, fs scan.FileSystem, path string
 	if http2 {
 		opts = append(opts, request.WithProto("HTTP/2.0"))
 	}
-	templates, err := scan.TemplatesFromZipBytes(ctx, pCfg, file, opts...)
+	templates, err := gbounty.TemplatesFromZipBytes(ctx, pCfg, file, opts...)
 	if err != nil {
 		return fmt.Errorf("%w(%s): %s", ErrProcessRequestFile, path, err.Error())
 	}
@@ -119,7 +119,7 @@ func createFromRequestsFile(ctx context.Context, fs scan.FileSystem, path string
 	return nil
 }
 
-func createFromRawRequestFiles(ctx context.Context, fs scan.FileSystem, paths MultiValue, pCfg scan.ParamsCfg, http2 bool) error {
+func createFromRawRequestFiles(ctx context.Context, fs gbounty.FileSystem, paths MultiValue, pCfg gbounty.ParamsCfg, http2 bool) error {
 	var tplIdx int
 	for _, path := range paths {
 		bytes, err := os.ReadFile(path)
@@ -131,7 +131,7 @@ func createFromRawRequestFiles(ctx context.Context, fs scan.FileSystem, paths Mu
 		if http2 {
 			opts = append(opts, request.WithProto("HTTP/2.0"))
 		}
-		templates, err := scan.TemplateFromRawBytes(ctx, tplIdx, pCfg, bytes, opts...)
+		templates, err := gbounty.TemplateFromRawBytes(ctx, tplIdx, pCfg, bytes, opts...)
 		if err != nil {
 			return fmt.Errorf("%w(%s): %s", ErrProcessRequestFile, path, err.Error())
 		}
@@ -148,7 +148,7 @@ func createFromRawRequestFiles(ctx context.Context, fs scan.FileSystem, paths Mu
 	return nil
 }
 
-func createFromConfig(ctx context.Context, fs scan.FileSystem, cfg Config, pCfg scan.ParamsCfg, http2 bool) error {
+func createFromConfig(ctx context.Context, fs gbounty.FileSystem, cfg Config, pCfg gbounty.ParamsCfg, http2 bool) error {
 	var options []request.Option
 
 	if len(cfg.Method) > 0 {
@@ -192,7 +192,7 @@ func createFromConfig(ctx context.Context, fs scan.FileSystem, cfg Config, pCfg 
 		}
 
 		reqWithOpts := request.WithOptions(cfgURL, options...)
-		templates := pCfg.Alter(scan.NewTemplate(ctx, tplIdx, reqWithOpts, nil))
+		templates := pCfg.Alter(gbounty.NewTemplate(ctx, tplIdx, reqWithOpts, nil))
 
 		for _, tpl := range templates {
 			tplIdx++

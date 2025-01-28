@@ -13,7 +13,7 @@ var OngoingRequests = promauto.NewGauge(prometheus.GaugeOpts{
 })
 
 // ConcurrentTemplates is a gauge metric that represents the total amount of template requests being processed
-// concurrently. See [scan.Template] for more details about what a template is.
+// concurrently. See [gbounty.Template] for more details about what a template is.
 var ConcurrentTemplates = promauto.NewGauge(prometheus.GaugeOpts{
 	Name: "scan_concurrent_templates",
 	Help: "Total amount of template requests being processed concurrently",

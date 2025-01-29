@@ -3,15 +3,15 @@ package modifier
 import (
 	"time"
 
-	scan "github.com/BountySecurity/gbounty"
+	"github.com/BountySecurity/gbounty"
 	"github.com/BountySecurity/gbounty/profile"
 	"github.com/BountySecurity/gbounty/request"
 )
 
-// Timeout must implement the [scan.Modifier] interface.
-var _ scan.Modifier = Timeout{}
+// Timeout must implement the [gbounty.Modifier] interface.
+var _ gbounty.Modifier = Timeout{}
 
-// Timeout is a [scan.Modifier] implementation that modifies the request
+// Timeout is a [gbounty.Modifier] implementation that modifies the request
 // by setting the timeout to the maximum value found in the time delay greps.
 type Timeout struct {
 	Margin int
@@ -26,7 +26,7 @@ func NewTimeout() Timeout {
 }
 
 // Modify modifies the request by setting the timeout to the maximum value found in the time delay greps.
-func (t Timeout) Modify(s *profile.Step, _ scan.Template, req request.Request) request.Request {
+func (t Timeout) Modify(s *profile.Step, _ gbounty.Template, req request.Request) request.Request {
 	timeout := req.Timeout
 	for i := 0; i < len(s.Greps); i++ {
 		grep, err := s.GrepAt(i, nil)

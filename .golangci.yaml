@@ -61,22 +61,22 @@ issues:
       linters:
         - dupl # false positives
         - perfsprint # performance doesn't matter in tests
-    - path: internal/profile/profilefakes/.*\.go
+    - path: profile/profilefakes/.*\.go
       linters:
         - dupl
-    - path: internal/profile/request.go
+    - path: profile/request.go
       linters:
         - dupl
-    - path: internal/profile/response.go
+    - path: profile/response.go
       linters:
         - dupl
-    - path: internal/platform/http/client/reader.go
+    - path: platform/http/client/reader.go
       linters:
         - mnd
     - path: kit/osext/.*\.go
       linters:
         - mnd
-    - path: internal/platform/filesystem/.*\.go
+    - path: platform/filesystem/.*\.go
       linters:
         - dupl
         - mnd

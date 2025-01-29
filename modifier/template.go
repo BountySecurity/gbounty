@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	scan "github.com/BountySecurity/gbounty"
+	"github.com/BountySecurity/gbounty"
 	"github.com/BountySecurity/gbounty/entrypoint"
 	"github.com/BountySecurity/gbounty/profile"
 	"github.com/BountySecurity/gbounty/request"
@@ -36,10 +36,10 @@ const (
 	indexInsertionPointValue = "{CURRENT_INSERTION_POINT_VALUE}"
 )
 
-// Template must implement the [scan.Modifier] interface.
-var _ scan.Modifier = &Template{}
+// Template must implement the [gbounty.Modifier] interface.
+var _ gbounty.Modifier = &Template{}
 
-// Template is a [scan.Modifier] implementation that modifies the request
+// Template is a [gbounty.Modifier] implementation that modifies the request
 // by replacing some specific placeholders (e.g. {CURRENT_METHOD}, {CURRENT_PATH})
 // with the corresponding values (e.g. POST, /login) from the given template.
 type Template struct {
@@ -60,7 +60,7 @@ func (t *Template) Customize(entrypoint entrypoint.Entrypoint) {
 }
 
 // Modify modifies the request by replacing the template placeholders.
-func (t *Template) Modify(_ *profile.Step, tpl scan.Template, req request.Request) request.Request {
+func (t *Template) Modify(_ *profile.Step, tpl gbounty.Template, req request.Request) request.Request {
 	tplURL := t.url(tpl)
 
 	return replace(req, map[string]string{
@@ -96,7 +96,7 @@ func (t *Template) Modify(_ *profile.Step, tpl scan.Template, req request.Reques
 	})
 }
 
-func (*Template) url(tpl scan.Template) urlParts {
+func (*Template) url(tpl gbounty.Template) urlParts {
 	tplURL := urlParts{protocol: "http"}
 
 	if strings.HasPrefix(strings.ToLower(tpl.Request.URL), "https://") {

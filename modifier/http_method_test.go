@@ -1,12 +1,12 @@
 package modifier_test
 
 import (
-	"github.com/BountySecurity/gbounty"
 	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 
+	"github.com/BountySecurity/gbounty"
 	"github.com/BountySecurity/gbounty/modifier"
 	"github.com/BountySecurity/gbounty/profile"
 	"github.com/BountySecurity/gbounty/request"

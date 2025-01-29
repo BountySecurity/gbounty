@@ -12,10 +12,10 @@ import (
 	"github.com/BountySecurity/gbounty/request"
 )
 
-// InteractionHost must implement the [scan.Modifier] interface.
+// InteractionHost must implement the [gbounty.Modifier] interface.
 var _ gbounty.Modifier = InteractionHost{}
 
-// InteractionHost is a [scan.Modifier] implementation that replaces the blind host
+// InteractionHost is a [gbounty.Modifier] implementation that replaces the blind host
 // placeholders (e.g. {BH}) of a [request.Request] with unique
 // request urls.
 type InteractionHost struct {

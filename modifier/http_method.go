@@ -2,10 +2,10 @@ package modifier
 
 import (
 	"fmt"
-	"github.com/BountySecurity/gbounty"
 	"net/http"
 	"strings"
 
+	"github.com/BountySecurity/gbounty"
 	"github.com/BountySecurity/gbounty/profile"
 	"github.com/BountySecurity/gbounty/request"
 )

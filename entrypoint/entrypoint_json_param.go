@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/bountysecurity/gbounty/profile"
-	"github.com/bountysecurity/gbounty/request"
+	"github.com/BountySecurity/gbounty/profile"
+	"github.com/BountySecurity/gbounty/request"
 )
 
 func init() {

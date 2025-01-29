@@ -10,7 +10,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/bountysecurity/gbounty/kit/logger"
+	"github.com/BountySecurity/gbounty/kit/logger"
 )
 
 const (

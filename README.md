@@ -18,12 +18,12 @@
 </p>
 
 ---
-[![Downloads](https://img.shields.io/github/downloads/bountysecurity/gbounty/total.svg)](https://github.com/bountysecurity/gbounty/releases)
-[![Contributors](https://img.shields.io/github/contributors/bountysecurity/gbounty.svg)](https://github.com/bountysecurity/gbounty/graphs/contributors)
+[![Downloads](https://img.shields.io/github/downloads/bountysecurity/gbounty/total.svg)](https://github.com/BountySecurity/gbounty/releases)
+[![Contributors](https://img.shields.io/github/contributors/bountysecurity/gbounty.svg)](https://github.com/BountySecurity/gbounty/graphs/contributors)
 
 Multi-step website vulnerability scanner designed to help pentesters and bug hunters identify potential vulnerabilities in web applications.
 
-We have a [dedicated repository](https://github.com/bountysecurity/gbounty-profiles) that houses various type of
+We have a [dedicated repository](https://github.com/BountySecurity/gbounty-profiles) that houses various type of
 web vulnerability profiles contributed by security researchers and engineers.
 
 > [!WARNING]  
@@ -48,7 +48,7 @@ GBounty requires **Go v1.21** to install successfully. Run the following command
 version under development:
 
 ```sh
-go install -v github.com/bountysecurity/gbounty/cmd/gbounty@main
+go install -v github.com/BountySecurity/gbounty/cmd/gbounty@main
 ```
 
 ### Installation with GitHub Releases

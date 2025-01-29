@@ -8,13 +8,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bountysecurity/gbounty"
-	"github.com/bountysecurity/gbounty/internal/platform/cli"
-	"github.com/bountysecurity/gbounty/kit/logger"
-	internalhttp "github.com/bountysecurity/gbounty/platform/http"
-	"github.com/bountysecurity/gbounty/platform/http/client"
-	"github.com/bountysecurity/gbounty/platform/http/stdclient"
-	"github.com/bountysecurity/gbounty/request"
+	"github.com/BountySecurity/gbounty"
+	"github.com/BountySecurity/gbounty/internal/platform/cli"
+	"github.com/BountySecurity/gbounty/kit/logger"
+	internalhttp "github.com/BountySecurity/gbounty/platform/http"
+	"github.com/BountySecurity/gbounty/platform/http/client"
+	"github.com/BountySecurity/gbounty/platform/http/stdclient"
+	"github.com/BountySecurity/gbounty/request"
 )
 
 func setupScanRequester(ctx context.Context, cfg cli.Config) func(*request.Request) (gbounty.Requester, error) {

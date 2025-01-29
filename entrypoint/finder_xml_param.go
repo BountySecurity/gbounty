@@ -6,7 +6,7 @@ import (
 	"github.com/antchfx/xmlquery"
 	"github.com/emirpasic/gods/stacks/arraystack"
 
-	"github.com/bountysecurity/gbounty/request"
+	"github.com/BountySecurity/gbounty/request"
 )
 
 // XMLParamFinder must implement the Finder interface.

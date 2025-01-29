@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/bountysecurity/gbounty/profile/encode"
+	"github.com/BountySecurity/gbounty/profile/encode"
 )
 
 func Test_URL(t *testing.T) {

@@ -1,6 +1,6 @@
 package profilefakes
 
-import "github.com/bountysecurity/gbounty/profile"
+import "github.com/BountySecurity/gbounty/profile"
 
 func SQLiTimeBased() *profile.Active {
 	return &profile.Active{

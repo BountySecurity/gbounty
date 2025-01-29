@@ -7,7 +7,7 @@ import (
 	"io"
 	"time"
 
-	"github.com/bountysecurity/gbounty"
+	"github.com/BountySecurity/gbounty"
 )
 
 // JSON must implement the [gbounty.Writer] interface.

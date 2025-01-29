@@ -8,14 +8,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/bountysecurity/gbounty/entrypoint"
-	"github.com/bountysecurity/gbounty/internal/platform/metrics"
-	"github.com/bountysecurity/gbounty/kit/logger"
-	"github.com/bountysecurity/gbounty/kit/panics"
-	"github.com/bountysecurity/gbounty/kit/syncutil"
-	"github.com/bountysecurity/gbounty/profile"
-	"github.com/bountysecurity/gbounty/request"
-	"github.com/bountysecurity/gbounty/response"
+	"github.com/BountySecurity/gbounty/entrypoint"
+	"github.com/BountySecurity/gbounty/internal/platform/metrics"
+	"github.com/BountySecurity/gbounty/kit/logger"
+	"github.com/BountySecurity/gbounty/kit/panics"
+	"github.com/BountySecurity/gbounty/kit/syncutil"
+	"github.com/BountySecurity/gbounty/profile"
+	"github.com/BountySecurity/gbounty/request"
+	"github.com/BountySecurity/gbounty/response"
 )
 
 var ErrManuallyInterrupted = errors.New("scan interrupted manually")

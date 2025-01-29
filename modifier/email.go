@@ -1,9 +1,9 @@
 package modifier
 
 import (
-	"github.com/bountysecurity/gbounty"
-	"github.com/bountysecurity/gbounty/profile"
-	"github.com/bountysecurity/gbounty/request"
+	"github.com/BountySecurity/gbounty"
+	"github.com/BountySecurity/gbounty/profile"
+	"github.com/BountySecurity/gbounty/request"
 )
 
 // Email must implement the [gbounty.Modifier] interface.

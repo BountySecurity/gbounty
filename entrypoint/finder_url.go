@@ -4,7 +4,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/bountysecurity/gbounty/request"
+	"github.com/BountySecurity/gbounty/request"
 )
 
 // URLFinder must implement the Finder interface.

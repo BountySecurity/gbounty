@@ -4,9 +4,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/bountysecurity/gbounty/profile"
-	"github.com/bountysecurity/gbounty/request"
-	"github.com/bountysecurity/gbounty/response"
+	"github.com/BountySecurity/gbounty/profile"
+	"github.com/BountySecurity/gbounty/request"
+	"github.com/BountySecurity/gbounty/response"
 )
 
 func bytesToFindIn(g profile.Grep, req *request.Request, res *response.Response) (int, []byte) {

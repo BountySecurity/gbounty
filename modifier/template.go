@@ -7,10 +7,10 @@ import (
 	"strconv"
 	"strings"
 
-	scan "github.com/bountysecurity/gbounty"
-	"github.com/bountysecurity/gbounty/entrypoint"
-	"github.com/bountysecurity/gbounty/profile"
-	"github.com/bountysecurity/gbounty/request"
+	scan "github.com/BountySecurity/gbounty"
+	"github.com/BountySecurity/gbounty/entrypoint"
+	"github.com/BountySecurity/gbounty/profile"
+	"github.com/BountySecurity/gbounty/request"
 )
 
 const (

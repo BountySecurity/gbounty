@@ -6,9 +6,9 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	scan "github.com/bountysecurity/gbounty"
-	"github.com/bountysecurity/gbounty/modifier"
-	"github.com/bountysecurity/gbounty/request"
+	scan "github.com/BountySecurity/gbounty"
+	"github.com/BountySecurity/gbounty/modifier"
+	"github.com/BountySecurity/gbounty/request"
 )
 
 //nolint:maintidx

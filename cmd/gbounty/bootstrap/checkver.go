@@ -12,10 +12,10 @@ import (
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/pterm/pterm"
 
-	"github.com/bountysecurity/gbounty"
-	"github.com/bountysecurity/gbounty/kit/selfupdate"
-	"github.com/bountysecurity/gbounty/kit/semver"
-	"github.com/bountysecurity/gbounty/kit/slices"
+	"github.com/BountySecurity/gbounty"
+	"github.com/BountySecurity/gbounty/kit/selfupdate"
+	"github.com/BountySecurity/gbounty/kit/semver"
+	"github.com/BountySecurity/gbounty/kit/slices"
 )
 
 const (

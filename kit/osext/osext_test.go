@@ -14,7 +14,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/bountysecurity/gbounty/kit/osext"
+	"github.com/BountySecurity/gbounty/kit/osext"
 )
 
 const (

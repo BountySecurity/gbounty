@@ -3,9 +3,9 @@ package modifier
 import (
 	"time"
 
-	scan "github.com/bountysecurity/gbounty"
-	"github.com/bountysecurity/gbounty/profile"
-	"github.com/bountysecurity/gbounty/request"
+	scan "github.com/BountySecurity/gbounty"
+	"github.com/BountySecurity/gbounty/profile"
+	"github.com/BountySecurity/gbounty/request"
 )
 
 // Timeout must implement the [scan.Modifier] interface.

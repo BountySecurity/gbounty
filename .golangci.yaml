@@ -42,7 +42,7 @@ linters-settings:
     sections:
       - standard
       - default
-      - prefix(github.com/bountysecurity/gbounty)
+      - prefix(github.com/BountySecurity/gbounty)
 
     # Skip generated files.
     skip-generated: false

@@ -9,7 +9,7 @@ import (
 
 	"github.com/google/go-github/v64/github"
 
-	"github.com/bountysecurity/gbounty/kit/semver"
+	"github.com/BountySecurity/gbounty/kit/semver"
 )
 
 func DetectLatest(ctx context.Context, slug string, withAsset bool) (release *Release, found bool, err error) {

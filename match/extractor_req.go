@@ -1,7 +1,7 @@
 package match
 
 import (
-	"github.com/bountysecurity/gbounty/request"
+	"github.com/BountySecurity/gbounty/request"
 )
 
 func reqBytesToFindInAll(where string, req *request.Request) (int, []byte) {

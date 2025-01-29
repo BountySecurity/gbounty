@@ -1,6 +1,6 @@
 package gbounty
 
-import "github.com/bountysecurity/gbounty/kit/semver"
+import "github.com/BountySecurity/gbounty/kit/semver"
 
 const (
 	Version = "v3.1.0"

@@ -9,10 +9,10 @@ import (
 
 	"github.com/pterm/pterm"
 
-	"github.com/bountysecurity/gbounty"
-	"github.com/bountysecurity/gbounty/kit/console/color"
-	"github.com/bountysecurity/gbounty/kit/console/printer"
-	"github.com/bountysecurity/gbounty/kit/strings/occurrence"
+	"github.com/BountySecurity/gbounty"
+	"github.com/BountySecurity/gbounty/kit/console/color"
+	"github.com/BountySecurity/gbounty/kit/console/printer"
+	"github.com/BountySecurity/gbounty/kit/strings/occurrence"
 )
 
 const (

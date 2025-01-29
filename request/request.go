@@ -17,8 +17,8 @@ import (
 	"strings"
 	"time"
 
-	internalurl "github.com/bountysecurity/gbounty/kit/url"
-	"github.com/bountysecurity/gbounty/profile"
+	internalurl "github.com/BountySecurity/gbounty/kit/url"
+	"github.com/BountySecurity/gbounty/profile"
 )
 
 const defaultTimeout = 20 * time.Second

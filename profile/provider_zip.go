@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"sort"
 
-	"github.com/bountysecurity/gbounty/kit/logger"
+	"github.com/BountySecurity/gbounty/kit/logger"
 )
 
 // ZipProvider is a profile provider that reads profiles from a zip file.

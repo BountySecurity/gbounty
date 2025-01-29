@@ -10,11 +10,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/bountysecurity/gbounty"
-	"github.com/bountysecurity/gbounty/kit/ulid"
-	"github.com/bountysecurity/gbounty/platform/filesystem"
-	"github.com/bountysecurity/gbounty/request"
-	"github.com/bountysecurity/gbounty/response"
+	"github.com/BountySecurity/gbounty"
+	"github.com/BountySecurity/gbounty/kit/ulid"
+	"github.com/BountySecurity/gbounty/platform/filesystem"
+	"github.com/BountySecurity/gbounty/request"
+	"github.com/BountySecurity/gbounty/response"
 )
 
 func TestAfero_New(t *testing.T) {

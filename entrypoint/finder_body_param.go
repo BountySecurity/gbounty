@@ -3,7 +3,7 @@ package entrypoint
 import (
 	"strings"
 
-	"github.com/bountysecurity/gbounty/request"
+	"github.com/BountySecurity/gbounty/request"
 )
 
 // BodyParamFinder must implement the Finder interface.

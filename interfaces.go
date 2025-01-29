@@ -3,11 +3,11 @@ package gbounty
 import (
 	"context"
 
-	"github.com/bountysecurity/gbounty/entrypoint"
-	"github.com/bountysecurity/gbounty/kit/blindhost"
-	"github.com/bountysecurity/gbounty/profile"
-	"github.com/bountysecurity/gbounty/request"
-	"github.com/bountysecurity/gbounty/response"
+	"github.com/BountySecurity/gbounty/entrypoint"
+	"github.com/BountySecurity/gbounty/kit/blindhost"
+	"github.com/BountySecurity/gbounty/profile"
+	"github.com/BountySecurity/gbounty/request"
+	"github.com/BountySecurity/gbounty/response"
 )
 
 // Writer defines the behavior expected from a [scan] writer, used to write

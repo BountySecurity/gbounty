@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/bountysecurity/gbounty/kit/url"
+	"github.com/BountySecurity/gbounty/kit/url"
 )
 
 func TestValidURL(t *testing.T) {

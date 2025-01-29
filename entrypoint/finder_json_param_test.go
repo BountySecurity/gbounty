@@ -5,9 +5,9 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/bountysecurity/gbounty/entrypoint"
-	"github.com/bountysecurity/gbounty/profile"
-	"github.com/bountysecurity/gbounty/request"
+	"github.com/BountySecurity/gbounty/entrypoint"
+	"github.com/BountySecurity/gbounty/profile"
+	"github.com/BountySecurity/gbounty/request"
 )
 
 func TestJSONParamFinder_Find_Replace(t *testing.T) {

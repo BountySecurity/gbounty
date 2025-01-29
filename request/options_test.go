@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/bountysecurity/gbounty/request"
+	"github.com/BountySecurity/gbounty/request"
 )
 
 func TestOption(t *testing.T) {

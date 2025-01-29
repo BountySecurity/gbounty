@@ -10,10 +10,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/bountysecurity/gbounty"
-	"github.com/bountysecurity/gbounty/kit/logger"
-	"github.com/bountysecurity/gbounty/kit/url"
-	"github.com/bountysecurity/gbounty/request"
+	"github.com/BountySecurity/gbounty"
+	"github.com/BountySecurity/gbounty/kit/logger"
+	"github.com/BountySecurity/gbounty/kit/url"
+	"github.com/BountySecurity/gbounty/request"
 )
 
 var (

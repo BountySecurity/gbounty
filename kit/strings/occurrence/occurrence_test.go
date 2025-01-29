@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/bountysecurity/gbounty/kit/strings/occurrence"
+	"github.com/BountySecurity/gbounty/kit/strings/occurrence"
 )
 
 func TestFind(t *testing.T) {

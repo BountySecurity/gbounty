@@ -5,7 +5,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/bountysecurity/gbounty/kit/getopt"
+	"github.com/BountySecurity/gbounty/kit/getopt"
 )
 
 const (

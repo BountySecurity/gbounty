@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/bountysecurity/gbounty/kit/jsonmap"
-	"github.com/bountysecurity/gbounty/request"
+	"github.com/BountySecurity/gbounty/kit/jsonmap"
+	"github.com/BountySecurity/gbounty/request"
 )
 
 // JSONParamFinder must implement the Finder interface.

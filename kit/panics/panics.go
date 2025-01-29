@@ -4,7 +4,7 @@ import (
 	"context"
 	"runtime/debug"
 
-	"github.com/bountysecurity/gbounty/kit/logger"
+	"github.com/BountySecurity/gbounty/kit/logger"
 )
 
 // Log logs a panic to the logger, including the stack trace.

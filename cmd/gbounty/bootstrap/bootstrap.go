@@ -259,15 +259,15 @@ func runScan(
 			modifiers = make([]gbounty.Modifier, 0)
 		)
 		if len(cfg.BlindHost) > 0 {
-			hid := blindhost.RandomHostIdentifier()
 			bhClient, err := blindhost.NewClient(cfg.BlindHost)
 			if err != nil {
-				logger.For(ctx).Errorf("Could not initialize blind host client: %s", err)
+				logger.For(ctx).Errorf("Could not initialize the blind host client: %s", err)
 			} else {
-				bhPoller, err = blindhost.NewPoller(bhClient, blindhost.WithContext(ctx), blindhost.WithHostIdentifier(hid))
+				bhPoller, err = blindhost.NewPoller(ctx, bhClient, blindhost.WithContext(ctx))
 				if err != nil {
 					logger.For(ctx).Errorf("Could not initialize blind host poller: %s", err)
 				} else {
+					hid := bhPoller.HostIdentifier()
 					modifiers = append(modifiers, modifier.NewInteractionHost(cfg.BlindHost, hid))
 					scanCfg.BlindHost = hid.HostBaseURL(cfg.BlindHost)
 					scanCfg.BlindHostKey = hid.PrivateKey()

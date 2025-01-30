@@ -43,7 +43,7 @@ func NewInteractionHost(base string, hid blindhost.HostIdentifier) InteractionHo
 // Modify modifies the request by replacing the interaction host placeholders.
 func (ih InteractionHost) Modify(_ *profile.Step, _ gbounty.Template, req request.Request) request.Request {
 	req.UID = uuid.New().String()[:8]
-	bh := ih.hid.HostReqURL(ih.scheme, ih.base, req.UID)
+	bh := ih.hid.HostReqURL(ih.base, req.UID)
 	return replace(req, map[string]string{bhLabel: bh})
 }
 

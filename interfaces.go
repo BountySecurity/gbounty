@@ -48,6 +48,7 @@ type Requester interface {
 // BlindHostPoller defines the behavior expected from an agent
 // that can continuously poll a `blindhost` looking for [blindhost.Interaction] instances.
 type BlindHostPoller interface {
+	HostIdentifier() blindhost.HostIdentifier
 	Search(substr string) *blindhost.Interaction
 	BruteSearch(substr string) *blindhost.Interaction
 }

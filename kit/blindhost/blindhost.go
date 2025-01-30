@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"net/url"
 	"time"
-
-	"github.com/google/uuid"
 )
 
 var (
@@ -20,8 +18,8 @@ var (
 	// ErrMissingHost is returned when the blind host address is missing the host.
 	ErrMissingHost = errors.New("missing host")
 
-	// ErrAddHost is returned when the client failed to add a host.
-	ErrAddHost = errors.New("failed to add host")
+	// ErrGetHost is returned when the client failed to add a host.
+	ErrGetHost = errors.New("failed to get a host")
 )
 
 // Interaction holds all the information that represents an interaction
@@ -38,22 +36,27 @@ type Interaction struct {
 }
 
 // HostIdentifier is a unique identifier for an interaction host.
-type HostIdentifier uuid.UUID
+type HostIdentifier struct {
+	id         string
+	privateKey string
+}
 
-// RandomHostIdentifier generates a random host identifier by using
-// the Google's UUIDv4 generation library (github.com/google/uuid).
-func RandomHostIdentifier() HostIdentifier {
-	return HostIdentifier(uuid.New())
+// NewHostIdentifier instantiates a new host identifier.
+func NewHostIdentifier(id, privateKey string) HostIdentifier {
+	return HostIdentifier{
+		id:         id,
+		privateKey: privateKey,
+	}
 }
 
 // ID returns the first 8 characters of the interaction host identifier, considered as the id.
 func (h HostIdentifier) ID() string {
-	return uuid.UUID(h).String()[:8]
+	return h.id
 }
 
 // PrivateKey returns the interaction host identifier (UUIDv4) as a string.
 func (h HostIdentifier) PrivateKey() string {
-	return uuid.UUID(h).String()
+	return h.privateKey
 }
 
 // HostBaseURL calculates the base URL of the interaction host, given a base URL.
@@ -64,8 +67,8 @@ func (h HostIdentifier) HostBaseURL(base string) string {
 
 // HostReqURL calculates the request URL of the interaction host, given a base URL and a unique identifier.
 // This can be used to uniquely identify each interaction with the interaction host.
-func (h HostIdentifier) HostReqURL(scheme, base, uid string) string {
-	return fmt.Sprintf("%s://%s.%s.%s", scheme, uid, h.ID(), base)
+func (h HostIdentifier) HostReqURL(base, uid string) string {
+	return fmt.Sprintf("%s.%s.%s", uid, h.ID(), base)
 }
 
 func urlScheme(addr string) string {

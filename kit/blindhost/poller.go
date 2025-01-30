@@ -8,8 +8,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/google/uuid"
-
 	"github.com/BountySecurity/gbounty/kit/logger"
 )
 
@@ -26,15 +24,12 @@ type Poller struct {
 	dur time.Duration
 	hid HostIdentifier
 
-	registrationDisabled bool
-
 	ctx context.Context
 	cnl context.CancelCauseFunc
 	wg  *sync.WaitGroup
 	mtx *sync.RWMutex
 
-	its    []Interaction
-	its2nd []Interaction
+	its []Interaction
 }
 
 // PollerOpt is a function that can be used to change the
@@ -48,28 +43,6 @@ func WithContext(ctx context.Context) PollerOpt {
 	}
 }
 
-// WithInterval sets the interval at which the poller will
-// poll the server.
-func WithInterval(dur time.Duration) PollerOpt {
-	return func(p *Poller) {
-		p.dur = dur
-	}
-}
-
-// WithHostIdentifier sets the host identifier of the poller.
-func WithHostIdentifier(hid HostIdentifier) PollerOpt {
-	return func(p *Poller) {
-		p.hid = hid
-	}
-}
-
-// WithRegistrationDisabled disables the poller's host registration.
-func WithRegistrationDisabled() PollerOpt {
-	return func(p *Poller) {
-		p.registrationDisabled = true
-	}
-}
-
 // NewPoller creates a new poller. It is recommended to use
 // this function instead of creating a poller manually.
 //
@@ -77,17 +50,22 @@ func WithRegistrationDisabled() PollerOpt {
 // by default.
 //
 // Use the PollerOpt functions to change the default behaviour.
-func NewPoller(c *Client, opts ...PollerOpt) (*Poller, error) {
+func NewPoller(ctx context.Context, c *Client, opts ...PollerOpt) (*Poller, error) {
+	hid, err := c.GetHost(ctx)
+	if err != nil {
+		logger.For(ctx).Errorf("Could not register new blind host: %s", err.Error())
+		return nil, err
+	}
+
 	// Default poller
 	p := &Poller{
-		c:      c,
-		ctx:    context.Background(),
-		dur:    DefaultPollerInterval,
-		hid:    HostIdentifier(uuid.New()),
-		its:    make([]Interaction, 0),
-		its2nd: make([]Interaction, 0),
-		wg:     &sync.WaitGroup{},
-		mtx:    &sync.RWMutex{},
+		c:   c,
+		ctx: context.Background(),
+		dur: DefaultPollerInterval,
+		hid: hid,
+		its: make([]Interaction, 0),
+		wg:  &sync.WaitGroup{},
+		mtx: &sync.RWMutex{},
 	}
 
 	for _, opt := range opts {
@@ -105,6 +83,11 @@ func NewPoller(c *Client, opts ...PollerOpt) (*Poller, error) {
 	return p, nil
 }
 
+// HostIdentifier returns the host identifier of the poller.
+func (p *Poller) HostIdentifier() HostIdentifier {
+	return p.hid
+}
+
 // Search searches for any interaction that contains
 // the given [substr] in the interaction's request.
 // E.g. in headers, like: Host: [substr]-[id].bh.com.
@@ -112,13 +95,7 @@ func (p *Poller) Search(substr string) *Interaction {
 	p.mtx.RLock()
 	defer p.mtx.RUnlock()
 
-	// First, we try luck with the hot storage
-	if it := p.search(p.its, substr); it != nil {
-		return it
-	}
-
-	// Otherwise, we try luck with the cold storage
-	return p.search(p.its2nd, substr)
+	return p.search(p.its, substr)
 }
 
 // BruteSearch is like [Search], but searches in all
@@ -142,14 +119,6 @@ func (p *Poller) Close() {
 }
 
 func (p *Poller) run() error {
-	if !p.registrationDisabled {
-		err := p.c.AddHost(p.ctx, p.hid)
-		if err != nil {
-			logger.For(p.ctx).Errorf("Could not register new blind host: %s", err.Error())
-			return err
-		}
-	}
-
 	p.wg.Add(1)
 	go func() {
 		defer p.wg.Done()
@@ -163,30 +132,10 @@ func (p *Poller) run() error {
 				p.cnl(context.Cause(p.ctx))
 				return
 			case <-t.C:
-				// First, we populate the "hot storage".
-				its, err := p.c.GetInteractions(p.ctx, p.hid)
-				if err == nil {
-					p.mtx.Lock()
-					p.its = append(p.its, its...)
-					p.mtx.Unlock()
-				} else {
-					// In case of "timeout", we just log the error and try again with
-					// the "cold storage". Otherwise, (other error), we skip the iteration.
-					// In the future, we might want to add more resilience for such cases.
-					var netErr net.Error
-					if errors.As(err, &netErr) && netErr.Timeout() {
-						logger.For(p.ctx).Warn("Retrieval of blind host interactions timed out")
-					} else {
-						logger.For(p.ctx).Errorf("Could not fetch new blind host interactions: %s", err.Error())
-						continue
-					}
-				}
-
-				// Then, we populate the "cold storage", using the same heuristics.
 				all, err := p.c.GetAllInteractions(p.ctx, p.hid)
 				if err == nil {
 					p.mtx.Lock()
-					p.its2nd = append(p.its2nd, all[len(p.its2nd):]...)
+					p.its = append(p.its, all[len(p.its):]...)
 					p.mtx.Unlock()
 				} else {
 					var netErr net.Error

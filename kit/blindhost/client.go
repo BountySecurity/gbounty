@@ -46,22 +46,22 @@ func NewClient(addr string, opts ...ClientOpt) (*Client, error) {
 	return client, nil
 }
 
-// AddHost adds a new interaction host to the blind host server.
-func (c *Client) AddHost(ctx context.Context, id HostIdentifier) (err error) {
+// GetHost gets a new interaction host from the blind host server.
+func (c *Client) GetHost(ctx context.Context) (HostIdentifier, error) {
+	var err error
+
 	// Validate URL
 	var u string
 	u, err = url.JoinPath(c.addr, "/add")
 	if err != nil {
-		return err
+		return HostIdentifier{}, err
 	}
 
 	// Prepare request
 	var req *http.Request
-	req, err = http.NewRequestWithContext(ctx, http.MethodPost, u, bytes.NewReader([]byte(fmt.Sprintf(`[
-	{"ID": "%s", "PrivateKey": "%s"}
-]`, id.ID(), id.PrivateKey()))))
+	req, err = http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
 	if err != nil {
-		return err
+		return HostIdentifier{}, err
 	}
 
 	// Set up headers (Content-Type: application/json)
@@ -71,7 +71,7 @@ func (c *Client) AddHost(ctx context.Context, id HostIdentifier) (err error) {
 	var resp *http.Response
 	resp, err = c.Do(req)
 	if err != nil {
-		return err
+		return HostIdentifier{}, err
 	}
 
 	// Close response body (report error, if any)
@@ -80,33 +80,27 @@ func (c *Client) AddHost(ctx context.Context, id HostIdentifier) (err error) {
 		err = errors.Join(err, closeErr)
 	}()
 
+	if resp.StatusCode != http.StatusOK {
+		return HostIdentifier{}, fmt.Errorf("%w: %s", ErrGetHost, resp.Status)
+	}
+
 	// Parse response body
 	var body struct {
-		Status string `json:"status"`
+		Id         string `json:"id"`
+		PrivateKey string `json:"privateKey"`
 	}
 	err = json.NewDecoder(resp.Body).Decode(&body)
 	if err != nil {
-		return err
+		return HostIdentifier{}, fmt.Errorf("%w: %s", ErrGetHost, err.Error())
 	}
 
-	// Check status (adhoc)
-	if body.Status != "Added successfully" {
-		return fmt.Errorf("%w: %s", ErrAddHost, body.Status)
-	}
-
-	return nil
+	return NewHostIdentifier(body.Id, body.PrivateKey), nil
 }
 
 // GetAllInteractions retrieves all the interactions detected for the
 // interaction host with the given [HostIdentifier].
 func (c *Client) GetAllInteractions(ctx context.Context, id HostIdentifier) (interactions []Interaction, err error) {
 	return c.getInteractions(ctx, id, "/historic")
-}
-
-// GetInteractions retrieves the new interactions (since last retrieval) detected for the
-// interaction host with the given [HostIdentifier].
-func (c *Client) GetInteractions(ctx context.Context, id HostIdentifier) (interactions []Interaction, err error) {
-	return c.getInteractions(ctx, id, "/get")
 }
 
 func (c *Client) getInteractions(ctx context.Context, id HostIdentifier, endpoint string) (interactions []Interaction, err error) {

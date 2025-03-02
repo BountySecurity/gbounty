@@ -207,7 +207,7 @@ func (c *Console) WriteError(_ context.Context, scanError gbounty.Error) error {
 			} else {
 				builder.WriteString(requestPrinter().Sprintln())
 			}
-			builder.Write(r.Bytes())
+			builder.WriteString(trimBytesNewline(r))
 		}
 	}
 
@@ -216,7 +216,7 @@ func (c *Console) WriteError(_ context.Context, scanError gbounty.Error) error {
 			if r == nil {
 				continue
 			}
-			builder.WriteString(responsePrinter().Sprintln(string(r.Bytes())))
+			builder.WriteString(responsePrinter().Sprintln(trimBytesNewline(r)))
 			builder.WriteString(durationPrinter().Sprintf("%.2fs\n\n", r.Time.Seconds()))
 		}
 	}
@@ -257,7 +257,7 @@ func (c *Console) WriteErrors(ctx context.Context, fs gbounty.FileSystem) error 
 				} else {
 					builder.WriteString(requestPrinter().Sprintln())
 				}
-				builder.Write(r.Bytes())
+				builder.WriteString(trimBytesNewline(r))
 			}
 		}
 
@@ -266,7 +266,7 @@ func (c *Console) WriteErrors(ctx context.Context, fs gbounty.FileSystem) error 
 				if r == nil {
 					continue
 				}
-				builder.WriteString(responsePrinter().Sprintln(string(r.Bytes())))
+				builder.WriteString(responsePrinter().Sprintln(trimBytesNewline(r)))
 				builder.WriteString(durationPrinter().Sprintf("%.2fs\n\n", r.Time.Seconds()))
 			}
 		}
@@ -312,16 +312,16 @@ func (c *Console) WriteMatch(_ context.Context, m gbounty.Match, _ bool) error {
 				} else {
 					builder.WriteString(requestPrinter().Sprintln())
 				}
-				builder.Write(m.Requests[i].Bytes())
+				builder.WriteString(trimBytesNewline(m.Requests[i]))
 				builder.WriteString("\n")
 			} else {
-				styledText := pterm.NewStyle(pterm.FgLightCyan).Sprintln(string(m.Requests[i].Bytes()))
+				styledText := pterm.NewStyle(pterm.FgLightCyan).Sprintln(trimBytesNewline(m.Requests[i]))
 				builder.WriteString(styledText)
 			}
 		}
 
 		if m.Responses != nil && i < len(m.Responses) && m.Responses[i] != nil && !c.pocEnabled {
-			result := formatResponseWithHighlights(string(m.Responses[i].Bytes()), i, m)
+			result := formatResponseWithHighlights(trimBytesNewline(m.Responses[i]), i, m)
 			if len(m.Responses) > 1 {
 				builder.WriteString(responseNPrinter(i + 1).Sprintln())
 			} else {
@@ -391,12 +391,12 @@ func (c *Console) WriteMatches(ctx context.Context, fs gbounty.FileSystem, _ boo
 				} else {
 					builder.WriteString(requestPrinter().Sprintln())
 				}
-				builder.Write(m.Requests[i].Bytes())
+				builder.WriteString(trimBytesNewline(m.Requests[i]))
 				builder.WriteString("\n")
 			}
 
 			if m.Responses != nil && i < len(m.Responses) && m.Responses[i] != nil && !c.pocEnabled {
-				result := formatResponseWithHighlights(string(m.Responses[i].Bytes()), i, m)
+				result := formatResponseWithHighlights(trimBytesNewline(m.Responses[i]), i, m)
 				if len(m.Responses) > 1 {
 					builder.WriteString(responseNPrinter(i + 1).Sprintln())
 				} else {
@@ -452,7 +452,7 @@ func (c *Console) WriteTasks(ctx context.Context, fs gbounty.FileSystem, allRequ
 				} else {
 					builder.WriteString(requestPrinter().Sprintln())
 				}
-				builder.Write(r.Bytes())
+				builder.WriteString(trimBytesNewline(r))
 			}
 		}
 
@@ -461,7 +461,7 @@ func (c *Console) WriteTasks(ctx context.Context, fs gbounty.FileSystem, allRequ
 				if r == nil {
 					continue
 				}
-				builder.WriteString(responsePrinter().Sprintln(string(r.Bytes())))
+				builder.WriteString(responsePrinter().Sprintln(trimBytesNewline(r)))
 				builder.WriteString(durationPrinter().Sprintf("%.2fs\n\n", r.Time.Seconds()))
 			}
 		}

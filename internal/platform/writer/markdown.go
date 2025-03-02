@@ -158,7 +158,7 @@ func (md Markdown) WriteError(_ context.Context, scanError gbounty.Error) error 
 			}
 			builder.WriteString(fmt.Sprintf("Request no. %d:\n\n", idx+1))
 			builder.WriteString("```\n")
-			builder.Write(r.Bytes())
+			builder.WriteString(trimBytesNewline(r))
 			builder.WriteString("\n```\n\n")
 		}
 	}
@@ -171,7 +171,7 @@ func (md Markdown) WriteError(_ context.Context, scanError gbounty.Error) error 
 			}
 			builder.WriteString(fmt.Sprintf("Response no. %d:\n\n", idx+1))
 			builder.WriteString("```\n")
-			builder.Write(r.Bytes())
+			builder.WriteString(trimBytesNewline(r))
 			builder.WriteString("\n```\n\n")
 			builder.WriteString(fmt.Sprintf("Duration: %.2fs\n\n", r.Time.Seconds()))
 		}
@@ -207,7 +207,7 @@ func (md Markdown) WriteErrors(ctx context.Context, fs gbounty.FileSystem) error
 				}
 				builder.WriteString(fmt.Sprintf("Request no. %d:\n\n", idx+1))
 				builder.WriteString("```\n")
-				builder.Write(r.Bytes())
+				builder.WriteString(trimBytesNewline(r))
 				builder.WriteString("\n```\n\n")
 			}
 		}
@@ -220,7 +220,7 @@ func (md Markdown) WriteErrors(ctx context.Context, fs gbounty.FileSystem) error
 				}
 				builder.WriteString(fmt.Sprintf("Response no. %d:\n\n", idx+1))
 				builder.WriteString("```\n")
-				builder.Write(r.Bytes())
+				builder.WriteString(trimBytesNewline(r))
 				builder.WriteString("\n```\n\n")
 				builder.WriteString(fmt.Sprintf("Duration: %.2fs\n\n", r.Time.Seconds()))
 			}
@@ -264,7 +264,7 @@ func (md Markdown) WriteMatch(_ context.Context, m gbounty.Match, includeRespons
 				builder.WriteString("**Request:**\n\n")
 			}
 			builder.WriteString("```\n")
-			builder.Write(m.Requests[i].Bytes())
+			builder.WriteString(trimBytesNewline(m.Requests[i]))
 			builder.WriteString("\n```\n\n")
 		}
 
@@ -275,7 +275,7 @@ func (md Markdown) WriteMatch(_ context.Context, m gbounty.Match, includeRespons
 				builder.WriteString("**Response:**\n\n")
 			}
 			builder.WriteString("```\n")
-			builder.Write(m.Responses[i].Bytes())
+			builder.WriteString(trimBytesNewline(m.Responses[i]))
 			builder.WriteString("\n```\n\n")
 			builder.WriteString(fmt.Sprintf("**Duration:** %.2fs\n\n", m.Responses[i].Time.Seconds()))
 		}
@@ -323,7 +323,7 @@ func (md Markdown) WriteMatches(ctx context.Context, fs gbounty.FileSystem, incl
 					builder.WriteString("**Request:**\n\n")
 				}
 				builder.WriteString("```\n")
-				builder.Write(m.Requests[i].Bytes())
+				builder.WriteString(trimBytesNewline(m.Requests[i]))
 				builder.WriteString("\n```\n\n")
 			}
 
@@ -334,7 +334,7 @@ func (md Markdown) WriteMatches(ctx context.Context, fs gbounty.FileSystem, incl
 					builder.WriteString("**Response:**\n\n")
 				}
 				builder.WriteString("```\n")
-				builder.Write(m.Responses[i].Bytes())
+				builder.WriteString(trimBytesNewline(m.Responses[i]))
 				builder.WriteString("\n```\n\n")
 				builder.WriteString(fmt.Sprintf("**Duration:** %.2fs\n\n", m.Responses[i].Time.Seconds()))
 			}
@@ -377,7 +377,7 @@ func (md Markdown) WriteTasks(ctx context.Context, fs gbounty.FileSystem, allReq
 				}
 				builder.WriteString(fmt.Sprintf("Request no. %d:\n\n", idx+1))
 				builder.WriteString("```\n")
-				builder.Write(r.Bytes())
+				builder.WriteString(trimBytesNewline(r))
 				builder.WriteString("\n```\n\n")
 			}
 		}
@@ -390,7 +390,7 @@ func (md Markdown) WriteTasks(ctx context.Context, fs gbounty.FileSystem, allReq
 				}
 				builder.WriteString(fmt.Sprintf("Response no. %d:\n\n", idx+1))
 				builder.WriteString("```\n")
-				builder.Write(r.Bytes())
+				builder.WriteString(trimBytesNewline(r))
 				builder.WriteString("\n```\n\n")
 				builder.WriteString(fmt.Sprintf("Duration: %.2fs\n\n", r.Time.Seconds()))
 			}

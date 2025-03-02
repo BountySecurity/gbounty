@@ -191,7 +191,7 @@ func (p *Plain) WriteError(_ context.Context, scanError gbounty.Error) error {
 			} else {
 				builder.WriteString(printer.Plain(requestPrinter()).Sprintln())
 			}
-			builder.Write(r.Bytes())
+			builder.WriteString(trimBytesNewline(r))
 		}
 	}
 
@@ -200,7 +200,7 @@ func (p *Plain) WriteError(_ context.Context, scanError gbounty.Error) error {
 			if r == nil {
 				continue
 			}
-			builder.WriteString(printer.Plain(responsePrinter()).Sprintln(string(r.Bytes())))
+			builder.WriteString(printer.Plain(responsePrinter()).Sprintln(trimBytesNewline(r)))
 			builder.WriteString(printer.Plain(durationPrinter()).Sprintf("%.2fs\n\n", r.Time.Seconds()))
 		}
 	}
@@ -241,7 +241,7 @@ func (p *Plain) WriteErrors(ctx context.Context, fs gbounty.FileSystem) error {
 				} else {
 					builder.WriteString(printer.Plain(requestPrinter()).Sprintln())
 				}
-				builder.Write(r.Bytes())
+				builder.WriteString(trimBytesNewline(r))
 			}
 		}
 
@@ -250,7 +250,7 @@ func (p *Plain) WriteErrors(ctx context.Context, fs gbounty.FileSystem) error {
 				if r == nil {
 					continue
 				}
-				builder.WriteString(printer.Plain(responsePrinter()).Sprintln(string(r.Bytes())))
+				builder.WriteString(printer.Plain(responsePrinter()).Sprintln(trimBytesNewline(r)))
 				builder.WriteString(printer.Plain(durationPrinter()).Sprintf("%.2fs\n\n", r.Time.Seconds()))
 			}
 		}
@@ -296,10 +296,10 @@ func (p *Plain) WriteMatch(_ context.Context, m gbounty.Match, includeResponse b
 				} else {
 					builder.WriteString(printer.Plain(requestPrinter()).Sprintln())
 				}
-				builder.Write(m.Requests[i].Bytes())
+				builder.WriteString(trimBytesNewline(m.Requests[i]))
 				builder.WriteString("\n")
 			} else {
-				builder.Write(m.Requests[i].Bytes())
+				builder.WriteString(trimBytesNewline(m.Requests[i]))
 			}
 		}
 
@@ -309,7 +309,7 @@ func (p *Plain) WriteMatch(_ context.Context, m gbounty.Match, includeResponse b
 			} else {
 				builder.WriteString(printer.Plain(responsePrinter()).Sprintln())
 			}
-			builder.Write(m.Responses[i].Bytes())
+			builder.WriteString(trimBytesNewline(m.Responses[i]))
 			builder.WriteString("\n")
 			builder.WriteString(printer.Plain(durationPrinter()).Sprintf("%.2fs\n\n", m.Responses[i].Time.Seconds()))
 			builder.WriteString("\n")
@@ -354,7 +354,7 @@ func (p *Plain) WriteMatches(ctx context.Context, fs gbounty.FileSystem, include
 				} else {
 					builder.WriteString(printer.Plain(requestPrinter()).Sprintln())
 				}
-				builder.Write(m.Requests[i].Bytes())
+				builder.WriteString(trimBytesNewline(m.Requests[i]))
 				builder.WriteString("\n")
 			}
 
@@ -364,7 +364,7 @@ func (p *Plain) WriteMatches(ctx context.Context, fs gbounty.FileSystem, include
 				} else {
 					builder.WriteString(printer.Plain(responsePrinter()).Sprintln())
 				}
-				builder.Write(m.Responses[i].Bytes())
+				builder.WriteString(trimBytesNewline(m.Responses[i]))
 				builder.WriteString("\n")
 				builder.WriteString(printer.Plain(durationPrinter()).Sprintf("%.2fs\n\n", m.Responses[i].Time.Seconds()))
 				builder.WriteString("\n")
@@ -414,7 +414,7 @@ func (p *Plain) WriteTasks(ctx context.Context, fs gbounty.FileSystem, allReques
 				} else {
 					builder.WriteString(printer.Plain(requestPrinter()).Sprintln())
 				}
-				builder.Write(r.Bytes())
+				builder.WriteString(trimBytesNewline(r))
 			}
 		}
 
@@ -423,7 +423,7 @@ func (p *Plain) WriteTasks(ctx context.Context, fs gbounty.FileSystem, allReques
 				if r == nil {
 					continue
 				}
-				builder.WriteString(printer.Plain(responsePrinter()).Sprintln(string(r.Bytes())))
+				builder.WriteString(printer.Plain(responsePrinter()).Sprintln(trimBytesNewline(r)))
 				builder.WriteString(printer.Plain(durationPrinter()).Sprintf("%.2fs\n\n", r.Time.Seconds()))
 			}
 		}

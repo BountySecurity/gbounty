@@ -348,6 +348,12 @@ func formatResponseWithHighlights(resAsString string, resIdx int, m gbounty.Matc
 	var result strings.Builder
 	lastIndex := 0
 	for _, occ := range occurrences {
+		if occ[0] < lastIndex {
+			if occ[1] <= lastIndex {
+				continue // Fully overlapped, we ignore it.
+			}
+			occ[0] = lastIndex // Partially overlapped.
+		}
 		result.WriteString(resAsString[lastIndex:occ[0]])
 		result.WriteString(color.Red().Sprint(resAsString[occ[0]:occ[1]]))
 		lastIndex = occ[1]

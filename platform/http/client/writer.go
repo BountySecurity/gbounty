@@ -5,6 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"strings"
+	
+	"github.com/BountySecurity/gbounty/platform/http/httputil"
 )
 
 type writer struct {
@@ -18,9 +21,15 @@ func (w *writer) writeRequest(method, path, proto string, headers map[string][]s
 		return err
 	}
 
-	for k, v := range headers {
-		for _, v := range v {
-			if err := w.writeHeader(k, v); err != nil {
+	for k, values := range headers {
+		if httputil.IsListBasedHeader(k) {
+			for _, v := range values {
+				if err := w.writeHeader(k, v); err != nil {
+					return err
+				}
+			}
+		} else {
+			if err := w.writeHeader(k, strings.Join(values, ", ")); err != nil {
 				return err
 			}
 		}

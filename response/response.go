@@ -11,6 +11,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/BountySecurity/gbounty/platform/http/httputil"
 )
 
 var (
@@ -48,9 +50,9 @@ func (r Response) Bytes() []byte {
 		return []byte{}
 	}
 
-	var ret string
+	var ret strings.Builder
 
-	ret += r.Proto + " " + strconv.Itoa(r.Code) + " " + r.Status + "\r\n"
+	ret.WriteString(r.Proto + " " + strconv.Itoa(r.Code) + " " + r.Status + "\r\n")
 
 	keys := make([]string, 0, len(r.Headers))
 	for key := range r.Headers {
@@ -59,13 +61,19 @@ func (r Response) Bytes() []byte {
 	sort.Strings(keys)
 
 	for _, k := range keys {
-		ret += k + ": " + strings.Join(r.Headers[k], ", ") + "\r\n"
+		if httputil.IsListBasedHeader(k) {
+			ret.WriteString(k + ": " + strings.Join(r.Headers[k], ", ") + "\r\n")
+		} else {
+			for _, v := range r.Headers[k] {
+				ret.WriteString(k + ": " + v + "\r\n")
+			}
+		}
 	}
 
-	ret += "\r\n"
-	ret += string(r.Body)
+	ret.WriteString("\r\n")
+	ret.Write(r.Body)
 
-	return []byte(strings.TrimSuffix(ret, "\n"))
+	return []byte(strings.TrimSuffix(ret.String(), "\n"))
 }
 
 // EscapedBytes returns the response as a byte slice, with the body
@@ -97,11 +105,24 @@ func (r Response) BytesOnlyHeaders() []byte {
 		return []byte{}
 	}
 
-	var ret string
-	for k, values := range r.Headers {
-		ret += k + ": " + strings.Join(values, ", ") + "\r\n"
+	keys := make([]string, 0, len(r.Headers))
+	for key := range r.Headers {
+		keys = append(keys, key)
 	}
-	return []byte(ret)
+	sort.Strings(keys)
+
+	var ret strings.Builder
+	for _, k := range keys {
+		if httputil.IsListBasedHeader(k) {
+			ret.WriteString(k + ": " + strings.Join(r.Headers[k], ", ") + "\r\n")
+		} else {
+			for _, v := range r.Headers[k] {
+				ret.WriteString(k + ": " + v + "\r\n")
+			}
+		}
+	}
+
+	return []byte(ret.String())
 }
 
 // ContentLength returns the length of the response.

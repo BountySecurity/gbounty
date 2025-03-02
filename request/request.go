@@ -18,6 +18,7 @@ import (
 	"time"
 
 	internalurl "github.com/BountySecurity/gbounty/kit/url"
+	"github.com/BountySecurity/gbounty/platform/http/httputil"
 	"github.com/BountySecurity/gbounty/profile"
 )
 
@@ -148,11 +149,24 @@ func (r *Request) Header(header string) string {
 
 // HeaderBytes returns the headers section as a byte slice.
 func (r *Request) HeaderBytes() []byte {
-	var ret string
-	for k, values := range r.Headers {
-		ret += k + ": " + strings.Join(values, ", ") + "\r\n"
+	keys := make([]string, 0, len(r.Headers))
+	for key := range r.Headers {
+		keys = append(keys, key)
 	}
-	return []byte(ret)
+	sort.Strings(keys)
+
+	var ret strings.Builder
+	for _, k := range keys {
+		if httputil.IsListBasedHeader(k) {
+			ret.WriteString(k + ": " + strings.Join(r.Headers[k], ", ") + "\r\n")
+		} else {
+			for _, v := range r.Headers[k] {
+				ret.WriteString(k + ": " + v + "\r\n")
+			}
+		}
+	}
+
+	return []byte(ret.String())
 }
 
 // MultipartForm returns the request body as a multipart form.
@@ -251,7 +265,8 @@ func (r *Request) ToJSON() ([]byte, error) {
 
 // Bytes returns the request as a byte slice.
 func (r *Request) Bytes() []byte {
-	ret := r.Method + " " + r.Path + " " + r.Proto + "\n"
+	var ret strings.Builder
+	ret.WriteString(r.Method + " " + r.Path + " " + r.Proto + "\r\n")
 
 	keys := make([]string, 0, len(r.Headers))
 	for key := range r.Headers {
@@ -259,14 +274,20 @@ func (r *Request) Bytes() []byte {
 	}
 	sort.Strings(keys)
 
-	for _, key := range keys {
-		ret += textproto.CanonicalMIMEHeaderKey(key) + ": " + strings.Join(r.Headers[key], ", ") + "\n"
+	for _, k := range keys {
+		if httputil.IsListBasedHeader(k) {
+			ret.WriteString(k + ": " + strings.Join(r.Headers[k], ", ") + "\r\n")
+		} else {
+			for _, v := range r.Headers[k] {
+				ret.WriteString(k + ": " + v + "\r\n")
+			}
+		}
 	}
 
-	ret += "\n"
-	ret += string(r.Body)
+	ret.WriteString("\r\n")
+	ret.WriteString(string(r.Body))
 
-	return []byte(strings.TrimSuffix(ret, "\n"))
+	return []byte(strings.TrimSuffix(ret.String(), "\n"))
 }
 
 // EscapedBytes returns the request as a byte slice, with the body

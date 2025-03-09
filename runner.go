@@ -91,6 +91,7 @@ func (r *Runner) run() error {
 		go r.calculateTasks(r.opts.ctx)
 	}
 
+	defer r.opts.closeTemplatesIt()
 	for tpl := range r.opts.templatesIt {
 		// Check for context cancellation
 		select {
@@ -278,11 +279,12 @@ func (r *Runner) calculateTasks(ctx context.Context) {
 	wg := new(sync.WaitGroup)
 	once := new(sync.Once)
 
-	templates, err := r.opts.fileSystem.TemplatesIterator(ctx)
+	templates, closeIt, err := r.opts.fileSystem.TemplatesIterator(ctx)
 	if err != nil {
 		logger.For(ctx).Errorf("Error while reading templates to calculate the total amount of tasks: %s", err)
 		return
 	}
+	defer closeIt()
 
 	for tpl := range templates {
 		tpl := tpl

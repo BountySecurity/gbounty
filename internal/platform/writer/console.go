@@ -128,6 +128,7 @@ func (c *Console) WriteMatchesSummary(ctx context.Context, fs gbounty.FileSystem
 	if err != nil {
 		return err
 	}
+	defer closeIt()
 
 	profileTypes := make(map[string]string)
 	byIssue := make(map[string]map[string]struct{ count int })
@@ -173,8 +174,6 @@ func (c *Console) WriteMatchesSummary(ctx context.Context, fs gbounty.FileSystem
 			return err
 		}
 	}
-
-	closeIt()
 
 	if !atLeastOne {
 		_, err := fmt.Fprint(c.writer, infoPrinter().Sprintln(color.Cyan().Sprint("No matches found")))
@@ -241,6 +240,7 @@ func (c *Console) WriteErrors(ctx context.Context, fs gbounty.FileSystem) error 
 	if err != nil {
 		return err
 	}
+	defer closeIt()
 
 	for scanError := range ch {
 		builder := strings.Builder{}
@@ -278,8 +278,6 @@ func (c *Console) WriteErrors(ctx context.Context, fs gbounty.FileSystem) error 
 			return err
 		}
 	}
-
-	closeIt()
 
 	return nil
 }
@@ -376,6 +374,7 @@ func (c *Console) WriteMatches(ctx context.Context, fs gbounty.FileSystem, _ boo
 	if err != nil {
 		return err
 	}
+	defer closeIt()
 
 	for m := range ch {
 		builder := strings.Builder{}
@@ -423,8 +422,6 @@ func (c *Console) WriteMatches(ctx context.Context, fs gbounty.FileSystem, _ boo
 		}
 	}
 
-	closeIt()
-
 	return nil
 }
 
@@ -443,6 +440,7 @@ func (c *Console) WriteTasks(ctx context.Context, fs gbounty.FileSystem, allRequ
 	if err != nil {
 		return err
 	}
+	defer closeIt()
 
 	for scanTask := range ch {
 		builder := strings.Builder{}
@@ -479,8 +477,6 @@ func (c *Console) WriteTasks(ctx context.Context, fs gbounty.FileSystem, allRequ
 			return err
 		}
 	}
-
-	closeIt()
 
 	return nil
 }

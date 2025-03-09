@@ -83,6 +83,7 @@ func (j JSON) WriteMatchesSummary(ctx context.Context, fs gbounty.FileSystem) er
 	if err != nil {
 		return err
 	}
+	defer closeIt()
 
 	profileTypes := make(map[string]string)
 	byIssue := make(map[string]map[string]struct{ count int })
@@ -144,8 +145,6 @@ func (j JSON) WriteMatchesSummary(ctx context.Context, fs gbounty.FileSystem) er
 
 	_, err = fmt.Fprint(j.writer, `
 	]`)
-
-	closeIt()
 
 	return err
 }
@@ -250,6 +249,7 @@ func (j JSON) WriteErrors(ctx context.Context, fs gbounty.FileSystem) error {
 	if err != nil {
 		return err
 	}
+	defer closeIt()
 
 	first := true
 
@@ -353,8 +353,6 @@ func (j JSON) WriteErrors(ctx context.Context, fs gbounty.FileSystem) error {
 
 	_, err = fmt.Fprint(j.writer, `
 	]`)
-
-	closeIt()
 
 	return err
 }
@@ -466,6 +464,7 @@ func (j JSON) WriteMatches(ctx context.Context, fs gbounty.FileSystem, includeRe
 	if err != nil {
 		return err
 	}
+	defer closeIt()
 
 	first := true
 
@@ -575,8 +574,6 @@ func (j JSON) WriteMatches(ctx context.Context, fs gbounty.FileSystem, includeRe
 
 	_, err = fmt.Fprint(j.writer, `
 	]`)
-
-	closeIt()
 
 	return err
 }

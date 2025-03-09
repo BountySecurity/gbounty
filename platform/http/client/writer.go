@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io"
 	"strings"
-	
+
 	"github.com/BountySecurity/gbounty/platform/http/httputil"
 )
 

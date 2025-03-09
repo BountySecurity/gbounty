@@ -24,38 +24,32 @@ type FileSystemStats interface {
 // to store and retrieve [Error] instances.
 type FileSystemErrors interface {
 	StoreError(ctx context.Context, err Error) error
-	LoadErrors(ctx context.Context) ([]Error, error)
 	ErrorsIterator(ctx context.Context) (chan Error, CloseFunc, error)
+	CloseErrors(ctx context.Context) error
 }
 
 // FileSystemMatches defines the behavior expected from a [scan] file system
 // to store and retrieve [Match] instances.
 type FileSystemMatches interface {
 	StoreMatch(ctx context.Context, match Match) error
-	LoadMatches(ctx context.Context) ([]Match, error)
 	MatchesIterator(ctx context.Context) (chan Match, CloseFunc, error)
+	CloseMatches(ctx context.Context) error
 }
 
 // FileSystemSummaries defines the behavior expected from a [scan] file system
 // to store and retrieve [TaskSummary] instances.
 type FileSystemSummaries interface {
 	StoreTaskSummary(ctx context.Context, ts TaskSummary) error
-	LoadTasksSummaries(ctx context.Context) ([]TaskSummary, error)
 	TasksSummariesIterator(ctx context.Context) (chan TaskSummary, CloseFunc, error)
+	CloseTasksSummaries(ctx context.Context) error
 }
 
 // FileSystemTemplates defines the behavior expected from a [scan] file system
 // to store and retrieve [Template] instances.
 type FileSystemTemplates interface {
 	StoreTemplate(ctx context.Context, tpl Template) error
-	LoadTemplates(ctx context.Context) ([]Template, error)
-
-	// TemplatesIterator returns a channel of Template (or an error),
-	// so the channel can be used as an iterator.
-	// The returned channel is closed when the iterator is done (no more elements)
-	// or when the context is canceled.
-	// Thus, the context cancellation can also be used to stop the iteration.
-	TemplatesIterator(ctx context.Context) (chan Template, error)
+	TemplatesIterator(ctx context.Context) (chan Template, CloseFunc, error)
+	CloseTemplates(ctx context.Context) error
 }
 
 // CloseFunc is a function that can be used to close something that's open.

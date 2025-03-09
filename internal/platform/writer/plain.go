@@ -114,6 +114,7 @@ func (p *Plain) WriteMatchesSummary(ctx context.Context, fs gbounty.FileSystem) 
 	if err != nil {
 		return err
 	}
+	defer closeIt()
 
 	profileTypes := make(map[string]string)
 	byIssue := make(map[string]map[string]struct{ count int })
@@ -157,8 +158,6 @@ func (p *Plain) WriteMatchesSummary(ctx context.Context, fs gbounty.FileSystem) 
 			return err
 		}
 	}
-
-	closeIt()
 
 	if !atLeastOne {
 		_, err := fmt.Fprint(p.writer, "No matches found\n")
@@ -225,6 +224,7 @@ func (p *Plain) WriteErrors(ctx context.Context, fs gbounty.FileSystem) error {
 	if err != nil {
 		return err
 	}
+	defer closeIt()
 
 	for scanError := range ch {
 		builder := strings.Builder{}
@@ -262,8 +262,6 @@ func (p *Plain) WriteErrors(ctx context.Context, fs gbounty.FileSystem) error {
 			return err
 		}
 	}
-
-	closeIt()
 
 	return nil
 }
@@ -333,6 +331,7 @@ func (p *Plain) WriteMatches(ctx context.Context, fs gbounty.FileSystem, include
 	if err != nil {
 		return err
 	}
+	defer closeIt()
 
 	for m := range ch {
 		builder := strings.Builder{}
@@ -378,8 +377,6 @@ func (p *Plain) WriteMatches(ctx context.Context, fs gbounty.FileSystem, include
 			return err
 		}
 	}
-
-	closeIt()
 
 	return nil
 }

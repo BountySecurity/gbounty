@@ -60,29 +60,6 @@ func TestAfero_LoadStats(t *testing.T) {
 	assert.EqualValues(t, &gbounty.Stats{}, scanStats)
 }
 
-func TestAfero_LoadErrors(t *testing.T) {
-	t.Parallel()
-
-	fs, basePath := initializeFsTest()
-
-	aferoFS, err := filesystem.New(fs, basePath)
-	require.NoError(t, err)
-
-	storeSomeErrors(t, aferoFS)
-
-	scanErrors, err := aferoFS.LoadErrors(context.Background())
-	require.NoError(t, err)
-
-	var numErrors int
-	for _, scanError := range scanErrors {
-		numErrors++
-
-		assert.Equal(t, dummyError(), scanError)
-	}
-
-	assert.Equal(t, 5, numErrors)
-}
-
 func TestAfero_ErrorsIterator(t *testing.T) {
 	t.Parallel()
 
@@ -97,6 +74,7 @@ func TestAfero_ErrorsIterator(t *testing.T) {
 
 	scanErrorsIterator, closeIt, err := aferoFS.ErrorsIterator(context.Background())
 	require.NoError(t, err)
+	defer closeIt()
 
 	for scanError := range scanErrorsIterator {
 		numErrors++
@@ -104,32 +82,7 @@ func TestAfero_ErrorsIterator(t *testing.T) {
 		assert.Equal(t, dummyError(), scanError)
 	}
 
-	closeIt()
-
 	assert.Equal(t, 5, numErrors)
-}
-
-func TestAfero_LoadMatches(t *testing.T) {
-	t.Parallel()
-
-	fs, basePath := initializeFsTest()
-
-	aferoFS, err := filesystem.New(fs, basePath)
-	require.NoError(t, err)
-
-	storeSomeMatches(t, aferoFS)
-
-	scanMatches, err := aferoFS.LoadMatches(context.Background())
-	require.NoError(t, err)
-
-	var numMatches int
-	for _, scanMatch := range scanMatches {
-		numMatches++
-
-		assert.Equal(t, dummyMatch(), scanMatch)
-	}
-
-	assert.Equal(t, 5, numMatches)
 }
 
 func TestAfero_MatchesIterator(t *testing.T) {
@@ -146,6 +99,7 @@ func TestAfero_MatchesIterator(t *testing.T) {
 
 	scanMatchesIterator, closeIt, err := aferoFS.MatchesIterator(context.Background())
 	require.NoError(t, err)
+	defer closeIt()
 
 	for scanMatch := range scanMatchesIterator {
 		numMatches++
@@ -153,32 +107,7 @@ func TestAfero_MatchesIterator(t *testing.T) {
 		assert.Equal(t, dummyMatch(), scanMatch)
 	}
 
-	closeIt()
-
 	assert.Equal(t, 5, numMatches)
-}
-
-func TestAfero_LoadTasksSummaries(t *testing.T) {
-	t.Parallel()
-
-	fs, basePath := initializeFsTest()
-
-	aferoFS, err := filesystem.New(fs, basePath)
-	require.NoError(t, err)
-
-	storeSomeTaskSummaries(t, aferoFS)
-
-	scanTasks, err := aferoFS.LoadTasksSummaries(context.Background())
-	require.NoError(t, err)
-
-	var numTasks int
-	for _, scanTask := range scanTasks {
-		numTasks++
-
-		assert.Equal(t, dummyTask(), scanTask)
-	}
-
-	assert.Equal(t, 5, numTasks)
 }
 
 func TestAfero_TasksSummariesIterator(t *testing.T) {
@@ -207,29 +136,6 @@ func TestAfero_TasksSummariesIterator(t *testing.T) {
 	assert.Equal(t, 5, numTasks)
 }
 
-func TestAfero_LoadTemplates(t *testing.T) {
-	t.Parallel()
-
-	fs, basePath := initializeFsTest()
-
-	aferoFS, err := filesystem.New(fs, basePath)
-	require.NoError(t, err)
-
-	storeSomeTemplates(t, aferoFS)
-
-	scanTemplates, err := aferoFS.LoadTemplates(context.Background())
-	require.NoError(t, err)
-
-	var numTemplates int
-	for _, scanTemplate := range scanTemplates {
-		numTemplates++
-
-		assert.Equal(t, dummyTemplate(), scanTemplate)
-	}
-
-	assert.Equal(t, 5, numTemplates)
-}
-
 func TestAfero_TemplatesIterator(t *testing.T) {
 	t.Parallel()
 
@@ -242,8 +148,9 @@ func TestAfero_TemplatesIterator(t *testing.T) {
 
 	var numTemplates int
 
-	scanTemplatesIterator, err := aferoFS.TemplatesIterator(context.Background())
+	scanTemplatesIterator, closeIt, err := aferoFS.TemplatesIterator(context.Background())
 	require.NoError(t, err)
+	defer closeIt()
 
 	for scanTemplate := range scanTemplatesIterator {
 		numTemplates++
@@ -252,69 +159,6 @@ func TestAfero_TemplatesIterator(t *testing.T) {
 	}
 
 	assert.Equal(t, 5, numTemplates)
-}
-
-func TestConcurrentOps(t *testing.T) {
-	t.Parallel()
-
-	fs, basePath := initializeFsTest()
-
-	aferoFS, err := filesystem.New(fs, basePath)
-	require.NoError(t, err)
-
-	storeSomeErrors(t, aferoFS)
-
-	scanErrors, err := aferoFS.LoadErrors(context.Background())
-	require.NoError(t, err)
-
-	var numErrors int
-	for _, scanError := range scanErrors {
-		numErrors++
-
-		assert.Equal(t, dummyError(), scanError)
-	}
-
-	assert.Equal(t, 5, numErrors)
-
-	// Now we have tested the regular functionality.
-	// So, now we want to see what happens if new writes
-	// happens after the read (LoadErrors call above).
-
-	additionalError1 := gbounty.Error{
-		URL:       "localhost:9090",
-		Requests:  []*request.Request{dummyRequest()},
-		Responses: []*response.Response{dummyResponse()},
-		Err:       "something went wrong",
-	}
-
-	additionalError2 := gbounty.Error{
-		URL:       "localhost:9191",
-		Requests:  []*request.Request{dummyRequest()},
-		Responses: []*response.Response{dummyResponse()},
-		Err:       "something went wrong",
-	}
-
-	require.NoError(t, aferoFS.StoreError(context.Background(), additionalError1))
-	require.NoError(t, aferoFS.StoreError(context.Background(), additionalError2))
-
-	scanErrors, err = aferoFS.LoadErrors(context.Background())
-	require.NoError(t, err)
-
-	numErrors = 0
-	for _, scanError := range scanErrors {
-		numErrors++
-
-		switch numErrors {
-		case 1, 2, 3, 4, 5:
-			assert.Equal(t, dummyError(), scanError)
-		case 6:
-			assert.Equal(t, additionalError1, scanError)
-		case 7:
-			assert.Equal(t, additionalError2, scanError)
-		}
-	}
-
-	assert.Equal(t, 7, numErrors)
 }
 
 func initializeFsTest() (*afero.MemMapFs, string) {

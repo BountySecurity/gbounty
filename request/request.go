@@ -285,7 +285,7 @@ func (r *Request) Bytes() []byte {
 	}
 
 	ret.WriteString("\r\n")
-	ret.WriteString(string(r.Body))
+	ret.Write(r.Body)
 
 	return []byte(ret.String())
 }

@@ -47,7 +47,8 @@ type RunnerOpts struct {
 	saveAllResponses   bool
 	fileSystem         FileSystem
 
-	templatesIt chan Template
+	templatesIt      chan Template
+	closeTemplatesIt CloseFunc
 }
 
 // DefaultRunnerOpts constructs an empty instance of [RunnerOpts].
@@ -209,12 +210,13 @@ func (opts *RunnerOpts) validate() error {
 }
 
 func (opts *RunnerOpts) setupTemplatesIt() error {
-	it, err := opts.fileSystem.TemplatesIterator(opts.ctx)
+	it, closeIt, err := opts.fileSystem.TemplatesIterator(opts.ctx)
 	if err != nil {
 		return err
 	}
 
 	opts.templatesIt = it
+	opts.closeTemplatesIt = closeIt
 	return nil
 }
 

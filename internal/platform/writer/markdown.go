@@ -87,6 +87,7 @@ func (md Markdown) WriteMatchesSummary(ctx context.Context, fs gbounty.FileSyste
 	if err != nil {
 		return err
 	}
+	defer closeIt()
 
 	profileTypes := make(map[string]string)
 	byIssue := make(map[string]map[string]struct{ count int })
@@ -131,8 +132,6 @@ func (md Markdown) WriteMatchesSummary(ctx context.Context, fs gbounty.FileSyste
 			return err
 		}
 	}
-
-	closeIt()
 
 	if !atLeastOne {
 		_, err := fmt.Fprint(md.writer, "**No matches found**\n")
@@ -193,6 +192,7 @@ func (md Markdown) WriteErrors(ctx context.Context, fs gbounty.FileSystem) error
 	if err != nil {
 		return err
 	}
+	defer closeIt()
 
 	for scanError := range ch {
 		builder := strings.Builder{}
@@ -233,8 +233,6 @@ func (md Markdown) WriteErrors(ctx context.Context, fs gbounty.FileSystem) error
 			return err
 		}
 	}
-
-	closeIt()
 
 	return nil
 }
@@ -298,6 +296,7 @@ func (md Markdown) WriteMatches(ctx context.Context, fs gbounty.FileSystem, incl
 	if err != nil {
 		return err
 	}
+	defer closeIt()
 
 	for m := range ch {
 		builder := strings.Builder{}
@@ -347,8 +346,6 @@ func (md Markdown) WriteMatches(ctx context.Context, fs gbounty.FileSystem, incl
 			return err
 		}
 	}
-
-	closeIt()
 
 	return nil
 }

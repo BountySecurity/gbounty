@@ -38,6 +38,7 @@ func Finders() []Finder {
 		NewQueryFinder(),
 		NewURLFinder(),
 		NewXMLParamFinder(),
+		NewUserProvidedFinder(),
 	}
 }
 

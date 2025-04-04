@@ -107,6 +107,7 @@ const (
 	EntireBody            InsertionPointType = "entire_body"
 	EntireBodyJSON        InsertionPointType = "entire_body_json"
 	EntireBodyMulti       InsertionPointType = "entire_body_multipart"
+	UserProvided          InsertionPointType = "user_provided"
 )
 
 const (

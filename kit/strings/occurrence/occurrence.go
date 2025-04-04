@@ -79,3 +79,26 @@ func FindStatusCode(s string, code int) []Occurrence {
 
 	return []Occurrence{{match[0], match[1]}}
 }
+
+// ForEach is like Find, but it calls the callback for each occurrence.
+func ForEach(s, sub string, f func(s string, from, to int)) {
+	// If either the string or the substring is empty,
+	// there are no occurrences.
+	if len(s) == 0 || len(sub) == 0 {
+		return
+	}
+
+	start := 0
+	for {
+		// If the substring is not found, break the loop
+		index := strings.Index(s[start:], sub)
+		if index == -1 {
+			break
+		}
+
+		startIndex := start + index
+		endIndex := startIndex + len(sub)
+		f(s[startIndex:endIndex], startIndex, endIndex)
+		start = endIndex
+	}
+}

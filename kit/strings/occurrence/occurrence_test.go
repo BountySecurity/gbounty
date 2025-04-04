@@ -96,3 +96,38 @@ func TestFindStatusCode(t *testing.T) {
 		})
 	}
 }
+
+func TestForEach(t *testing.T) {
+	t.Parallel()
+
+	tcs := map[string]struct {
+		s    string
+		sub  string
+		expS []string
+		expO []occurrence.Occurrence
+	}{
+		"empty":                {s: "", sub: "", expS: nil, expO: nil},
+		"empty string":         {s: "", sub: "test", expS: nil, expO: nil},
+		"empty substring":      {s: "This is a test string.", sub: "", expS: nil, expO: nil},
+		"single occurrence":    {s: "This is a test string.", sub: "test", expS: []string{"test"}, expO: []occurrence.Occurrence{{10, 14}}},
+		"multiple occurrences": {s: "This is a test string. Let's test string matching.", sub: "test", expS: []string{"test", "test"}, expO: []occurrence.Occurrence{{10, 14}, {29, 33}}},
+		"not matching":         {s: "This is a test string. Let's test string matching.", sub: "desd", expS: nil, expO: nil},
+	}
+
+	for name, tc := range tcs {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			var (
+				gotS []string
+				gotO []occurrence.Occurrence
+			)
+			occurrence.ForEach(tc.s, tc.sub, func(s string, from, to int) {
+				gotS = append(gotS, s)
+				gotO = append(gotO, occurrence.Occurrence{from, to})
+			})
+			require.Equal(t, tc.expS, gotS)
+			require.Equal(t, tc.expO, gotO)
+		})
+	}
+}

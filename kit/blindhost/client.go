@@ -46,20 +46,20 @@ func NewClient(addr string, opts ...ClientOpt) (*Client, error) {
 	return client, nil
 }
 
-// GetHost gets a new interaction host from the blind host server.
-func (c *Client) GetHost(ctx context.Context) (HostIdentifier, error) {
+// GenerateHost gets a new interaction host from the blind host server.
+func (c *Client) GenerateHost(ctx context.Context) (HostIdentifier, error) {
 	var err error
 
 	// Validate URL
 	var u string
-	u, err = url.JoinPath(c.addr, "/add")
+	u, err = url.JoinPath(c.addr, "/generate")
 	if err != nil {
 		return HostIdentifier{}, err
 	}
 
 	// Prepare request
 	var req *http.Request
-	req, err = http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
+	req, err = http.NewRequestWithContext(ctx, http.MethodPost, u, nil)
 	if err != nil {
 		return HostIdentifier{}, err
 	}
@@ -80,14 +80,14 @@ func (c *Client) GetHost(ctx context.Context) (HostIdentifier, error) {
 		err = errors.Join(err, closeErr)
 	}()
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return HostIdentifier{}, fmt.Errorf("%w: %s", ErrGetHost, resp.Status)
 	}
 
 	// Parse response body
 	var body struct {
 		Id         string `json:"id"`
-		PrivateKey string `json:"privateKey"`
+		PrivateKey string `json:"private_key"`
 	}
 	err = json.NewDecoder(resp.Body).Decode(&body)
 	if err != nil {
@@ -100,7 +100,7 @@ func (c *Client) GetHost(ctx context.Context) (HostIdentifier, error) {
 // GetAllInteractions retrieves all the interactions detected for the
 // interaction host with the given [HostIdentifier].
 func (c *Client) GetAllInteractions(ctx context.Context, id HostIdentifier) (interactions []Interaction, err error) {
-	return c.getInteractions(ctx, id, "/historic")
+	return c.getInteractions(ctx, id, "/history")
 }
 
 func (c *Client) getInteractions(ctx context.Context, id HostIdentifier, endpoint string) (interactions []Interaction, err error) {
@@ -113,9 +113,10 @@ func (c *Client) getInteractions(ctx context.Context, id HostIdentifier, endpoin
 
 	// Prepare request
 	var req *http.Request
-	req, err = http.NewRequestWithContext(ctx, http.MethodPost, u, bytes.NewReader([]byte(fmt.Sprintf(`[
-	{"ID": "%s", "PrivateKey": "%s"}
-]`, id.ID(), id.PrivateKey()))))
+	req, err = http.NewRequestWithContext(
+		ctx, http.MethodPost, u,
+		bytes.NewReader([]byte(fmt.Sprintf(`{"id": "%s", "private_key": "%s"}`, id.ID(), id.PrivateKey()))),
+	)
 	if err != nil {
 		return nil, err
 	}

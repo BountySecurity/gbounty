@@ -26,6 +26,7 @@ var (
 // between an HTTP client and the blind host server.
 type Interaction struct {
 	ID            string    `json:"id"`
+	Server        string    `json:"server"`
 	Timestamp     time.Time `json:"timestamp"`
 	Protocol      string    `json:"protocol"`
 	Type          string    `json:"type"`
@@ -68,7 +69,7 @@ func (h HostIdentifier) HostBaseURL(base string) string {
 // HostReqURL calculates the request URL of the interaction host, given a base URL and a unique identifier.
 // This can be used to uniquely identify each interaction with the interaction host.
 func (h HostIdentifier) HostReqURL(base, uid string) string {
-	return fmt.Sprintf("%s.%s.%s", uid, h.ID(), base)
+	return fmt.Sprintf("%s-%s.%s", uid, h.ID(), base)
 }
 
 func urlScheme(addr string) string {

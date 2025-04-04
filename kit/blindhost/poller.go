@@ -51,7 +51,7 @@ func WithContext(ctx context.Context) PollerOpt {
 //
 // Use the PollerOpt functions to change the default behaviour.
 func NewPoller(ctx context.Context, c *Client, opts ...PollerOpt) (*Poller, error) {
-	hid, err := c.GetHost(ctx)
+	hid, err := c.GenerateHost(ctx)
 	if err != nil {
 		logger.For(ctx).Errorf("Could not register new blind host: %s", err.Error())
 		return nil, err

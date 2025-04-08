@@ -192,7 +192,10 @@ func (t *Task) run(
 			matched = true
 			onUpdate(true, false, false) // Report the match, the request will be reported later.
 			if onMatchFn != nil {
-				onMatchFn(ctx, tpl.OriginalURL, t.Requests, t.Responses, t.Profile, t.Profile.Steps[t.StepIdx], entrypoint.Entrypoint(nil), t.payloadEncoded(), t.Occurrences)
+				tplOriginalURL := applyReplacements(tpl.OriginalURL, map[string]string{
+					entrypoint.UserProvidedInput: t.payloadEncoded(),
+				})
+				onMatchFn(ctx, tplOriginalURL, t.Requests, t.Responses, t.Profile, t.Profile.Steps[t.StepIdx], entrypoint.Entrypoint(nil), t.payloadEncoded(), t.Occurrences)
 			}
 		}
 

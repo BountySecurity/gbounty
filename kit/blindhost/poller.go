@@ -43,6 +43,13 @@ func WithContext(ctx context.Context) PollerOpt {
 	}
 }
 
+// WithHostIdentifier sets the context of the poller.
+func WithHostIdentifier(id, privateKey string) PollerOpt {
+	return func(p *Poller) {
+		p.hid = NewHostIdentifier(id, privateKey)
+	}
+}
+
 // NewPoller creates a new poller. It is recommended to use
 // this function instead of creating a poller manually.
 //
@@ -50,19 +57,11 @@ func WithContext(ctx context.Context) PollerOpt {
 // by default.
 //
 // Use the PollerOpt functions to change the default behaviour.
-func NewPoller(ctx context.Context, c *Client, opts ...PollerOpt) (*Poller, error) {
-	hid, err := c.GenerateHost(ctx)
-	if err != nil {
-		logger.For(ctx).Errorf("Could not register new blind host: %s", err.Error())
-		return nil, err
-	}
-
-	// Default poller
+func NewPoller(c *Client, opts ...PollerOpt) (*Poller, error) {
 	p := &Poller{
 		c:   c,
 		ctx: context.Background(),
 		dur: DefaultPollerInterval,
-		hid: hid,
 		its: make([]Interaction, 0),
 		wg:  &sync.WaitGroup{},
 		mtx: &sync.RWMutex{},
@@ -70,6 +69,15 @@ func NewPoller(ctx context.Context, c *Client, opts ...PollerOpt) (*Poller, erro
 
 	for _, opt := range opts {
 		opt(p)
+	}
+
+	if len(p.hid.ID()) == 0 || len(p.hid.PrivateKey()) == 0 {
+		hid, err := c.GenerateHost(p.ctx)
+		if err != nil {
+			logger.For(p.ctx).Errorf("Could not register new blind host: %s", err.Error())
+			return nil, err
+		}
+		p.hid = hid
 	}
 
 	// Set up context...

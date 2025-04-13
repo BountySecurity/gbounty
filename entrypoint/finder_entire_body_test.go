@@ -1,7 +1,6 @@
 package entrypoint_test
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -241,7 +240,7 @@ func TestEntireBodyFinder_Find_Insert(t *testing.T) {
 
 		for _, e := range entrypoints {
 			injected := e.InjectPayload(req, profile.Insert, payload)
-			assert.True(t, strings.Contains(string(injected.Body), payload))
+			assert.Contains(t, string(injected.Body), payload)
 
 			expectedBodyLength := len(req.Body) + len([]byte(payload))
 			assert.Len(t, injected.Body, expectedBodyLength)
@@ -264,7 +263,7 @@ func TestEntireBodyFinder_Find_Insert(t *testing.T) {
 
 		for _, e := range entrypoints {
 			injected := e.InjectPayload(req, profile.Insert, payload)
-			assert.True(t, strings.Contains(string(injected.Body), payload))
+			assert.Contains(t, string(injected.Body), payload)
 
 			expectedBodyLength := len(req.Body) + len([]byte(payload))
 			assert.Len(t, injected.Body, expectedBodyLength)
@@ -287,7 +286,7 @@ func TestEntireBodyFinder_Find_Insert(t *testing.T) {
 
 		for _, e := range entrypoints {
 			injected := e.InjectPayload(req, profile.Insert, payload)
-			assert.True(t, strings.Contains(string(injected.Body), payload))
+			assert.Contains(t, string(injected.Body), payload)
 
 			expectedBodyLength := len(req.Body) + len([]byte(payload))
 			assert.Len(t, injected.Body, expectedBodyLength)
@@ -319,7 +318,7 @@ contents of the file
 
 		for _, e := range entrypoints {
 			injected := e.InjectPayload(req, profile.Insert, payload)
-			assert.True(t, strings.Contains(string(injected.Body), payload))
+			assert.Contains(t, string(injected.Body), payload)
 
 			expectedBodyLength := len(req.Body) + len([]byte(payload))
 			assert.Len(t, injected.Body, expectedBodyLength)

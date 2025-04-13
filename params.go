@@ -56,7 +56,7 @@ func (pCfg ParamsCfg) grouped() [][]string {
 
 	groups := make([][]string, ng)
 
-	for i := 0; i < ng; i++ {
+	for i := range ng {
 		start := i * pCfg.Size
 		end := start + pCfg.Size
 		if end > len(pCfg.Params) {
@@ -118,7 +118,7 @@ func paramsToBody(tpl Template, idx int, params []string, encoding string) Templ
 func paramsAsURL(params []string) string {
 	values := make(url.Values)
 	for _, p := range params {
-		p, v := p, p
+		p, v := p, p //nolint:copyloopvar
 		if strings.Contains(p, ",") {
 			chunks := strings.Split(p, ",")
 			p, v = chunks[0], chunks[1]
@@ -133,7 +133,7 @@ func paramsAsURL(params []string) string {
 func paramsAsJSON(params []string) string {
 	m := make(map[string]string)
 	for _, p := range params {
-		p, v := p, p
+		p, v := p, p //nolint:copyloopvar
 		if strings.Contains(p, ",") {
 			chunks := strings.Split(p, ",")
 			p, v = chunks[0], chunks[1]

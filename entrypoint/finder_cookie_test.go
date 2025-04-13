@@ -78,8 +78,6 @@ func TestCookieFinder_Find_Replace(t *testing.T) {
 	}
 
 	for name, tc := range tcs {
-		tc := tc
-
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
@@ -166,8 +164,6 @@ func TestCookieFinder_Find_Append(t *testing.T) {
 	}
 
 	for name, tc := range tcs {
-		tc := tc
-
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
@@ -254,8 +250,6 @@ func TestCookieFinder_Find_Insert(t *testing.T) {
 	}
 
 	for name, tc := range tcs {
-		tc := tc
-
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 

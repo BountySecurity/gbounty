@@ -48,7 +48,6 @@ func Test_evaluate(t *testing.T) {
 	}
 
 	for name, tc := range tcs {
-		tc := tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			assert.Equal(t, tc.expected, evaluate(tc.booleans, tc.operators))

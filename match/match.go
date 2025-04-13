@@ -80,7 +80,7 @@ func Match(ctx context.Context, d Data) (bool, []occurrence.Occurrence) {
 	operators := make([]profile.GrepOperator, 0, ngreps-1)
 	occurrences := make([]occurrence.Occurrence, 0)
 
-	for idx := 0; idx < ngreps; idx++ {
+	for idx := range ngreps {
 		// It must never fail here.
 		// Any error must be caught by the profile validation.
 		g, err := x.GrepAt(idx, d.CustomTokens)

@@ -184,7 +184,7 @@ func createFromConfig(ctx context.Context, fs gbounty.FileSystem, cfg Config, pC
 
 	var tplIdx int
 	for _, cfgURL := range cfg.URLS {
-		err := url.Validate(&cfgURL) //nolint:gosec,scopelint
+		err := url.Validate(&cfgURL) //nolint:scopelint
 		if err != nil {
 			logger.For(ctx).Errorf("Error while validating url (%s): %s", cfgURL, err.Error())
 

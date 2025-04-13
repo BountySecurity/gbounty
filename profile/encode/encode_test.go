@@ -34,8 +34,6 @@ func Test_URL(t *testing.T) {
 	}
 
 	for name, tc := range tcs {
-		tc := tc
-
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			assert.Equal(t, tc.out, encode.URL(tc.in))
@@ -69,8 +67,6 @@ func Test_UnicodeURL(t *testing.T) {
 	}
 
 	for name, tc := range tcs {
-		tc := tc
-
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			assert.Equal(t, tc.out, encode.UnicodeURL(tc.in))
@@ -104,8 +100,6 @@ func Test_HTML(t *testing.T) {
 	}
 
 	for name, tc := range tcs {
-		tc := tc
-
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			assert.Equal(t, tc.out, encode.HTML(tc.in))
@@ -139,8 +133,6 @@ func Test_KeyHTML(t *testing.T) {
 	}
 
 	for name, tc := range tcs {
-		tc := tc
-
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			assert.Equal(t, tc.out, encode.KeyHTML(tc.in))
@@ -174,8 +166,6 @@ func Test_KeyURL(t *testing.T) {
 	}
 
 	for name, tc := range tcs {
-		tc := tc
-
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			assert.Equal(t, tc.out, encode.KeyURL(tc.in))
@@ -209,8 +199,6 @@ func Test_TheseURL(t *testing.T) {
 	}
 
 	for name, tc := range tcs {
-		tc := tc
-
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			assert.Equal(t, tc.out, encode.TheseURL(tc.in, "\\<\\(\\[\\\\\\^\\-\\=\\$\\!\\|\\]\\)\\?\\*\\+\\.\\>]\\&\\%\\:\\@ "))
@@ -244,8 +232,6 @@ func Test_Base64(t *testing.T) {
 	}
 
 	for name, tc := range tcs {
-		tc := tc
-
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			assert.Equal(t, tc.out, encode.Base64(tc.in))

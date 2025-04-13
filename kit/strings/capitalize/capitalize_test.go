@@ -23,7 +23,6 @@ func Test_First(t *testing.T) {
 		"starting symbol":     {in: "-cc", out: "-cc"},
 	}
 	for name, tc := range tcs {
-		tc := tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			require.Equal(t, tc.out, capitalize.First(tc.in))
@@ -46,7 +45,6 @@ func Test_All(t *testing.T) {
 		"starting symbol":     {in: "-cc", out: "-CC"},
 	}
 	for name, tc := range tcs {
-		tc := tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			require.Equal(t, tc.out, capitalize.All(tc.in))

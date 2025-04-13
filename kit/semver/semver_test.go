@@ -40,8 +40,6 @@ func Test_Parse(t *testing.T) {
 	}
 
 	for v, tc := range tcs {
-		v := v
-		tc := tc
 		t.Run(v, func(t *testing.T) {
 			t.Parallel()
 
@@ -113,7 +111,6 @@ func TestVersion_ShouldUpdate(t *testing.T) {
 	}
 
 	for v, tc := range tcs {
-		tc := tc
 		t.Run(v, func(t *testing.T) {
 			t.Parallel()
 			assert.Equal(t, tc.shouldUpdate, tc.from.ShouldUpdate(tc.to))

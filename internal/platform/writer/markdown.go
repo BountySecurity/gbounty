@@ -254,7 +254,7 @@ func (md Markdown) WriteMatch(_ context.Context, m gbounty.Match, includeRespons
 	builder.WriteString(fmt.Sprintf("**Type:** %s\n\n", m.ProfileType))
 
 	to := max(len(m.Requests), len(m.Responses))
-	for i := 0; i < to; i++ {
+	for i := range to {
 		if m.Requests != nil && i < len(m.Requests) && m.Requests[i] != nil {
 			if len(m.Requests) > 1 {
 				builder.WriteString(fmt.Sprintf("**Request no. %d:**\n\n", i+1))
@@ -314,7 +314,7 @@ func (md Markdown) WriteMatches(ctx context.Context, fs gbounty.FileSystem, incl
 		builder.WriteString(fmt.Sprintf("**Type:** %s\n\n", m.ProfileType))
 
 		to := max(len(m.Requests), len(m.Responses))
-		for i := 0; i < to; i++ {
+		for i := range to {
 			if m.Requests != nil && i < len(m.Requests) && m.Requests[i] != nil {
 				if len(m.Requests) > 1 {
 					builder.WriteString(fmt.Sprintf("**Request no. %d:**\n\n", i+1))

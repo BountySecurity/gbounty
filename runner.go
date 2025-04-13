@@ -107,8 +107,6 @@ func (r *Runner) run() error {
 			continue
 		}
 
-		tpl := tpl
-
 		// This is a blocking operation, based on the maximum concurrency set
 		// at the pool.Pool initialization. It will block until a worker is
 		// available, or just early return if the given context is cancelled.
@@ -287,7 +285,6 @@ func (r *Runner) calculateTasks(ctx context.Context) {
 	defer closeIt()
 
 	for tpl := range templates {
-		tpl := tpl
 		if tpl.Response != nil { // Is passive? (analyze only)
 			if !tpl.Request.IsEmpty() {
 				r.stats.incrementRequestsToAnalyze(1)

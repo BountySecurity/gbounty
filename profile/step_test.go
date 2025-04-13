@@ -52,7 +52,6 @@ func TestStep_InsertionPointEnabled(t *testing.T) {
 	}
 
 	for name, tc := range tcs {
-		tc := tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			result := tc.step.InsertionPointEnabled(tc.ipt, tc.method)

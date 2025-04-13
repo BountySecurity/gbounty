@@ -38,8 +38,6 @@ func TestUserProvided_Find_Replace_path(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		tc := tc
-
 		t.Run(tc.req.Path, func(t *testing.T) {
 			t.Parallel()
 
@@ -127,8 +125,6 @@ func TestUserProvided_Find_Replace_headers(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		tc := tc
-
 		t.Run(fmt.Sprintf("%v", tc.req.Headers), func(t *testing.T) {
 			t.Parallel()
 
@@ -173,8 +169,6 @@ func TestUserProvided_Find_Replace_body(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		tc := tc
-
 		t.Run(string(tc.req.Body), func(t *testing.T) {
 			t.Parallel()
 

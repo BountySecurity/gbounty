@@ -19,7 +19,7 @@ func executable() (exePath string, err error) {
 func getModuleFileName() (string, error) {
 	var n uint32
 	b := make([]uint16, syscall.MAX_PATH)
-	size := uint32(len(b))
+	size := uint32(len(b)) //nolint:gosec
 
 	r0, _, e1 := getModuleFileNameProc.Call(0, uintptr(unsafe.Pointer(&b[0])), uintptr(size))
 	n = uint32(r0)

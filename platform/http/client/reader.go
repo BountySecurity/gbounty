@@ -83,7 +83,7 @@ func (r *reader) readResponse() (string, int, string, map[string][]string, io.Re
 func (r *reader) readProto() (string, error) {
 	var major, minor int
 
-	for pos := 0; pos < len("HTTP/x.x "); pos++ {
+	for pos := range len("HTTP/x.x ") {
 		c, err := r.ReadByte()
 		if err != nil {
 			return "", err
@@ -133,7 +133,7 @@ func (r *reader) readProto() (string, error) {
 func (r *reader) readStatusCode() (int, error) {
 	var code int
 
-	for pos := 0; pos < len("200 "); pos++ {
+	for pos := range len("200 ") {
 		c, err := r.ReadByte()
 		if err != nil {
 			return 0, err

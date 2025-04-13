@@ -2,12 +2,16 @@ package writer
 
 // WithOptions is an interface that defines the expected behavior for [gbounty.Writer] implementations on this
 // package that can be configured with [Option]. It's mostly a composition of all the concrete interfaces.
+//
+//nolint:iface
 type WithOptions interface {
 	WithProofOfConcept
 }
 
 // WithProofOfConcept is an interface that defines the expected behavior for [gbounty.Writer] implementations on this
 // package that can be configured with [WithProofOfConceptEnabled].
+//
+//nolint:iface
 type WithProofOfConcept interface {
 	SetProofOfConcept(enabled bool)
 }

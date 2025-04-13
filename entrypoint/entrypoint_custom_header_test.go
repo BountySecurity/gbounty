@@ -53,8 +53,6 @@ func TestCustomHeader_InjectPayload(t *testing.T) {
 	}
 
 	for name, tc := range tcs {
-		tc := tc
-
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 

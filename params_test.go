@@ -138,8 +138,6 @@ func Test_ParamsCfg_Expand_GET(t *testing.T) {
 	}
 
 	for name, tc := range tcs {
-		tc := tc
-
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			assert.Equal(t, tc.out, pCfg.Alter(tc.tpl))
@@ -292,8 +290,6 @@ func Test_ParamsCfg_Expand_POST_url(t *testing.T) {
 	}
 
 	for name, tc := range tcs {
-		tc := tc
-
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			assert.Equal(t, tc.out, pCfg.Alter(tc.tpl))
@@ -446,8 +442,6 @@ func Test_ParamsCfg_Expand_POST_json(t *testing.T) {
 	}
 
 	for name, tc := range tcs {
-		tc := tc
-
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			assert.Equal(t, tc.out, pCfg.Alter(tc.tpl))
@@ -487,8 +481,6 @@ func Test_ParamsCfg_grouped(t *testing.T) {
 	}
 
 	for name, tc := range tcs {
-		tc := tc
-
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			pCfg := ParamsCfg{Params: tc.params, Size: size}

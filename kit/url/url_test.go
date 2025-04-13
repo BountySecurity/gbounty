@@ -40,7 +40,6 @@ func TestValidURL(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			urlInput := tc.input
@@ -77,7 +76,6 @@ func TestInvalidURL(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			urlInput := tc.input
@@ -109,7 +107,6 @@ func TestURLFallbackProtocol(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			urlInput := tc.input
@@ -141,7 +138,6 @@ func TestURLWithPort(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			urlInput := tc.input
@@ -174,7 +170,6 @@ func TestURLWithoutHost(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			urlInput := tc.input

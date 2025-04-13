@@ -96,8 +96,6 @@ func TestJSONParamFinder_Find_Replace(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		tc := tc
-
 		t.Run(string(tc.req.Body), func(t *testing.T) {
 			t.Parallel()
 
@@ -201,8 +199,6 @@ func TestJSONParamFinder_Find_Append(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		tc := tc
-
 		t.Run(string(tc.req.Body), func(t *testing.T) {
 			t.Parallel()
 
@@ -306,8 +302,6 @@ func TestJSONParamFinder_Find_Insert(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		tc := tc
-
 		t.Run(string(tc.req.Body), func(t *testing.T) {
 			t.Parallel()
 

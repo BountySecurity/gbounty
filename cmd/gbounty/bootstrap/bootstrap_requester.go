@@ -57,7 +57,7 @@ func setupScanRequester(ctx context.Context, cfg cli.Config) func(*request.Reque
 		func() gbounty.Requester {
 			return client.New(baseOpts...)
 		},
-		uint32(maxConcurrentRequests), // Technically, we can have up to [maxConcurrentRequests] clients.
+		uint32(maxConcurrentRequests), //nolint:gosec // Technically, we can have up to [maxConcurrentRequests] clients.
 	)
 
 	stdPool := internalhttp.NewClientPool(
@@ -65,7 +65,7 @@ func setupScanRequester(ctx context.Context, cfg cli.Config) func(*request.Reque
 		func() gbounty.Requester {
 			return stdclient.New(stdOpts...)
 		},
-		uint32(maxConcurrentRequests), // Technically, we can have up to [maxConcurrentRequests] clients.
+		uint32(maxConcurrentRequests), //nolint:gosec // Technically, we can have up to [maxConcurrentRequests] clients.
 	)
 
 	return gbounty.NewReqBuilderPool(
@@ -78,6 +78,6 @@ func setupScanRequester(ctx context.Context, cfg cli.Config) func(*request.Reque
 			// Otherwise, we use our own client.
 			return basePool(r)
 		},
-		uint32(maxConcurrentRequests),
+		uint32(maxConcurrentRequests), //nolint:gosec
 	)
 }

@@ -22,7 +22,6 @@ func Test_dieFmt(t *testing.T) {
 	}
 
 	for name, tc := range tcs {
-		tc := tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			err := errors.New("test err") //nolint:goerr113

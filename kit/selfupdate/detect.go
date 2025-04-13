@@ -17,7 +17,7 @@ func DetectLatest(ctx context.Context, slug string, withAsset bool) (release *Re
 }
 
 func detectVersion(
-	ctx context.Context, slug string, min semver.Version, withAsset bool,
+	ctx context.Context, slug string, minimum semver.Version, withAsset bool,
 ) (release *Release, found bool, err error) {
 	// The slug must be owner/name.
 	repo := strings.Split(slug, "/")
@@ -40,7 +40,7 @@ func detectVersion(
 
 	// Then, we try to find the release and asset we're looking for.
 	// If the given version is [semver.Zero()], the latest version will be fetched.
-	rel, asset, version, found := findReleaseAndAsset(releases, min, withAsset)
+	rel, asset, version, found := findReleaseAndAsset(releases, minimum, withAsset)
 	if !found || (withAsset && asset == nil) {
 		return nil, false, nil
 	}

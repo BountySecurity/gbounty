@@ -25,7 +25,6 @@ func TestOccurrences(t *testing.T) {
 	}
 
 	for name, tc := range tcs {
-		tc := tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			assert.Equal(t, tc.out, slices.Occurrences(tc.in, tc.lookup))
@@ -50,7 +49,6 @@ func TestIn(t *testing.T) {
 	}
 
 	for name, tc := range tcs {
-		tc := tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			assert.Equal(t, tc.out, slices.In(tc.in, tc.lookup))
@@ -76,7 +74,6 @@ func TestNoneIn(t *testing.T) {
 	}
 
 	for name, tc := range tcs {
-		tc := tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			assert.Equal(t, tc.out, slices.NoneIn(tc.in, tc.lookup))
@@ -102,7 +99,6 @@ func TestValForKey(t *testing.T) {
 	}
 
 	for name, tc := range tcs {
-		tc := tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			gotVal, gotOk := slices.ValForKey(tc.inSlice, tc.inKey)

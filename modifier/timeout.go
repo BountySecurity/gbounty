@@ -28,7 +28,7 @@ func NewTimeout() Timeout {
 // Modify modifies the request by setting the timeout to the maximum value found in the time delay greps.
 func (t Timeout) Modify(s *profile.Step, _ gbounty.Template, req request.Request) request.Request {
 	timeout := req.Timeout
-	for i := 0; i < len(s.Greps); i++ {
+	for i := range len(s.Greps) {
 		grep, err := s.GrepAt(i, nil)
 		if err == nil && // valid grep
 			grep.Type.TimeDelay() && // is time delay

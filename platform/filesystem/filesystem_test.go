@@ -209,7 +209,7 @@ func storeSomeStats(t *testing.T, aferoFS *filesystem.Afero) {
 func storeSomeErrors(t *testing.T, aferoFS *filesystem.Afero) {
 	t.Helper()
 
-	for i := 0; i < 5; i++ {
+	for range 5 {
 		require.NoError(t, aferoFS.StoreError(context.Background(), dummyError()))
 	}
 }
@@ -217,7 +217,7 @@ func storeSomeErrors(t *testing.T, aferoFS *filesystem.Afero) {
 func storeSomeMatches(t *testing.T, aferoFS *filesystem.Afero) {
 	t.Helper()
 
-	for i := 0; i < 5; i++ {
+	for range 5 {
 		require.NoError(t, aferoFS.StoreMatch(context.Background(), dummyMatch()))
 	}
 }
@@ -225,7 +225,7 @@ func storeSomeMatches(t *testing.T, aferoFS *filesystem.Afero) {
 func storeSomeTaskSummaries(t *testing.T, aferoFS *filesystem.Afero) {
 	t.Helper()
 
-	for i := 0; i < 5; i++ {
+	for range 5 {
 		require.NoError(t, aferoFS.StoreTaskSummary(context.Background(), dummyTask()))
 	}
 }
@@ -233,7 +233,7 @@ func storeSomeTaskSummaries(t *testing.T, aferoFS *filesystem.Afero) {
 func storeSomeTemplates(t *testing.T, aferoFS *filesystem.Afero) {
 	t.Helper()
 
-	for i := 0; i < 5; i++ {
+	for range 5 {
 		require.NoError(t, aferoFS.StoreTemplate(context.Background(), dummyTemplate()))
 	}
 }

@@ -30,7 +30,7 @@ func TestFromStdlib_Basic(t *testing.T) {
 	assert.Equal(t, 200, resp.Code)
 	assert.Equal(t, "OK", resp.Status)
 	assert.Equal(t, headerAsMap(httpRes.Header), resp.Headers)
-	assert.Equal(t, []byte(`{"key": "value"}`), resp.Body)
+	assert.JSONEq(t, `{"key": "value"}`, string(resp.Body))
 }
 
 func TestFromStdlib_NilBody(t *testing.T) {

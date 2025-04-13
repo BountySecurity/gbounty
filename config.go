@@ -169,7 +169,7 @@ func CfgOptionsFromJSON(r io.Reader) ([]CfgOption, error) {
 		opts = append(opts, WithBlindHostKey(*cfg.BlindHostKey))
 	}
 
-	if cfg.CustomTokens != nil && len(cfg.CustomTokens) > 0 {
+	if len(cfg.CustomTokens) > 0 {
 		opts = append(opts, WithCustomTokens(cfg.CustomTokens))
 	}
 

@@ -16,7 +16,7 @@ func New(ctx context.Context, workers int) Pool {
 	ch := make(chan func())
 	wg := &sync.WaitGroup{}
 
-	for i := 0; i < workers; i++ {
+	for range workers {
 		wg.Add(1)
 
 		go func() {

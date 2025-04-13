@@ -79,8 +79,6 @@ func TestQueryFinder_Find_Replace(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		tc := tc
-
 		t.Run(tc.req.Path, func(t *testing.T) {
 			t.Parallel()
 
@@ -167,8 +165,6 @@ func TestQueryFinder_Find_Append(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		tc := tc
-
 		t.Run(tc.req.Path, func(t *testing.T) {
 			t.Parallel()
 
@@ -255,8 +251,6 @@ func TestQueryFinder_Find_Insert(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		tc := tc
-
 		t.Run(tc.req.Path, func(t *testing.T) {
 			t.Parallel()
 

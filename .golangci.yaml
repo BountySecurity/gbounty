@@ -5,8 +5,7 @@ linters:
   enable-all: true
   disable:
     # deprecations:
-    - gomnd # (since v1.58.0) in favor of 'mnd'
-    - execinquery # (since v1.58.0) as it has been archived
+    - tenv # (since v1.64.0) as it's a duplicate feature (usetesting)
     # we don't want that many whitespaces and white lines
     - wsl
     - nlreturn
@@ -29,9 +28,6 @@ linters:
     - cyclop
     - funlen
     - gocognit
-    # enable when on Go v1.22
-    - copyloopvar
-    - intrange
 
 linters-settings:
   revive:

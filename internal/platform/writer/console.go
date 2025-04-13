@@ -302,7 +302,7 @@ func (c *Console) WriteMatch(_ context.Context, m gbounty.Match, _ bool) error {
 	}
 
 	to := max(len(m.Requests), len(m.Responses))
-	for i := 0; i < to; i++ {
+	for i := range to {
 		if m.Requests != nil && i < len(m.Requests) && m.Requests[i] != nil {
 			if !c.pocEnabled {
 				if len(m.Requests) > 1 {
@@ -389,7 +389,7 @@ func (c *Console) WriteMatches(ctx context.Context, fs gbounty.FileSystem, _ boo
 		}
 
 		to := max(len(m.Requests), len(m.Responses))
-		for i := 0; i < to; i++ {
+		for i := range to {
 			if m.Requests != nil && i < len(m.Requests) && m.Requests[i] != nil {
 				if len(m.Requests) > 1 {
 					builder.WriteString(requestNPrinter(i + 1).Sprintln())

@@ -286,7 +286,7 @@ func (p *Plain) WriteMatch(_ context.Context, m gbounty.Match, includeResponse b
 	}
 
 	to := max(len(m.Requests), len(m.Responses))
-	for i := 0; i < to; i++ {
+	for i := range to {
 		if m.Requests != nil && i < len(m.Requests) && m.Requests[i] != nil {
 			if !p.pocEnabled {
 				if len(m.Requests) > 1 {
@@ -346,7 +346,7 @@ func (p *Plain) WriteMatches(ctx context.Context, fs gbounty.FileSystem, include
 		}
 
 		to := max(len(m.Requests), len(m.Responses))
-		for i := 0; i < to; i++ {
+		for i := range to {
 			if m.Requests != nil && i < len(m.Requests) && m.Requests[i] != nil {
 				if len(m.Requests) > 1 {
 					builder.WriteString(printer.Plain(requestNPrinter(i + 1)).Sprintln())

@@ -18,7 +18,7 @@ func executable() (string, error) {
 	case "freebsd":
 		mib = [4]int32{1 /* CTL_KERN */, 14 /* KERN_PROC */, 12 /* KERN_PROC_PATHNAME */, -1}
 	case "darwin":
-		mib = [4]int32{1 /* CTL_KERN */, 38 /* KERN_PROCARGS */, int32(os.Getpid()), -1}
+		mib = [4]int32{1 /* CTL_KERN */, 38 /* KERN_PROCARGS */, int32(os.Getpid()), -1} //nolint:gosec
 	}
 
 	n := uintptr(0)

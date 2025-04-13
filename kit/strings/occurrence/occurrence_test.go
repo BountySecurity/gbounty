@@ -25,7 +25,6 @@ func TestFind(t *testing.T) {
 	}
 
 	for name, tc := range tcs {
-		tc := tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			require.Equal(t, tc.exp, occurrence.Find(tc.s, tc.sub))
@@ -50,7 +49,6 @@ func TestFindRegexp(t *testing.T) {
 	}
 
 	for name, tc := range tcs {
-		tc := tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			require.Equal(t, tc.exp, occurrence.FindRegexp(tc.s, tc.sub))
@@ -89,7 +87,6 @@ func TestFindStatusCode(t *testing.T) {
 	}
 
 	for name, tc := range tcs {
-		tc := tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			require.Equal(t, tc.exp, occurrence.FindStatusCode(tc.s, tc.code))
@@ -115,7 +112,6 @@ func TestForEach(t *testing.T) {
 	}
 
 	for name, tc := range tcs {
-		tc := tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			var (

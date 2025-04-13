@@ -1,8 +1,8 @@
 module github.com/BountySecurity/gbounty
 
-go 1.21
+go 1.23.0
 
-toolchain go1.21.13
+toolchain go1.23.8
 
 require (
 	github.com/antchfx/xmlquery v1.4.1

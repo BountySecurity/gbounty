@@ -44,7 +44,7 @@ binaries from [GitHub Releases](https://github.com/BountySecurity/gbounty/releas
 
 ### Installation with Go
 
-GBounty requires **Go v1.21** to install successfully. Run the following command to install the latest 
+GBounty requires **Go v1.23** to install successfully. Run the following command to install the latest 
 version under development:
 
 ```sh

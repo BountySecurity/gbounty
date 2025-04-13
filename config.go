@@ -13,16 +13,17 @@ var _ = reflect.TypeOf(Config{})
 // It includes options to control the scanner's behavior, such as the rate of
 // requests per second, the concurrency level, and the output format.
 type Config struct {
-	RPS             int `default:"100"`
-	Concurrency     int `default:"100"`
-	Version         string
-	SaveOnStop      bool
-	InMemory        bool
-	BlindHost       string
-	BlindHostKey    string
-	EmailAddress    bool
-	CustomTokens    map[string]string
-	PayloadStrategy PayloadStrategy
+	RPS                 int `default:"100"`
+	Concurrency         int `default:"100"`
+	Version             string
+	SaveOnStop          bool
+	InMemory            bool
+	BlindHostId         string
+	BlindHostDomain     string
+	BlindHostPrivateKey string
+	EmailAddress        bool
+	CustomTokens        map[string]string
+	PayloadStrategy     PayloadStrategy
 
 	Silent             bool
 	StreamErrors       bool
@@ -46,16 +47,17 @@ func (c Config) Clone() Config {
 	}
 
 	return Config{
-		RPS:             c.RPS,
-		Concurrency:     c.Concurrency,
-		Version:         c.Version,
-		SaveOnStop:      c.SaveOnStop,
-		InMemory:        c.InMemory,
-		BlindHost:       c.BlindHost,
-		BlindHostKey:    c.BlindHostKey,
-		EmailAddress:    c.EmailAddress,
-		CustomTokens:    clonedTokens,
-		PayloadStrategy: c.PayloadStrategy,
+		RPS:                 c.RPS,
+		Concurrency:         c.Concurrency,
+		Version:             c.Version,
+		SaveOnStop:          c.SaveOnStop,
+		InMemory:            c.InMemory,
+		BlindHostId:         c.BlindHostId,
+		BlindHostDomain:     c.BlindHostDomain,
+		BlindHostPrivateKey: c.BlindHostPrivateKey,
+		EmailAddress:        c.EmailAddress,
+		CustomTokens:        clonedTokens,
+		PayloadStrategy:     c.PayloadStrategy,
 
 		Silent:           c.Silent,
 		StreamErrors:     c.StreamErrors,
@@ -73,7 +75,7 @@ func (c Config) Clone() Config {
 
 // BlindHostConfigured returns whether the blind host and its key are configured.
 func (c Config) BlindHostConfigured() bool {
-	return len(c.BlindHost) > 0 && len(c.BlindHostKey) > 0
+	return len(c.BlindHostId) > 0 && len(c.BlindHostDomain) > 0 && len(c.BlindHostPrivateKey) > 0
 }
 
 // CfgOption is a function that modifies a [Config] instance.
@@ -94,17 +96,24 @@ func WithConcurrency(concurrency int) CfgOption {
 	}
 }
 
-// WithBlindHost sets the blind host.
-func WithBlindHost(blindHost string) CfgOption {
+// WithBlindHostId sets the blind host id.
+func WithBlindHostId(blindHostId string) CfgOption {
 	return func(cfg *Config) {
-		cfg.BlindHost = blindHost
+		cfg.BlindHostId = blindHostId
 	}
 }
 
-// WithBlindHostKey sets the blind host key.
-func WithBlindHostKey(blindHostKey string) CfgOption {
+// WithBlindHostDomain sets the blind host.
+func WithBlindHostDomain(blindHostDomain string) CfgOption {
 	return func(cfg *Config) {
-		cfg.BlindHostKey = blindHostKey
+		cfg.BlindHostDomain = blindHostDomain
+	}
+}
+
+// WithBlindHostPrivateKey sets the blind host key.
+func WithBlindHostPrivateKey(blindHostPrivateKey string) CfgOption {
+	return func(cfg *Config) {
+		cfg.BlindHostPrivateKey = blindHostPrivateKey
 	}
 }
 
@@ -137,12 +146,13 @@ func WithPayloadStrategy(ps string) CfgOption {
 // The latter uses long, camel-cased names.
 func CfgOptionsFromJSON(r io.Reader) ([]CfgOption, error) {
 	var cfg struct {
-		Concurrency      *int              `json:"concurrency"`
-		RequestPerSecond *int              `json:"requestPerSecond"`
-		BlindHost        *string           `json:"blindHost"`
-		BlindHostKey     *string           `json:"blindHostKey"`
-		CustomTokens     map[string]string `json:"tokens"`
-		PayloadStrategy  *string           `json:"payloadStrategy"`
+		Concurrency         *int              `json:"concurrency"`
+		RequestPerSecond    *int              `json:"requestPerSecond"`
+		BlindHostId         *string           `json:"blindHostId"`
+		BlindHostDomain     *string           `json:"blindHostDomain"`
+		BlindHostPrivateKey *string           `json:"BlindHostPrivateKey"`
+		CustomTokens        map[string]string `json:"tokens"`
+		PayloadStrategy     *string           `json:"payloadStrategy"`
 	}
 
 	err := json.NewDecoder(r).Decode(&cfg)
@@ -161,12 +171,16 @@ func CfgOptionsFromJSON(r io.Reader) ([]CfgOption, error) {
 		opts = append(opts, WithRPS(*cfg.RequestPerSecond))
 	}
 
-	if cfg.BlindHost != nil && len(*cfg.BlindHost) > 0 {
-		opts = append(opts, WithBlindHost(*cfg.BlindHost))
+	if cfg.BlindHostId != nil && len(*cfg.BlindHostId) > 0 {
+		opts = append(opts, WithBlindHostId(*cfg.BlindHostId))
 	}
 
-	if cfg.BlindHostKey != nil && len(*cfg.BlindHostKey) > 0 {
-		opts = append(opts, WithBlindHostKey(*cfg.BlindHostKey))
+	if cfg.BlindHostDomain != nil && len(*cfg.BlindHostDomain) > 0 {
+		opts = append(opts, WithBlindHostDomain(*cfg.BlindHostDomain))
+	}
+
+	if cfg.BlindHostPrivateKey != nil && len(*cfg.BlindHostPrivateKey) > 0 {
+		opts = append(opts, WithBlindHostPrivateKey(*cfg.BlindHostPrivateKey))
 	}
 
 	if len(cfg.CustomTokens) > 0 {

@@ -145,7 +145,7 @@ func (r *Runner) run() error {
 					_, _ = lineOfWork.prepareTasks(
 						r.opts.ctx,
 						prof,
-						len(r.opts.cfg.BlindHost) > 0,
+						len(r.opts.cfg.BlindHostDomain) > 0,
 						r.opts.cfg.EmailAddress,
 					)
 				}
@@ -318,7 +318,7 @@ func (r *Runner) calculateTasks(ctx context.Context) {
 				numTasksPrepared, skipped := lineOfWork.prepareTasks(
 					ctx,
 					prof,
-					len(r.opts.cfg.BlindHost) > 0,
+					len(r.opts.cfg.BlindHostDomain) > 0,
 					r.opts.cfg.EmailAddress,
 				)
 

@@ -36,9 +36,10 @@ func (md Markdown) WriteConfig(_ context.Context, cfg gbounty.Config) error {
 	builder.WriteString(fmt.Sprintf("**Save on stop:** %v\n\n", cfg.SaveOnStop))
 	builder.WriteString(fmt.Sprintf("**Memory-only:** %v\n\n", cfg.InMemory))
 
-	if len(cfg.BlindHost) > 0 {
-		builder.WriteString(fmt.Sprintf("**Blind host:** %v\n\n", cfg.BlindHost))
-		builder.WriteString(fmt.Sprintf("**Blind host key:** %v\n\n", cfg.BlindHostKey))
+	if len(cfg.BlindHostDomain) > 0 {
+		builder.WriteString(fmt.Sprintf("**Blind host:** %v\n\n", cfg.BlindHostDomain))
+		builder.WriteString(fmt.Sprintf("**Blind host id:** %v\n\n", cfg.BlindHostId))
+		builder.WriteString(fmt.Sprintf("**Blind host key:** %v\n\n", cfg.BlindHostPrivateKey))
 	}
 
 	_, err := fmt.Fprintln(md.writer, builder.String())

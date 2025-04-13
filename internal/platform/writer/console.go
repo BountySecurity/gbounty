@@ -66,9 +66,10 @@ func (c *Console) WriteConfig(_ context.Context, cfg gbounty.Config) error {
 	builder.WriteString(infoPrinter.Sprintf("%s %s\n", cyan.Sprint("Save on stop:"), lightCyan.Sprintf("%v", cfg.SaveOnStop)))
 	builder.WriteString(infoPrinter.Sprintf("%s %s\n\n", cyan.Sprint("Memory-only:"), lightCyan.Sprintf("%v", cfg.InMemory)))
 
-	if len(cfg.BlindHost) > 0 {
-		builder.WriteString(infoPrinter.Sprintf("%s %s\n\n", cyan.Sprint("Blind host:"), lightCyan.Sprintf("%s", cfg.BlindHost)))
-		builder.WriteString(infoPrinter.Sprintf("%s %s\n\n", cyan.Sprint("Blind host key:"), lightCyan.Sprintf("%s", cfg.BlindHostKey)))
+	if len(cfg.BlindHostDomain) > 0 {
+		builder.WriteString(infoPrinter.Sprintf("%s %s\n\n", cyan.Sprint("Blind host:"), lightCyan.Sprintf("%s", cfg.BlindHostDomain)))
+		builder.WriteString(infoPrinter.Sprintf("%s %s\n\n", cyan.Sprint("Blind host id:"), lightCyan.Sprintf("%s", cfg.BlindHostId)))
+		builder.WriteString(infoPrinter.Sprintf("%s %s\n\n", cyan.Sprint("Blind host key:"), lightCyan.Sprintf("%s", cfg.BlindHostPrivateKey)))
 	}
 
 	_, err := fmt.Fprint(c.writer, builder.String())

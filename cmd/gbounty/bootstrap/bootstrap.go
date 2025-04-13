@@ -263,15 +263,16 @@ func runScan(
 			if err != nil {
 				logger.For(ctx).Errorf("Could not initialize the blind host client: %s", err)
 			} else {
-				bhPoller, err = blindhost.NewPoller(ctx, bhClient, blindhost.WithContext(ctx))
+				bhPoller, err = blindhost.NewPoller(bhClient, blindhost.WithContext(ctx))
 				if err != nil {
 					logger.For(ctx).Errorf("Could not initialize blind host poller: %s", err)
 				} else {
 					hid := bhPoller.HostIdentifier()
 					modifiers = append(modifiers, modifier.NewInteractionHost(cfg.BlindHost, hid))
-					scanCfg.BlindHost = hid.HostBaseURL(cfg.BlindHost)
-					scanCfg.BlindHostKey = hid.PrivateKey()
-					logger.For(ctx).Infof("Blind host is set to: %s", scanCfg.BlindHost)
+					scanCfg.BlindHostId = hid.ID()
+					scanCfg.BlindHostDomain = hid.HostBaseURL(cfg.BlindHost)
+					scanCfg.BlindHostPrivateKey = hid.PrivateKey()
+					logger.For(ctx).Infof("Blind host is set to: %s", scanCfg.BlindHostDomain)
 				}
 			}
 		}

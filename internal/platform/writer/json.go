@@ -34,8 +34,10 @@ func (j JSON) WriteConfig(_ context.Context, cfg gbounty.Config) error {
 		"saveOnStop": %v,
 		"memoryOnly": %v,
 		"blindHost": "%s",
+		"blindHostId": "%s",
 		"blindHostKey": "%s"
-	}`, cfg.Version, cfg.RPS, cfg.Concurrency, cfg.SaveOnStop, cfg.InMemory, cfg.BlindHost, cfg.BlindHostKey)
+	}`, cfg.Version, cfg.RPS, cfg.Concurrency, cfg.SaveOnStop, cfg.InMemory, cfg.BlindHostDomain, cfg.BlindHostId,
+		cfg.BlindHostPrivateKey)
 
 	return err
 }

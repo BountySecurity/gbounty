@@ -55,9 +55,10 @@ func (p *Plain) WriteConfig(_ context.Context, cfg gbounty.Config) error {
 	builder.WriteString(fmt.Sprintf("    Memory-only: %v\n", cfg.InMemory))
 	builder.WriteString(fmt.Sprintf("     Blind host: %v\n", cfg.InMemory))
 
-	if len(cfg.BlindHost) > 0 {
-		builder.WriteString(fmt.Sprintf("     Blind host: %v\n", cfg.BlindHost))
-		builder.WriteString(fmt.Sprintf(" Blind host key: %v\n", cfg.BlindHostKey))
+	if len(cfg.BlindHostDomain) > 0 {
+		builder.WriteString(fmt.Sprintf("     Blind host: %v\n", cfg.BlindHostDomain))
+		builder.WriteString(fmt.Sprintf("  Blind host id: %v\n", cfg.BlindHostId))
+		builder.WriteString(fmt.Sprintf(" Blind host key: %v\n", cfg.BlindHostPrivateKey))
 	}
 
 	_, err := fmt.Fprintln(p.writer, builder.String())

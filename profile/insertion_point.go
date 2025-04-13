@@ -70,6 +70,8 @@ func (i InsertionPointType) String() string {
 		return "Entire Body JSON"
 	case EntireBodyMulti:
 		return "Entire Body Multi"
+	case UserProvided:
+		return "User Provided"
 	default:
 		return unknown
 	}

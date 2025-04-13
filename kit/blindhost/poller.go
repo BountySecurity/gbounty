@@ -76,9 +76,7 @@ func NewPoller(ctx context.Context, c *Client, opts ...PollerOpt) (*Poller, erro
 	p.ctx, p.cnl = context.WithCancelCause(p.ctx)
 
 	// ...and run!
-	if err := p.run(); err != nil {
-		return nil, err
-	}
+	p.run()
 
 	return p, nil
 }
@@ -118,7 +116,7 @@ func (p *Poller) Close() {
 	p.wg.Wait()
 }
 
-func (p *Poller) run() error {
+func (p *Poller) run() {
 	p.wg.Add(1)
 	go func() {
 		defer p.wg.Done()
@@ -148,7 +146,6 @@ func (p *Poller) run() error {
 			}
 		}
 	}()
-	return nil
 }
 
 func (p *Poller) search(its []Interaction, substr string) *Interaction {

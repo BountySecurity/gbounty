@@ -183,11 +183,11 @@ func (l *Logger) log(level Level, msg string) {
 		if fmtErr == nil {
 			_, err = fmt.Fprintf(l.w, fmt.Sprintf("%s\n", string(fmtMsg))) //nolint
 		} else {
-			_, err = fmt.Fprintf(l.w, buildErrLogFmtLine("Cannot build fmt log", err)) //nolint
+			_, err = fmt.Fprintf(l.w, buildErrLogFmtLine("Cannot build fmt log", msg, err)) //nolint
 		}
 
 		if err != nil {
-			fmt.Printf(buildErrLogFmtLine("Cannot write to log output", err)) //nolint
+			fmt.Printf(buildErrLogFmtLine("Cannot write to log output", msg, err)) //nolint
 		}
 	}()
 }
@@ -198,8 +198,8 @@ func (l *Logger) shouldLog(level Level) bool {
 	return l.Level.shouldLog(level)
 }
 
-func buildErrLogFmtLine(msg string, err error) string {
-	return fmt.Sprintf("%s=error %s=\"%s\" error=\"%s\"\n", logLineLevelKey, logLineMsgKey, msg, err.Error())
+func buildErrLogFmtLine(msg, origMsg string, err error) string {
+	return fmt.Sprintf("%s=error %s=\"%s\" error=\"%s\" original_msg=\"%s\"\n", logLineLevelKey, logLineMsgKey, msg, err.Error(), origMsg)
 }
 
 func (l *Logger) fmt(level Level, now int64, msg string) ([]byte, error) {

@@ -264,9 +264,17 @@ func (r *Runner) statsCollector(ch chan update, onUpdatedFn func(*Stats)) {
 			NumOfPerformedRequests: r.stats.NumOfPerformedRequests,
 			NumOfSucceedRequests:   r.stats.NumOfSucceedRequests,
 			NumOfFailedRequests:    r.stats.NumOfFailedRequests,
-			TemplatesEnded:         r.stats.TemplatesEnded,
-			NumOfEntrypoints:       r.stats.NumOfEntrypoints,
-			NumOfMatches:           r.stats.NumOfMatches,
+			NumOfSkippedRequests:   r.stats.NumOfSkippedRequests,
+
+			NumOfRequestsToAnalyze:  r.stats.NumOfRequestsToAnalyze,
+			NumOfResponsesToAnalyze: r.stats.NumOfResponsesToAnalyze,
+
+			TemplatesEnded: r.stats.TemplatesEnded,
+
+			NumOfEntrypoints: r.stats.NumOfEntrypoints,
+			NumOfMatches:     r.stats.NumOfMatches,
+
+			StartedAt: r.stats.StartedAt,
 		})
 	}
 }

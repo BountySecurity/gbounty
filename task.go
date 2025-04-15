@@ -195,7 +195,8 @@ func (t *Task) run(
 				tplOriginalURL := applyReplacements(tpl.OriginalURL, map[string]string{
 					entrypoint.UserProvidedInput: t.payloadEncoded(),
 				})
-				onMatchFn(ctx, tplOriginalURL, t.Requests, t.Responses, t.Profile, t.Profile.Steps[t.StepIdx], entrypoint.Entrypoint(nil), t.payloadEncoded(), t.Occurrences)
+				payloadEncoded := applyReplacements(t.payloadEncoded(), req.Modifications)
+				onMatchFn(ctx, tplOriginalURL, t.Requests, t.Responses, t.Profile, t.Profile.Steps[t.StepIdx], entrypoint.Entrypoint(nil), payloadEncoded, t.Occurrences)
 			}
 		}
 

@@ -16,7 +16,7 @@ require (
 	github.com/pterm/pterm v0.12.80
 	github.com/spf13/afero v1.14.0
 	github.com/stretchr/testify v1.10.0
-	github.com/ulikunitz/xz v0.5.12
+	github.com/ulikunitz/xz v0.5.14
 	golang.org/x/net v0.39.0
 	golang.org/x/oauth2 v0.29.0
 	golang.org/x/sync v0.13.0
